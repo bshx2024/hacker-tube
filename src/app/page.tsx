@@ -172,6 +172,11 @@ export default function HomePage() {
         <SlopContrastSection />
 
         <div className="container">
+          <div className="section-title-wrap" style={{ marginTop: "48px", marginBottom: "24px" }}>
+            <div className="section-eyebrow">The Curated Library</div>
+            <h2 className="section-title">HackerTube Curated Video Archive</h2>
+          </div>
+
           <Controls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -217,7 +222,7 @@ export default function HomePage() {
               </h3>
               <p style={{ color: "var(--text-muted)", fontSize: "14px", maxWidth: "500px", margin: "0 auto 20px" }}>
                 {isSavedView
-                  ? "Click the '+ Watch Later' button on any video card to save talks locally for later study."
+                  ? "Click the '+ Save' bookmark button on any video card to save talks locally for later study."
                   : "Try clearing search keywords or selecting a broader topic category."}
               </p>
               <button

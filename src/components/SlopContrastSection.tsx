@@ -10,7 +10,7 @@ export const SlopContrastSection: React.FC = () => {
       <div className="container">
         <div className="section-title-wrap">
           <div className="section-eyebrow">The Manifesto</div>
-          <h2 className="section-title">The Algorithmic Trap vs. The Human Filter</h2>
+          <h2 className="section-title">HackerTube vs. The Algorithmic Trap</h2>
           <p style={{ color: "var(--text-secondary)", maxWidth: "680px", margin: "12px auto 0", fontSize: "16px" }}>
             Commercial video platforms optimize for eyeballs and dopamine spikes. HackerTube optimizes for long-term intellectual leverage.
           </p>
@@ -24,6 +24,8 @@ export const SlopContrastSection: React.FC = () => {
               <img
                 src="/images/anti-slop-contrast.jpg"
                 alt="Visual comparison showing chaotic clickbait noise dissolving into clean structured knowledge nodes and Bell Labs history"
+                width="1280"
+                height="720"
                 className="contrast-img"
               />
               <div className="contrast-img-overlay">

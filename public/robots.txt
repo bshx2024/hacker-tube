@@ -25,6 +25,6 @@ User-agent: CCBot
 Allow: /
 
 # Sitemaps and LLM standards
-Sitemap: https://hackertube.org/sitemap.xml
+Sitemap: https://www.hacker-tube.net/sitemap.xml
 # LLM Manifest
-# https://hackertube.org/llms.txt
+# https://www.hacker-tube.net/llms.txt

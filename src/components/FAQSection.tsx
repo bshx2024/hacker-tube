@@ -9,7 +9,7 @@ export const FAQSection: React.FC = () => {
       <div className="container">
         <div className="section-title-wrap">
           <div className="section-eyebrow">Frequently Answered Questions</div>
-          <h2 className="section-title">The Philosophy of Anti-Algorithm Curation</h2>
+          <h2 className="section-title">HackerTube FAQ: Curated Video Philosophy</h2>
         </div>
 
         <div className="faq-grid">

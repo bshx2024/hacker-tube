@@ -63,12 +63,12 @@ export const Hero: React.FC<HeroProps> = ({
         </div>
 
         <h1 className="hero-title">
-          Stop Watching <span className="hero-title-gradient">Slop.</span>
+          HackerTube: Stop Watching <span className="hero-title-gradient">Slop.</span>
         </h1>
 
         <p className="hero-subtitle">
-          The anti-algorithm video platform for hackers, engineers, and deep thinkers.
-          Every video here was recommended by real humans in Hacker News comments—with zero
+          <strong>HackerTube</strong> is the anti-algorithm video platform for hackers, engineers, and deep thinkers.
+          Every video on HackerTube was recommended by real humans in Hacker News comments—with zero
           clickbait thumbnails, zero tracking, and pure technical signal.
         </p>
 
@@ -124,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({
                 <span className="dot green"></span>
               </div>
               <div className="window-address-bar">
-                <span>hackertube.org/spotlight/{activeVideo.id}</span>
+                <span>hacker-tube.net/spotlight/{activeVideo.id}</span>
               </div>
               <div className="window-status-pill">
                 <span className="live-signal-indicator"></span>
@@ -142,6 +142,8 @@ export const Hero: React.FC<HeroProps> = ({
               <img
                 src={midframeThumb}
                 alt={activeVideo.title}
+                width="1280"
+                height="720"
                 className="spotlight-bg-img"
               />
               <div className="spotlight-gradient-overlay" />
@@ -215,7 +217,7 @@ export const Hero: React.FC<HeroProps> = ({
                       onToggleSave(activeVideo.id, e);
                     }}
                   >
-                    <span>{saved ? "✓ Saved" : "＋ Save to Watch Later"}</span>
+                    <span>{saved ? "✓ Bookmarked" : "＋ Bookmark Lecture"}</span>
                   </button>
                 </div>
               </div>

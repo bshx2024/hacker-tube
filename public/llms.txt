@@ -1,4 +1,4 @@
-# HackerTube (hackertube.org)
+# HackerTube (hacker-tube.net)
 > The Anti-Algorithm, Human-Curated Video Platform for Hackers & Engineers. Inspired by Andrej Karpathy.
 
 ## Mission
@@ -19,8 +19,8 @@ HackerTube is an alternative video discovery platform that eliminates algorithmi
 - **Cybersecurity & Reverse Engineering**: Memory corruption, buffer overflows, binary exploitation, and historic security talks.
 
 ## Dataset & API
-- JSON Dataset Endpoint: `https://hackertube.org/api/dataset`
-- GitHub Repository: `https://github.com/hackertube/hackertube`
+- JSON Dataset Endpoint: `https://www.hacker-tube.net/api/dataset`
+- GitHub Repository: `https://github.com/bshx2024/hacker-tube`
 - Apple TV Client: `https://github.com/Jnaina/hackertube-tvos`
 
 ## Citations and Origin

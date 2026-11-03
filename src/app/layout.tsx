@@ -4,11 +4,12 @@ import "./globals.css";
 import { FAQ_ITEMS } from "@/data/faq";
 
 export const metadata: Metadata = {
-  title: "HackerTube – Human-Curated Tech Videos, No Slop & No Clickbait",
+  metadataBase: new URL("https://www.hacker-tube.net"),
+  title: "HackerTube – Curated Tech Videos Without Slop",
   description:
-    "Tired of YouTube's algorithm and clickbait slop? HackerTube curates the highest-signal tech talks, AI lectures, and deep dives organically recommended by Hacker News engineers. Clean mid-frame thumbnails, zero tracking, open-source on GitHub.",
+    "HackerTube curates high-signal tech talks, AI lectures, and deep dives from Hacker News. Free from clickbait and algorithmic slop with 50% honest previews.",
   keywords: [
-    "hackertube",
+    "HackerTube",
     "hacker tube",
     "hacker tube karpathy",
     "anti algorithm video platform",
@@ -35,22 +36,31 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "HackerTube – Human-Curated Tech Videos, No Slop & No Clickbait",
+    title: "HackerTube – Curated Tech Videos Without Slop",
     description:
-      "The anti-algorithm video platform. Hand-curated talks from 20 years of Hacker News comments with neutral 50% mid-frame thumbnails and zero tracking.",
-    url: "https://hackertube.org",
+      "HackerTube curates high-signal tech talks, AI lectures, and deep dives from Hacker News. Free from clickbait and algorithmic slop with 50% honest previews.",
+    url: "https://www.hacker-tube.net/",
     siteName: "HackerTube",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "https://www.hacker-tube.net/images/hero-showcase.jpg",
+        width: 1200,
+        height: 630,
+        alt: "HackerTube Curated Tech Video Platform",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HackerTube – Human-Curated Tech Videos, No Slop & No Clickbait",
+    title: "HackerTube – Curated Tech Videos Without Slop",
     description:
-      "Tired of algorithmic slop on YouTube? Watch high-signal tech talks recommended by Hacker News engineers.",
+      "HackerTube curates high-signal tech talks, AI lectures, and deep dives from Hacker News with 50% honest previews.",
+    images: ["https://www.hacker-tube.net/images/hero-showcase.jpg"],
   },
   alternates: {
-    canonical: "https://hackertube.org",
+    canonical: "https://www.hacker-tube.net/",
   },
 };
 
@@ -77,12 +87,12 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "HackerTube",
-    url: "https://hackertube.org",
+    url: "https://www.hacker-tube.net",
     description:
       "The anti-algorithm video platform curating technical and scientific videos recommended across Hacker News comments.",
     potentialAction: {
       "@type": "SearchAction",
-      target: "https://hackertube.org/?q={search_term_string}",
+      target: "https://www.hacker-tube.net/?q={search_term_string}",
       "query-input": "required name=search_term_string",
     },
   };
