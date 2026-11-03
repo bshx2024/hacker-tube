@@ -68,10 +68,10 @@ export const ChannelWelcomeBanner: React.FC<ChannelWelcomeBannerProps> = ({
         return {
           badge: "▲ Hacker News",
           badgeBg: "rgba(255, 102, 0, 0.15)",
-          title: "Welcome from Hacker News!",
+          title: "Welcome Hacker News Readers!",
           message:
-            "Every talk in this archive was organically recommended across 43M+ HN comments. 50% runtime mid-frame previews, zero algorithmic slop.",
-          ctaText: "Explore High-Signal Talks",
+            "Organically curated from 20 years of HN comments. Mid-frame previews, zero slop, and full study notes exportable to Obsidian/Notion.",
+          ctaText: "Explore Top Voted Talks",
           ctaAction: onExplore,
         };
       case "twitter":

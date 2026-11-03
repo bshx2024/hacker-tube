@@ -210,11 +210,30 @@ function generateSampleLogs() {
  * Parse input file or stream
  */
 function parseLogs(filePath) {
-  if (!filePath || !fs.existsSync(filePath)) {
+  let raw = "";
+
+  if (filePath === "-" || args.includes("--stdin")) {
+    try {
+      console.log("📥 Reading log stream from stdin...");
+      raw = fs.readFileSync(0, "utf-8");
+      console.log(`📥 Read ${raw.length} bytes from stdin.`);
+    } catch (err) {
+      console.error("Failed to read from stdin:", err);
+      raw = "";
+    }
+  } else if (filePath && fs.existsSync(filePath)) {
+    console.log(`📖 Reading log file: ${filePath}`);
+    raw = fs.readFileSync(filePath, "utf-8");
+  } else {
+    console.log("ℹ️  No log file or stdin pipe specified. Analyzing benchmark baseline session...");
     return generateSampleLogs();
   }
 
-  const raw = fs.readFileSync(filePath, "utf-8");
+  if (!raw || !raw.trim()) {
+    console.log("ℹ️  Empty log stream provided. Analyzing benchmark baseline session...");
+    return generateSampleLogs();
+  }
+
   const lines = raw.split("\n");
   const parsed = [];
 

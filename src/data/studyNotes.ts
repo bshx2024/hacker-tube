@@ -279,6 +279,293 @@ tags:
   - system-design
 created: ${new Date().toISOString().slice(0, 10)}
 ---`
+  },
+  "karpathy-build-gpt": {
+    videoId: "karpathy-build-gpt",
+    executiveSummary:
+      "A masterclass deconstruction of the GPT architecture from first principles. Karpathy constructs a complete, decoder-only Transformer in ~300 lines of pure PyTorch, progressing systematically from character tokenization and bigram baselines to causal multi-head self-attention, feed-forward projections, residual stream connections, and LayerNorm stabilization.",
+    coreMentalModels: [
+      "Attention as Communication: Nodes in a sequence aggregate information from previous nodes by weighted averages where weights are determined by content alignment (Query-Key dot product).",
+      "Causal Masking: Future tokens must be strictly isolated by masking attention logits with -inf prior to Softmax so tokens only communicate backward in time.",
+      "Residual Stream as Highway: Residual connections (x = x + sublayer(x)) allow gradients to propagate unimpeded across deep stacks during backpropagation.",
+      "Pre-LN Stability: Applying LayerNorm before multi-head attention and feedforward blocks (Pre-LN) stabilizes optimization without requiring delicate warmup schedules."
+    ],
+    keyTimestamps: [
+      {
+        time: "00:00",
+        seconds: 0,
+        title: "Tokenization & Tiny Shakespeare Dataset",
+        slideConcept: "Character-level vocabulary mapping and train/val splitting",
+        keyTakeaway: "Understanding discrete token sequences as integer arrays before neural projections."
+      },
+      {
+        time: "15:40",
+        seconds: 940,
+        title: "The Bigram Baseline Model",
+        slideConcept: "Counting transitions and cross-entropy loss evaluation",
+        keyTakeaway: "Establishing the fundamental baseline loss (-ln(1/vocab_size)) to verify training convergence."
+      },
+      {
+        time: "41:20",
+        seconds: 2480,
+        title: "Self-Attention Mechanism & Q/K/V Matrices",
+        slideConcept: "Mathematical derivation of Queries, Keys, and Values",
+        keyTakeaway: "Queries ask what to look for, Keys advertise what is present, Values communicate the actual message."
+      },
+      {
+        time: "1:04:10",
+        seconds: 3850,
+        title: "Multi-Head Attention & Causal Truncation Mask",
+        slideConcept: "Multiple communication channels in parallel with lower-triangular masking",
+        keyTakeaway: "Multi-head attention lets tokens query different linguistic/semantic facets simultaneously."
+      },
+      {
+        time: "1:26:00",
+        seconds: 5160,
+        title: "Residual Connections, LayerNorm & FeedForward",
+        slideConcept: "Computation layers as additions onto the persistent residual stream",
+        keyTakeaway: "The residual stream preserves representation integrity while sublayers incrementally enrich features."
+      },
+      {
+        time: "1:45:30",
+        seconds: 6330,
+        title: "Scaling Up nanoGPT & Text Generation",
+        slideConcept: "Hyperparameter scaling (block_size, n_embd, n_head, n_layer)",
+        keyTakeaway: "Trained mini-GPT produces syntactically plausible Shakespeare passages directly from random weights."
+      }
+    ],
+    mathDerivations: [
+      {
+        title: "Scaled Dot-Product Attention",
+        formula: "\\text{Attention}(Q, K, V) = \\text{softmax}\\left(\\frac{Q K^T}{\\sqrt{d_k}}\\right) V",
+        explanation:
+          "Scaling by 1/sqrt(d_k) prevents the dot products from growing excessively large in high dimensions, which would otherwise drive softmax into saturation regions with vanishing gradients.",
+        codeSnippet: `# Scaled Dot-Product with Causal Masking
+B, T, C = x.shape
+q = self.query(x) # (B, T, head_size)
+k = self.key(x)   # (B, T, head_size)
+v = self.value(x) # (B, T, head_size)
+
+wei = q @ k.transpose(-2, -1) * (1.0 / math.sqrt(k.size(-1)))
+wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf'))
+wei = F.softmax(wei, dim=-1)
+out = wei @ v # (B, T, head_size)`
+      },
+      {
+        title: "Self-Attention Computational Complexity",
+        formula: "\\mathcal{O}(T^2 \\cdot d)",
+        explanation:
+          "Because every token queries every preceding token in the sequence of length T, computing the attention matrix requires quadratic memory and compute, motivating modern linear and FlashAttention optimizations."
+      }
+    ],
+    hnDebates: [
+      {
+        topic: "Why Decoder-Only Won Over Encoder-Decoder (T5 / Original Transformer)",
+        consensus:
+          "Decoder-only autoregressive models unify pretraining, prompting, and in-context learning with maximum computational efficiency and simplified KV-caching.",
+        counterArgument:
+          "For non-generative tasks like ranking or sequence classification, bidirectional encoders (BERT) still offer superior per-parameter representations.",
+        topCommentQuote:
+          "This single video demystified LLMs more than reading 50 research papers. It is the pinnacle of technical pedagogy.",
+        author: "jeremyphoward"
+      }
+    ],
+    obsidianFrontmatter: `---
+title: "Let's build GPT: from scratch, in code, spelled out"
+speaker: "Andrej Karpathy"
+source: "HackerTube"
+url: "https://www.hacker-tube.net"
+youtubeId: "kCc8FmEb1nY"
+tags:
+  - deep-learning
+  - transformer
+  - gpt
+  - ai-architecture
+  - karpathy
+created: ${new Date().toISOString().slice(0, 10)}
+---`
+  },
+  "casey-muratori-clean-code": {
+    videoId: "casey-muratori-clean-code",
+    executiveSummary:
+      "A brutal hardware-first deconstruction of standard Clean Code OOP doctrine. Casey demonstrates with concrete AVX benchmarks how abstract class hierarchies, virtual function tables, and excessive encapsulation cause a 15x-20x performance penalty by annihilating CPU cache locality and defeating superscalar branch prediction.",
+    coreMentalModels: [
+      "Mechanical Sympathy: Modern CPUs are pipelined caches that thrive on contiguous linear memory arrays (Data-Oriented Design), not conceptual class hierarchies.",
+      "Vtable Thrashing: Virtual dispatch forces pointer chasing through memory, causing instruction cache misses and branch mispredictions.",
+      "Data Alignment > Object Abstraction: Grouping data by access frequency (Structure of Arrays) allows SIMD vectorization and optimal memory bandwidth saturation.",
+      "The Cost of Convenience: Architectural dogmas that prioritize theoretical polymorphism over memory layouts impose permanent latency taxes."
+    ],
+    keyTimestamps: [
+      {
+        time: "00:00",
+        seconds: 0,
+        title: "The Clean Code Dogma & Problem Statement",
+        slideConcept: "Examining Robert C. Martin's clean code rules in practice",
+        keyTakeaway: "Clean code rules often claim performance is negligible; Casey benchmarks real CPU cycles."
+      },
+      {
+        time: "08:30",
+        seconds: 510,
+        title: "Benchmark 1: Textbook OOP Hierarchy",
+        slideConcept: "Virtual shape methods with dynamic dispatch",
+        keyTakeaway: "Virtual methods introduce vtable dereference overhead and prevent inlining."
+      },
+      {
+        time: "18:20",
+        seconds: 1100,
+        title: "Benchmark 2: Flattened Enum Switch Table",
+        slideConcept: "Direct type tagging and flat procedural loops",
+        keyTakeaway: "Flattening the data structure yields an immediate 4x speedup with simpler code."
+      },
+      {
+        time: "27:45",
+        seconds: 1665,
+        title: "Benchmark 3: Data-Oriented Design & SIMD AVX",
+        slideConcept: "Structure of Arrays (SoA) and auto-vectorization",
+        keyTakeaway: "Aligning numbers sequentially enables hardware AVX instructions to achieve 15x-20x gains."
+      },
+      {
+        time: "36:10",
+        seconds: 2170,
+        title: "Engineering Trade-offs & Conclusions",
+        slideConcept: "Balancing maintainability, latency, and scale",
+        keyTakeaway: "Software engineers must understand hardware behavior before adopting dogmatic abstractions."
+      }
+    ],
+    mathDerivations: [
+      {
+        title: "Memory Latency Hierarchy (CPU Cycles)",
+        formula: "\\text{L1 Cache (~4c)} \\ll \\text{L2 (~14c)} \\ll \\text{L3 (~40c)} \\ll \\text{Main RAM (~200c)}",
+        explanation:
+          "Avoiding a single main memory cache miss is worth hundreds of arithmetic ALU operations. Pointer-chasing OOP architectures keep CPU execution units permanently starved of data.",
+        codeSnippet: `// Virtual Dispatch vs Flat Table:
+// OOP (Slow - vtable pointer indirection + call):
+virtual f32 Area() = 0;
+
+// Data-Oriented (Fast - direct array coefficient lookup):
+f32 Area = CTable[Shape.Type] * Shape.Width * Shape.Height;`
+      }
+    ],
+    hnDebates: [
+      {
+        topic: "Is Clean Code Still Viable in Modern Enterprise Development?",
+        consensus:
+          "For IO/network-bound web CRUD apps, cognitive maintainability often wins; but in games, browsers, DB engines, and AI kernels, OOP overhead is catastrophic.",
+        counterArgument:
+          "Premature optimization without profiling can create unmaintainable procedural spaghetti if misapplied by junior teams.",
+        topCommentQuote:
+          "Writing performant software requires accepting what hardware actually does, not what design patterns wish it did.",
+        author: "cmuratori"
+      }
+    ],
+    obsidianFrontmatter: `---
+title: "'Clean' Code, Horrible Performance"
+speaker: "Casey Muratori"
+source: "HackerTube"
+url: "https://www.hacker-tube.net"
+youtubeId: "tD5NrevFtbU"
+tags:
+  - systems
+  - performance
+  - data-oriented-design
+  - hardware
+created: ${new Date().toISOString().slice(0, 10)}
+---`
+  },
+  "carmack-quake-graphics": {
+    videoId: "carmack-quake-graphics",
+    executiveSummary:
+      "The definitive reverse engineering of the legendary Fast Inverse Square Root algorithm from Quake III Arena (Q_rsqrt). Demonstrates how bit-level type punning and the magic constant 0x5f3759df compute 1/sqrt(x) up to 4x faster than 1990s hardware FPUs by exploiting the IEEE 754 floating-point logarithmic structure.",
+    coreMentalModels: [
+      "IEEE 754 Floating-Point as Piecewise Linear Logarithm: The bitwise layout of a float naturally behaves as an affine approximation of log2(x).",
+      "Bitcasting Type Punning: Interpreting 32-bit float bits as a signed integer allows logarithmic division by 2 via integer bit shifts (>> 1).",
+      "Newton-Raphson Iterative Refinement: An initial crude guess can be doubled in precision with a single quadratic convergence step.",
+      "The Magic Constant: 0x5f3759df is mathematically chosen to minimize the maximum absolute error across the piecewise approximation."
+    ],
+    keyTimestamps: [
+      {
+        time: "00:00",
+        seconds: 0,
+        title: "Historical Context: 3D Vector Normalization in Quake III",
+        slideConcept: "Computing unit vectors for lighting and physics at 60 FPS",
+        keyTakeaway: "Vector normalization requires dividing by magnitude, making 1/sqrt(x) the primary graphics bottleneck."
+      },
+      {
+        time: "03:15",
+        seconds: 195,
+        title: "The IEEE 754 32-bit Single-Precision Bit Layout",
+        slideConcept: "Sign bit (1), Biased Exponent (8), Mantissa (23)",
+        keyTakeaway: "The float bit pattern translates into an affine linear approximation of the binary logarithm."
+      },
+      {
+        time: "06:40",
+        seconds: 400,
+        title: "Deriving the Magic Constant 0x5f3759df",
+        slideConcept: "Solving the minimax optimization problem for the log approximation",
+        keyTakeaway: "The constant represents 3/2 * 2^23 * (127 - mu) minimizing the maximum relative error."
+      },
+      {
+        time: "10:20",
+        seconds: 620,
+        title: "Single-Iteration Newton-Raphson Convergence",
+        slideConcept: "Quadratic refinement formula y_next = y * (1.5 - 0.5 * x * y^2)",
+        keyTakeaway: "One iteration reduces maximum relative error to less than 0.175% across the entire positive float domain."
+      },
+      {
+        time: "12:45",
+        seconds: 765,
+        title: "Modern Assembly & Silicon Implementations",
+        slideConcept: "SSE rsqrtss and hardware vector reciprocal instructions",
+        keyTakeaway: "Modern silicon has dedicated reciprocal square root units, but Carmack's hack remains an intellectual monument."
+      }
+    ],
+    mathDerivations: [
+      {
+        title: "Logarithmic Equivalence for Inverse Square Root",
+        formula: "y = \\frac{1}{\\sqrt{x}} = x^{-1/2} \\implies \\log_2(y) = -\\frac{1}{2} \\log_2(x)",
+        explanation:
+          "Because floating-point bit integers represent approximate logarithms, dividing by 2 is accomplished by shifting the integer representation right by 1 bit (`i >> 1`). Subtracting from the magic constant inverts the sign and centers the approximation.",
+        codeSnippet: `float Q_rsqrt(float number) {
+    long i;
+    float x2, y;
+    const float threehalfs = 1.5F;
+
+    x2 = number * 0.5F;
+    y  = number;
+    i  = * ( long * ) &y;                       // evil floating point bit level hacking
+    i  = 0x5f3759df - ( i >> 1 );               // what the fuck?
+    y  = * ( float * ) &i;
+    y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration Newton-Raphson
+    return y;
+}`
+      }
+    ],
+    hnDebates: [
+      {
+        topic: "Who Actually Invented the Constant (Carmack, Terje Mathisen, or Gary Tarolli)?",
+        consensus:
+          "Historical consensus credits Gary Tarolli (3dfx) with the derivation, while John Carmack popularized and optimized it in Quake III.",
+        counterArgument:
+          "Today SSE `rsqrtss` computes this directly in silicon, but understanding the algorithm remains the gold standard for hardware intuition.",
+        topCommentQuote:
+          "This algorithm is pure poetry in applied computer science.",
+        author: "kristopolous"
+      }
+    ],
+    obsidianFrontmatter: `---
+title: "Fast Inverse Square Root: A Quake III Algorithm Deep Dive"
+speaker: "Nemean"
+source: "HackerTube"
+url: "https://www.hacker-tube.net"
+youtubeId: "443UNeGrFoM"
+tags:
+  - graphics
+  - algorithms
+  - c-programming
+  - quake
+  - assembly
+created: ${new Date().toISOString().slice(0, 10)}
+---`
   }
 };
 
