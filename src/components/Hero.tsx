@@ -63,12 +63,12 @@ export const Hero: React.FC<HeroProps> = ({
         </div>
 
         <h1 className="hero-title">
-          HackerTube: Stop Watching <span className="hero-title-gradient">Slop.</span>
+          Hacker Tube: Stop Watching <span className="hero-title-gradient">Slop.</span>
         </h1>
 
         <p className="hero-subtitle">
-          <strong>HackerTube</strong> is the anti-algorithm video platform for hackers, engineers, and deep thinkers.
-          Every video on HackerTube was recommended by real humans in Hacker News comments—with zero
+          <strong>Hacker Tube</strong> (HackerTube) is the anti-algorithm video platform for hackers, engineers, and deep thinkers.
+          Every video on Hacker Tube was organically recommended by real humans in Hacker News discussions—with zero
           clickbait thumbnails, zero tracking, and pure technical signal.
         </p>
 
@@ -171,11 +171,11 @@ export const Hero: React.FC<HeroProps> = ({
                 <div className="spotlight-badges-row">
                   <span className="badge-50-percent" style={{ position: "static" }}>
                     <span>🎯</span>
-                    <span>50% Mid-frame Preview</span>
+                    <span>50% Timestamp</span>
                   </span>
                   <span className="card-hn-mentions">
-                    <span>🔥</span>
-                    <span>{activeVideo.hnMentions} HN Mentions</span>
+                    <span>▲</span>
+                    <span>{activeVideo.hnMentions} pts</span>
                   </span>
                   <span className="card-topic-tag" style={{ color: "var(--accent-sky)", fontWeight: 700 }}>
                     {activeVideo.topic} • {activeVideo.duration}

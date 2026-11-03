@@ -10,9 +10,9 @@ export const SlopContrastSection: React.FC = () => {
       <div className="container">
         <div className="section-title-wrap">
           <div className="section-eyebrow">The Manifesto</div>
-          <h2 className="section-title">HackerTube vs. The Algorithmic Trap</h2>
+          <h2 className="section-title">Hacker Tube vs. The Algorithmic Trap</h2>
           <p style={{ color: "var(--text-secondary)", maxWidth: "680px", margin: "12px auto 0", fontSize: "16px" }}>
-            Commercial video platforms optimize for eyeballs and dopamine spikes. HackerTube optimizes for long-term intellectual leverage.
+            Commercial video platforms optimize for eyeballs and dopamine spikes. Hacker Tube (HackerTube) optimizes for long-term intellectual leverage.
           </p>
         </div>
 
@@ -31,7 +31,7 @@ export const SlopContrastSection: React.FC = () => {
               <div className="contrast-img-overlay">
                 <span className="contrast-tag red">YouTube: Noise &amp; Addiction</span>
                 <span className="contrast-arrow">➔</span>
-                <span className="contrast-tag green">HackerTube: Pure Knowledge</span>
+                <span className="contrast-tag green">Hacker Tube: Pure Knowledge</span>
               </div>
             </div>
           </div>
@@ -48,7 +48,7 @@ export const SlopContrastSection: React.FC = () => {
             </div>
 
             <div className="contrast-tile-signal">
-              <div className="tile-badge-signal">✅ The Hacker News Standard (HackerTube)</div>
+              <div className="tile-badge-signal">✅ The Hacker News Standard (Hacker Tube)</div>
               <ul className="signal-list">
                 <li><strong>50% Mid-frame Previews:</strong> Honest static frames taken from the middle of the lecture. What you see is what you learn.</li>
                 <li><strong>20-Year Human Consensus:</strong> Filtered from 40,000+ organic recommendations by engineers with skin in the game.</li>
@@ -89,7 +89,7 @@ export const SlopContrastSection: React.FC = () => {
           <div className="simulator-preview-box">
             {isHonestMode ? (
               <div className="preview-content-honest">
-                <div className="preview-badge-status green">✓ HackerTube Honest Frame (50% timestamp)</div>
+                <div className="preview-badge-status green">✓ Hacker Tube Honest Frame (50% timestamp)</div>
                 <div className="preview-headline">Neural Network Backpropagation: Matrix Derivation</div>
                 <div className="preview-speaker">Speaker: Andrej Karpathy • 2h 25m • Stanford AI / Eureka Labs</div>
                 <div className="preview-code-mock">

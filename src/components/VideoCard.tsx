@@ -46,7 +46,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
         <div className="badge-50-percent" title="Captured at 50% video runtime to prevent clickbait">
           <span>🎯</span>
-          <span>50% Frame</span>
+          <span>50%</span>
         </div>
 
         <div className="duration-pill">{video.duration}</div>
@@ -64,8 +64,8 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         <div className="card-meta-top">
           <span className="card-topic-tag">{video.topic}</span>
           <span className="card-hn-mentions">
-            <span>🔥</span>
-            <span>{video.hnMentions} HN Upvotes</span>
+            <span>▲</span>
+            <span>{video.hnMentions} pts</span>
           </span>
         </div>
 
@@ -86,11 +86,11 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           <button
             className={`card-action-btn ${isSaved ? "saved" : ""}`}
             onClick={(e) => onToggleSave(video.id, e)}
-            title={isSaved ? "Remove from Bookmarks" : "Save to Bookmarks"}
-            aria-label={isSaved ? "Remove from Bookmarks" : "Save to Bookmarks"}
+            title={isSaved ? "Remove Bookmark" : "Bookmark"}
+            aria-label={isSaved ? "Remove Bookmark" : "Bookmark"}
           >
             <span>{isSaved ? "✓" : "＋"}</span>
-            <span>{isSaved ? "Saved" : "Save"}</span>
+            <span>{isSaved ? "Bookmarked" : "Bookmark"}</span>
           </button>
         </div>
       </div>

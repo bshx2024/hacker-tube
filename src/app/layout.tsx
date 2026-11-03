@@ -5,25 +5,27 @@ import { FAQ_ITEMS } from "@/data/faq";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.hacker-tube.net"),
-  title: "HackerTube – Curated Tech Videos Without Slop",
+  title: "Hacker Tube – Curated Tech Videos | HackerTube",
   description:
-    "HackerTube curates high-signal tech talks, AI lectures, and deep dives from Hacker News. Free from clickbait and algorithmic slop with 50% honest previews.",
+    "Hacker Tube (HackerTube) curates high-signal tech videos and AI lectures from Hacker News. Free from clickbait and algorithmic slop with honest previews.",
   keywords: [
+    "Hacker Tube",
     "HackerTube",
     "hacker tube",
+    "hackertube",
     "hacker tube karpathy",
     "anti algorithm video platform",
     "hacker news videos",
-    "tech talks",
-    "curated lectures",
+    "curated tech talks",
+    "AI lectures",
     "no clickbait youtube",
     "hackerbooks",
     "hacker tube github",
     "hacker tube app"
   ],
-  authors: [{ name: "HackerTube Community" }],
+  authors: [{ name: "Hacker Tube Community" }],
   creator: "Andrej Karpathy Community Concept",
-  publisher: "HackerTube",
+  publisher: "Hacker Tube",
   robots: {
     index: true,
     follow: true,
@@ -36,11 +38,11 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "HackerTube – Curated Tech Videos Without Slop",
+    title: "Hacker Tube – Curated Tech Videos | HackerTube",
     description:
-      "HackerTube curates high-signal tech talks, AI lectures, and deep dives from Hacker News. Free from clickbait and algorithmic slop with 50% honest previews.",
+      "Hacker Tube (HackerTube) curates high-signal tech videos and AI lectures from Hacker News. Free from clickbait and algorithmic slop with honest previews.",
     url: "https://www.hacker-tube.net/",
-    siteName: "HackerTube",
+    siteName: "Hacker Tube",
     locale: "en_US",
     type: "website",
     images: [
@@ -48,15 +50,15 @@ export const metadata: Metadata = {
         url: "https://www.hacker-tube.net/images/hero-showcase.jpg",
         width: 1200,
         height: 630,
-        alt: "HackerTube Curated Tech Video Platform",
+        alt: "Hacker Tube Curated Tech Video Platform",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "HackerTube – Curated Tech Videos Without Slop",
+    title: "Hacker Tube – Curated Tech Videos | HackerTube",
     description:
-      "HackerTube curates high-signal tech talks, AI lectures, and deep dives from Hacker News with 50% honest previews.",
+      "Hacker Tube (HackerTube) curates high-signal tech videos and AI lectures from Hacker News with honest previews.",
     images: ["https://www.hacker-tube.net/images/hero-showcase.jpg"],
   },
   alternates: {

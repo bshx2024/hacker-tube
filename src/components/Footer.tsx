@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
           <div className="footer-col" style={{ maxWidth: "340px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
               <div className="logo-badge" style={{ width: "28px", height: "28px", fontSize: "14px" }}>HT</div>
-              <span style={{ fontWeight: 800, fontSize: "16px", color: "var(--text-primary)" }}>HackerTube</span>
+              <span style={{ fontWeight: 800, fontSize: "16px", color: "var(--text-primary)" }}>Hacker Tube (HackerTube)</span>
             </div>
             <p style={{ lineHeight: 1.6, marginBottom: "12px" }}>
               An open-source, community-driven front-end indexing the highest-signal technical and scientific talks recommended across Hacker News history.

@@ -23,7 +23,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="logo-group" onClick={onResetView} style={{ cursor: "pointer" }}>
           <div className="logo-badge">HT</div>
           <div>
-            <span className="brand-text">HackerTube</span>
+            <span className="brand-text">Hacker Tube</span>
             <span className="brand-tag">ANTI-ALGORITHM</span>
           </div>
         </div>
@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </a>
 
           <a
-            href="https://github.com/hackertube/hackertube"
+            href="https://github.com/bshx2024/hacker-tube"
             target="_blank"
             rel="noopener noreferrer"
             className="nav-btn"

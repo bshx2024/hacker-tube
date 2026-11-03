@@ -174,7 +174,7 @@ export default function HomePage() {
         <div className="container">
           <div className="section-title-wrap" style={{ marginTop: "48px", marginBottom: "24px" }}>
             <div className="section-eyebrow">The Curated Library</div>
-            <h2 className="section-title">HackerTube Curated Video Archive</h2>
+            <h2 className="section-title">Hacker Tube Curated Video Archive</h2>
           </div>
 
           <Controls
