@@ -6,6 +6,7 @@ import { VideoItem } from "@/data/videos";
 interface VideoCardProps {
   video: VideoItem;
   onPlay: (v: VideoItem) => void;
+  onOpenStudy: (v: VideoItem) => void;
   isSaved: boolean;
   onToggleSave: (id: string, e: React.MouseEvent) => void;
   isSelectedKeyboard: boolean;
@@ -14,6 +15,7 @@ interface VideoCardProps {
 export const VideoCard: React.FC<VideoCardProps> = ({
   video,
   onPlay,
+  onOpenStudy,
   isSaved,
   onToggleSave,
   isSelectedKeyboard,
@@ -83,15 +85,33 @@ export const VideoCard: React.FC<VideoCardProps> = ({
 
         <div className="card-footer">
           <span>via @{video.hnAuthor} ({video.hnYear})</span>
-          <button
-            className={`card-action-btn ${isSaved ? "saved" : ""}`}
-            onClick={(e) => onToggleSave(video.id, e)}
-            title={isSaved ? "Remove Bookmark" : "Bookmark"}
-            aria-label={isSaved ? "Remove Bookmark" : "Bookmark"}
-          >
-            <span>{isSaved ? "✓" : "＋"}</span>
-            <span>{isSaved ? "Bookmarked" : "Bookmark"}</span>
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <button
+              className="card-action-btn"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenStudy(video);
+              }}
+              title="Open AI Study Companion Notes"
+              style={{
+                borderColor: "rgba(56, 189, 248, 0.4)",
+                color: "#38bdf8",
+                background: "rgba(56, 189, 248, 0.08)",
+              }}
+            >
+              <span>🧠</span>
+              <span>AI Notes</span>
+            </button>
+            <button
+              className={`card-action-btn ${isSaved ? "saved" : ""}`}
+              onClick={(e) => onToggleSave(video.id, e)}
+              title={isSaved ? "Remove Bookmark" : "Bookmark"}
+              aria-label={isSaved ? "Remove Bookmark" : "Bookmark"}
+            >
+              <span>{isSaved ? "✓" : "＋"}</span>
+              <span>{isSaved ? "Bookmarked" : "Bookmark"}</span>
+            </button>
+          </div>
         </div>
       </div>
     </article>

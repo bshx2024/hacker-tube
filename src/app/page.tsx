@@ -21,8 +21,19 @@ export default function HomePage() {
   const [isSavedView, setIsSavedView] = useState(false);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
+  const [modalInitialTab, setModalInitialTab] = useState<"player" | "study">("player");
   const [keyboardIndex, setKeyboardIndex] = useState<number>(-1);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+
+  const handlePlayVideo = useCallback((v: VideoItem) => {
+    setActiveVideo(v);
+    setModalInitialTab("player");
+  }, []);
+
+  const handleOpenStudy = useCallback((v: VideoItem) => {
+    setActiveVideo(v);
+    setModalInitialTab("study");
+  }, []);
 
   // Load bookmarks from localStorage on mount
   useEffect(() => {
@@ -164,7 +175,8 @@ export default function HomePage() {
           onExplore={scrollToControls}
           totalVideos={CURATED_VIDEOS.length}
           featuredVideos={featuredVideos}
-          onPlayVideo={setActiveVideo}
+          onPlayVideo={handlePlayVideo}
+          onOpenStudy={handleOpenStudy}
           isSaved={(id) => savedIds.includes(id)}
           onToggleSave={handleToggleSave}
         />
@@ -198,7 +210,8 @@ export default function HomePage() {
                 <VideoCard
                   key={video.id}
                   video={video}
-                  onPlay={setActiveVideo}
+                  onPlay={handlePlayVideo}
+                  onOpenStudy={handleOpenStudy}
                   isSaved={savedIds.includes(video.id)}
                   onToggleSave={handleToggleSave}
                   isSelectedKeyboard={keyboardIndex === idx}
@@ -247,6 +260,7 @@ export default function HomePage() {
         onClose={() => setActiveVideo(null)}
         isSaved={activeVideo ? savedIds.includes(activeVideo.id) : false}
         onToggleSave={handleToggleSave}
+        initialTab={modalInitialTab}
       />
 
       {/* Shortcuts Guide Modal */}

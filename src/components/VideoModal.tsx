@@ -9,6 +9,7 @@ interface VideoModalProps {
   onClose: () => void;
   isSaved: boolean;
   onToggleSave: (id: string, e: React.MouseEvent) => void;
+  initialTab?: "player" | "study";
 }
 
 export const VideoModal: React.FC<VideoModalProps> = ({
@@ -16,8 +17,9 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   onClose,
   isSaved,
   onToggleSave,
+  initialTab = "player",
 }) => {
-  const [activeTab, setActiveTab] = useState<"player" | "study">("player");
+  const [activeTab, setActiveTab] = useState<"player" | "study">(initialTab);
   const [seekSeconds, setSeekSeconds] = useState<number>(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -31,12 +33,12 @@ export const VideoModal: React.FC<VideoModalProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
-  // Reset states when changing video
+  // Reset states when changing video or initialTab
   useEffect(() => {
-    setActiveTab("player");
+    setActiveTab(initialTab);
     setSeekSeconds(0);
     setToastMessage(null);
-  }, [video?.id]);
+  }, [video?.id, initialTab]);
 
   if (!video) return null;
 
@@ -168,18 +170,7 @@ ${studyNote.hnDebates
           ✕
         </button>
 
-        {/* Embedded YouTube Player */}
-        <div className="player-embed-wrap">
-          <iframe
-            key={`${video.youtubeId}-${seekSeconds}`}
-            src={embedUrl}
-            title={video.title}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-
-        {/* Modal Tab Switcher & Second Brain Export Bar */}
+        {/* Modal Tab Switcher & Second Brain Export Bar AT THE TOP */}
         <div className="modal-tabs-header">
           <div className="modal-tab-group">
             <button
@@ -238,6 +229,17 @@ ${studyNote.hnDebates
               <span>HN Thread ({video.hnMentions} pts) ↗</span>
             </a>
           </div>
+        </div>
+
+        {/* Embedded YouTube Player */}
+        <div className="player-embed-wrap">
+          <iframe
+            key={`${video.youtubeId}-${seekSeconds}`}
+            src={embedUrl}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
         </div>
 
         {/* Toast Notification Alert */}

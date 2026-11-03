@@ -8,6 +8,7 @@ interface HeroProps {
   totalVideos: number;
   featuredVideos: VideoItem[];
   onPlayVideo: (v: VideoItem) => void;
+  onOpenStudy: (v: VideoItem) => void;
   isSaved: (id: string) => boolean;
   onToggleSave: (id: string, e?: React.MouseEvent) => void;
 }
@@ -17,6 +18,7 @@ export const Hero: React.FC<HeroProps> = ({
   totalVideos,
   featuredVideos,
   onPlayVideo,
+  onOpenStudy,
   isSaved,
   onToggleSave,
 }) => {
@@ -177,6 +179,24 @@ export const Hero: React.FC<HeroProps> = ({
                     <span>▲</span>
                     <span>{activeVideo.hnMentions} pts</span>
                   </span>
+                  <span
+                    className="card-topic-tag"
+                    style={{
+                      cursor: "pointer",
+                      background: "rgba(56, 189, 248, 0.15)",
+                      border: "1px solid rgba(56, 189, 248, 0.4)",
+                      color: "#38bdf8",
+                      fontWeight: 700,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenStudy(activeVideo);
+                    }}
+                    title="Click to open AI Study Companion Notes"
+                  >
+                    <span>🧠</span>
+                    <span>AI Study Companion</span>
+                  </span>
                   <span className="card-topic-tag" style={{ color: "var(--accent-sky)", fontWeight: 700 }}>
                     {activeVideo.topic} • {activeVideo.duration}
                   </span>
@@ -206,7 +226,30 @@ export const Hero: React.FC<HeroProps> = ({
                     }}
                   >
                     <span style={{ fontSize: "16px" }}>▶</span>
-                    <span>Watch Full Lecture Now</span>
+                    <span>Watch Full Lecture</span>
+                  </button>
+
+                  <button
+                    className="nav-btn"
+                    style={{
+                      padding: "10px 20px",
+                      fontSize: "14px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      background: "linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(16, 185, 129, 0.2) 100%)",
+                      borderColor: "rgba(56, 189, 248, 0.5)",
+                      color: "#38bdf8",
+                      fontWeight: 700,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenStudy(activeVideo);
+                    }}
+                    title="Open AI Study Companion with 3-minute TL;DR, LaTeX derivations & Obsidian Export"
+                  >
+                    <span>🧠</span>
+                    <span>AI Study Companion</span>
                   </button>
 
                   <button
