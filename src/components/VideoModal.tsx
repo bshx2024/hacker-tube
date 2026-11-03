@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { VideoItem } from "@/data/videos";
 import { getStudyNoteForVideo, StudyNote } from "@/data/studyNotes";
+import { trackExportNotes, trackHnClick, trackStudyOpen } from "@/lib/tracker";
 
 interface VideoModalProps {
   video: VideoItem | null;
@@ -23,6 +24,17 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   const [seekSeconds, setSeekSeconds] = useState<number>(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Sync state when video or initialTab prop changes (React recommended pattern)
+  const [prevVideoId, setPrevVideoId] = useState(video?.id);
+  const [prevInitialTab, setPrevInitialTab] = useState(initialTab);
+  if (video?.id !== prevVideoId || initialTab !== prevInitialTab) {
+    setPrevVideoId(video?.id);
+    setPrevInitialTab(initialTab);
+    setActiveTab(initialTab);
+    setSeekSeconds(0);
+    setToastMessage(null);
+  }
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -32,13 +44,6 @@ export const VideoModal: React.FC<VideoModalProps> = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
-
-  // Reset states when changing video or initialTab
-  useEffect(() => {
-    setActiveTab(initialTab);
-    setSeekSeconds(0);
-    setToastMessage(null);
-  }, [video?.id, initialTab]);
 
   if (!video) return null;
 
@@ -115,6 +120,7 @@ ${studyNote.hnDebates
     try {
       const content = generateMarkdownContent();
       await navigator.clipboard.writeText(content);
+      trackExportNotes(video.id, "markdown");
       showToast("✓ Copied full study note to clipboard! Ready to paste into Obsidian, Notion or Logseq.");
     } catch {
       showToast("⚠️ Could not write to clipboard automatically. Please copy manually.");
@@ -133,6 +139,7 @@ ${studyNote.hnDebates
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      trackExportNotes(video.id, "obsidian");
       showToast("✓ Downloaded Obsidian Markdown note! Drag into your Obsidian vault.");
     } catch {
       showToast("⚠️ Failed to trigger download.");
@@ -143,6 +150,7 @@ ${studyNote.hnDebates
     try {
       const content = generateMarkdownContent();
       await navigator.clipboard.writeText(content);
+      trackExportNotes(video.id, "notion");
       showToast("✓ Notion-ready blocks copied! Simply press Ctrl+V / Cmd+V in any Notion page.");
     } catch {
       showToast("⚠️ Could not write to clipboard.");
@@ -182,7 +190,10 @@ ${studyNote.hnDebates
             </button>
             <button
               className={`modal-tab-btn ${activeTab === "study" ? "active" : ""}`}
-              onClick={() => setActiveTab("study")}
+              onClick={() => {
+                trackStudyOpen(video);
+                setActiveTab("study");
+              }}
             >
               <span>🧠</span>
               <span>AI Study Companion</span>
@@ -307,7 +318,10 @@ ${studyNote.hnDebates
               <button
                 className="nav-btn nav-btn-primary"
                 style={{ padding: "6px 14px", fontSize: "12px" }}
-                onClick={() => setActiveTab("study")}
+                onClick={() => {
+                  trackStudyOpen(video);
+                  setActiveTab("study");
+                }}
               >
                 Open Study Notes ➔
               </button>
@@ -339,6 +353,7 @@ ${studyNote.hnDebates
                   href={video.hnDiscussionUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackHnClick(video.id, video.hnDiscussionUrl)}
                   style={{ fontSize: "12px", color: "var(--accent-cyan)", textDecoration: "underline" }}
                 >
                   View on Hacker News ↗

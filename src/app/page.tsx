@@ -10,8 +10,16 @@ import { VideoModal } from "@/components/VideoModal";
 import { FAQSection } from "@/components/FAQSection";
 import { Footer } from "@/components/Footer";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
-
 import { SlopContrastSection } from "@/components/SlopContrastSection";
+import { ChannelWelcomeBanner } from "@/components/ChannelWelcomeBanner";
+import { initAttributionTracker } from "@/lib/attribution";
+import {
+  trackPageView,
+  trackBookmark,
+  trackFilterTopic,
+  trackVideoPlay,
+  trackStudyOpen,
+} from "@/lib/tracker";
 
 export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,39 +27,45 @@ export default function HomePage() {
   const [durationFilter, setDurationFilter] = useState<DurationFilter>("all");
   const [sortBy, setSortBy] = useState<SortOption>("mentions");
   const [isSavedView, setIsSavedView] = useState(false);
-  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [savedIds, setSavedIds] = useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem("hackertube_saved_ids");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
   const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
   const [modalInitialTab, setModalInitialTab] = useState<"player" | "study">("player");
   const [keyboardIndex, setKeyboardIndex] = useState<number>(-1);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
 
+  // Initialize First-Party Channel Attribution & Dispatch Page View
+  useEffect(() => {
+    initAttributionTracker();
+    trackPageView();
+  }, []);
+
   const handlePlayVideo = useCallback((v: VideoItem) => {
+    trackVideoPlay(v);
     setActiveVideo(v);
     setModalInitialTab("player");
   }, []);
 
   const handleOpenStudy = useCallback((v: VideoItem) => {
+    trackStudyOpen(v);
     setActiveVideo(v);
     setModalInitialTab("study");
   }, []);
 
-  // Load bookmarks from localStorage on mount
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("hackertube_saved_ids");
-      if (stored) {
-        setSavedIds(JSON.parse(stored));
-      }
-    } catch {
-      // Ignore storage errors in private browsing
-    }
-  }, []);
-
-  // Save bookmarks to localStorage
+  // Save bookmarks to localStorage and track event
   const handleToggleSave = useCallback((id: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
     setSavedIds((prev) => {
-      const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
+      const isSaved = prev.includes(id);
+      const next = isSaved ? prev.filter((item) => item !== id) : [...prev, id];
+      trackBookmark(id, isSaved ? "unsave" : "save");
       try {
         localStorage.setItem("hackertube_saved_ids", JSON.stringify(next));
       } catch {
@@ -170,6 +184,15 @@ export default function HomePage() {
         onResetView={handleResetToAll}
       />
 
+      <ChannelWelcomeBanner
+        onSelectTopic={(topic) => {
+          setSelectedTopic(topic as TopicCategory);
+          trackFilterTopic(topic);
+          scrollToControls();
+        }}
+        onExplore={scrollToControls}
+      />
+
       <main>
         <Hero
           onExplore={scrollToControls}
@@ -193,7 +216,10 @@ export default function HomePage() {
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             selectedTopic={selectedTopic}
-            onTopicChange={setSelectedTopic}
+            onTopicChange={(topic) => {
+              setSelectedTopic(topic);
+              trackFilterTopic(topic);
+            }}
             durationFilter={durationFilter}
             onDurationChange={setDurationFilter}
             sortBy={sortBy}

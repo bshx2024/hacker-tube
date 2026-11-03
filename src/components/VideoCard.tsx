@@ -2,6 +2,7 @@
 
 import React from "react";
 import { VideoItem } from "@/data/videos";
+import { trackVideoPlay, trackStudyOpen } from "@/lib/tracker";
 
 interface VideoCardProps {
   video: VideoItem;
@@ -23,16 +24,27 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   // Use mid-video frame (hqdefault or 0.jpg which represents middle/preview)
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
 
+  const handleCardClick = () => {
+    trackVideoPlay(video);
+    onPlay(video);
+  };
+
+  const handleStudyClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    trackStudyOpen(video);
+    onOpenStudy(video);
+  };
+
   return (
     <article
       className={`video-card ${isSelectedKeyboard ? "active-keyboard" : ""}`}
-      onClick={() => onPlay(video)}
+      onClick={handleCardClick}
       id={`video-${video.id}`}
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          onPlay(video);
+          handleCardClick();
         }
       }}
     >
@@ -88,10 +100,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
             <button
               className="card-action-btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenStudy(video);
-              }}
+              onClick={handleStudyClick}
               title="Open AI Study Companion Notes"
               style={{
                 borderColor: "rgba(56, 189, 248, 0.4)",

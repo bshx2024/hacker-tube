@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { trackOutboundClick } from "@/lib/tracker";
 
 interface NavbarProps {
   savedCount: number;
@@ -46,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="nav-btn"
             title="Download Full Clean JSON Dataset"
             id="btn-dataset"
+            onClick={() => trackOutboundClick("dataset", "navbar")}
           >
             <span>📦</span>
             <span>Dataset</span>
@@ -58,6 +60,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="nav-btn"
             title="View Open Source Code on GitHub"
             id="btn-github"
+            onClick={() => trackOutboundClick("github", "navbar")}
           >
             <span>⭐</span>
             <span>GitHub</span>

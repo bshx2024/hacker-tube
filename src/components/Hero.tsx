@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { VideoItem } from "@/data/videos";
+import { trackOutboundClick } from "@/lib/tracker";
 
 interface HeroProps {
   onExplore: () => void;
@@ -92,6 +93,7 @@ export const Hero: React.FC<HeroProps> = ({
             className="nav-btn"
             style={{ padding: "12px 24px", fontSize: "15px" }}
             id="hero-karpathy-btn"
+            onClick={() => trackOutboundClick("karpathy_blog", "hero")}
           >
             <span>💡</span>
             <span>Inspired by Andrej Karpathy</span>
@@ -104,6 +106,7 @@ export const Hero: React.FC<HeroProps> = ({
             className="nav-btn"
             style={{ padding: "12px 24px", fontSize: "15px" }}
             id="hero-tvos-btn"
+            onClick={() => trackOutboundClick("apple_tv", "hero")}
           >
             <span>📺</span>
             <span>Apple TV Client</span>
