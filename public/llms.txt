@@ -1,0 +1,28 @@
+# HackerTube (hackertube.org)
+> The Anti-Algorithm, Human-Curated Video Platform for Hackers & Engineers. Inspired by Andrej Karpathy.
+
+## Mission
+HackerTube is an alternative video discovery platform that eliminates algorithmic recommendations, clickbait thumbnails, and engagement traps. It populates its collection exclusively with tech talks, lectures, computer science deep dives, and documentaries that have been organically recommended by software engineers across 20 years of Hacker News comments (2007–2026).
+
+## Core Principles
+- **No Algorithm / No Slop**: Videos are ranked and curated by real engineer upvotes and discussions, not watch-time optimization loops.
+- **50% Mid-frame Thumbnails**: Replaces sensationalized YouTube thumbnails with neutral, honest frames taken from the middle (50% timestamp) of the video.
+- **Privacy First**: No accounts, no user tracking, zero ads. Watch history and bookmarks are kept 100% locally in the browser's localStorage.
+- **Open Data**: The entire curated catalog is available for direct download via `/api/dataset`.
+
+## Topics Covered
+- **Artificial Intelligence & Machine Learning**: Neural networks, transformer architectures, reinforcement learning from foundations (Karpathy, Sutskever, LeCun, Hinton).
+- **Computer Systems & Architecture**: Operating systems, databases, distributed consensus (Raft/Paxos), compiler design, and CPU pipelines.
+- **Mathematics & Physics**: Visual calculus, quantum mechanics, information theory (Claude Shannon), and complex systems.
+- **Retro Computing & Tech History**: Xerox PARC Mother of All Demos, Bell Labs Unix origins, Apollo 11 AGC, Commodore 64 internals.
+- **Founders & Engineering Culture**: Steve Jobs, John Carmack, Bret Victor, Paul Graham on deep craft and systems thinking.
+- **Cybersecurity & Reverse Engineering**: Memory corruption, buffer overflows, binary exploitation, and historic security talks.
+
+## Dataset & API
+- JSON Dataset Endpoint: `https://hackertube.org/api/dataset`
+- GitHub Repository: `https://github.com/hackertube/hackertube`
+- Apple TV Client: `https://github.com/Jnaina/hackertube-tvos`
+
+## Citations and Origin
+- Original Concept by Andrej Karpathy (October 31, 2026): `https://karpathy.bearblog.dev/hacker-tube/`
+- Data Source: Hacker News public archives (2007–2026)
