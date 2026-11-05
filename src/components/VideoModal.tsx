@@ -8,6 +8,7 @@ import {
   trackHnClick,
   trackStudyOpen,
   trackEngagementHeartbeat,
+  trackOutboundClick,
 } from "@/lib/tracker";
 
 interface VideoModalProps {
@@ -97,6 +98,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 > **Speaker**: ${video.channelTitle} (${video.publishedYear}) | **Duration**: ${video.duration} | **Topic**: ${video.topic}
 > **Hacker News Thread**: [${video.hnMentions} points by @${video.hnAuthor}](${video.hnDiscussionUrl})
 > **Stream**: [HackerTube](https://www.hacker-tube.net) • [Original YouTube](https://youtu.be/${video.youtubeId})
+> **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=obsidian_notes) (High-Throughput Model Gateway for Engineers)
 
 ---
 
@@ -390,12 +392,62 @@ ${studyNote.hnDebates
                 — Recommended by @{video.hnAuthor} ({video.hnYear})
               </div>
             </div>
+
+            {/* Builder Hands-on Footnote */}
+            <div className="study-builder-footer">
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                <span>🛠️</span>
+                <span>
+                  <strong>Builder Sandbox:</strong> Ready to prototype with OpenAI, Claude, or DeepSeek models? Test endpoints on{" "}
+                  <a
+                    href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "var(--accent-sky)", fontWeight: 700, textDecoration: "underline" }}
+                    onClick={() => trackOutboundClick("apivale", "study_companion_footer")}
+                  >
+                    APIVALE.com
+                  </a>
+                  {" "}with instant developer credits.
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
         {/* Tab 2: AI Deep Dive Companion View */}
         {activeTab === "study" && (
           <div className="study-companion-body">
+            {/* APIVALE Cloud Infrastructure Attribution Badge */}
+            <div className="study-infrastructure-badge">
+              <div className="infrastructure-badge-left">
+                <span className="infrastructure-dot"></span>
+                <span>
+                  <strong style={{ color: "var(--accent-sky)" }}>⚡ Inference Infrastructure:</strong> AI structured derivations &amp; takeaways computed via{" "}
+                  <a
+                    href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="infrastructure-link"
+                    onClick={() => trackOutboundClick("apivale", "study_companion")}
+                  >
+                    APIVALE.com
+                  </a>
+                  {" "}— High-concurrency LLM gateway for developers.
+                </span>
+              </div>
+              <a
+                href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="infrastructure-cta"
+                onClick={() => trackOutboundClick("apivale", "study_companion")}
+                title="Get unified API access for OpenAI, Claude, DeepSeek & GLM models"
+              >
+                <span>Free Playground &amp; Key ↗</span>
+              </a>
+            </div>
+
             {/* Executive Summary & Mental Models */}
             <div className="study-box-lead">
               <div className="study-box-title">
@@ -501,6 +553,26 @@ ${studyNote.hnDebates
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Builder Hands-on Footnote */}
+            <div className="study-builder-footer">
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                <span>🛠️</span>
+                <span>
+                  <strong>Builder Sandbox:</strong> Ready to prototype with OpenAI, Claude, or DeepSeek models? Test endpoints on{" "}
+                  <a
+                    href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "var(--accent-sky)", fontWeight: 700, textDecoration: "underline" }}
+                    onClick={() => trackOutboundClick("apivale", "study_companion_footer")}
+                  >
+                    APIVALE.com
+                  </a>
+                  {" "}with instant developer credits.
+                </span>
               </div>
             </div>
           </div>

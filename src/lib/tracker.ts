@@ -155,7 +155,7 @@ export function trackExportNotes(
 }
 
 export function trackOutboundClick(
-  target: "github" | "dataset" | "apple_tv" | "karpathy_blog",
+  target: "github" | "dataset" | "apple_tv" | "karpathy_blog" | "apivale",
   context?: string
 ): void {
   trackEvent("outbound_click", {

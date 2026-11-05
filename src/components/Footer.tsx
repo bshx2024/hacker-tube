@@ -27,6 +27,16 @@ export const Footer: React.FC = () => {
               <li><a href="https://wikihack.org" target="_blank" rel="noopener noreferrer">Wikihack (Wikipedia on HN)</a></li>
               <li><a href="https://hnrepos.com" target="_blank" rel="noopener noreferrer">Hnrepos (GitHub on HN)</a></li>
               <li><a href="https://github.com/Jnaina/hackertube-tvos" target="_blank" rel="noopener noreferrer">HackerTube for Apple TV</a></li>
+              <li>
+                <a
+                  href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=footer_partner"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="High-concurrency LLM Gateway & Asset Management for Builders"
+                >
+                  APIVALE Cloud (LLM Gateway) ↗
+                </a>
+              </li>
             </ul>
           </div>
 

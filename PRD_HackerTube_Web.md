@@ -112,8 +112,14 @@ HackerTube 站点结构
   - 在 `VideoModal` 开启状态下，每 20 秒发送一次活跃心跳（带视频 ID 与激活 Tab）；
   - 在首页阅读状态下，每 30 秒发送一次前台心跳；
   - 双通道分发：向第一方 `/api/track` 上报同时，向 GA4 派发 `user_engagement` 事件（携带 `engagement_time_msec`），修正停留时间统计。
-  - `[ ⭐️ Open Source on GitHub ]`（承接 `hacker tube github` 搜索）
-  - `[ 📱 Get Client / Apple TV ]`（承接 `hacker tube app` 搜索）
+
+#### (3) 极客开发者生态与算力基础设施伙伴 (APIVALE Cloud Integration)
+- **定位**：零反感、原生高信噪比的技术算力支持，顺承用户学完算法硬核视频后的模型调用实操需求。
+- **植入触点与链路**：
+  - **AI 导读顶部算力徽章**：`⚡ Inference Infrastructure: AI structured derivations computed via APIVALE.com`，附带 `Free Playground & Key ↗`；
+  - **Obsidian / Notion 导出笔记**：自动将 `Inference Infrastructure: APIVALE Cloud` 永久存入开发者本地知识库；
+  - **Footer 生态外链**：收录 `APIVALE Cloud (LLM Gateway) ↗`，双向传递技术站权重；
+  - **多层归因闭环**：携带 `utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes`，确保 APIVALE 的 GA4、前端会话与 PostgreSQL `users` 表 100% 精确捕获。
 
 #### (2) 视频卡片 (Video Card)
 - **缩略图**：采用视频中段（50% 时间点）生成的真实画面，悬浮时轻微放大并显示播放指示器。

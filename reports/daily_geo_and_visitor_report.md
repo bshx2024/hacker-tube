@@ -1,6 +1,6 @@
 # HackerTube 24小时 GEO 爬虫雷达与极客行为分析简报
 
-> **生成时间**：2026-11-03 23:04:39 UTC  
+> **生成时间**：2026-11-05 11:34:52 UTC  
 > **分析时间窗口**：过去 24 小时  
 > **数据源**：First-Party Event Tracker & Server Access Logs  
 
@@ -46,32 +46,32 @@
 - **来源渠道**: `hackernews` (社区标识: `hackernews`)
 - **交互请求数**: 4 次
 - **关键行为流**:
-  - `[20:58:39]` ⚡ **page_view**
-  - `[21:04:39]` ⚡ **video_play** ("Let's build GPT: from scratch, in code, spelled out.")
-  - `[21:16:39]` ⚡ **study_companion_open** ("Let's build GPT: from scratch")
-  - `[21:28:39]` ⚡ **export_study_notes** (格式: obsidian)
+  - `[09:28:52]` ⚡ **page_view**
+  - `[09:34:52]` ⚡ **video_play** ("Let's build GPT: from scratch, in code, spelled out.")
+  - `[09:46:52]` ⚡ **study_companion_open** ("Let's build GPT: from scratch")
+  - `[09:58:52]` ⚡ **export_study_notes** (格式: obsidian)
 
 #### 访客 `usr_px_110c` [GB] — **Level 4: 🏆 Elite Geek / Note Exporter**
 - **来源渠道**: `perplexity` (社区标识: `ai_search`)
 - **交互请求数**: 2 次
 - **关键行为流**:
-  - `[18:04:39]` ⚡ **page_view**
-  - `[18:10:39]` ⚡ **outbound_click**
+  - `[06:34:52]` ⚡ **page_view**
+  - `[06:40:52]` ⚡ **outbound_click**
 
 #### 访客 `usr_tw_442b` [DE] — **Level 3: 🧠 Deep Scholar (Read Notes / HN Debate)**
 - **来源渠道**: `twitter` (社区标识: `twitter`)
 - **交互请求数**: 4 次
 - **关键行为流**:
-  - `[18:52:39]` ⚡ **page_view**
-  - `[19:04:39]` ⚡ **filter_topic**
-  - `[19:16:39]` ⚡ **study_companion_open** ("Building LLMs from Scratch")
-  - `[19:22:39]` ⚡ **click_hn_discussion**
+  - `[07:22:52]` ⚡ **page_view**
+  - `[07:34:52]` ⚡ **filter_topic**
+  - `[07:46:52]` ⚡ **study_companion_open** ("Building LLMs from Scratch")
+  - `[07:52:52]` ⚡ **click_hn_discussion**
 
 #### 访客 `usr_dr_888d` [CN] — **Level 0: Curious Visitor**
 - **来源渠道**: `direct` (社区标识: `direct`)
 - **交互请求数**: 1 次
 - **关键行为流**:
-  - `[22:34:39]` ⚡ **page_view**
+  - `[11:04:52]` ⚡ **page_view**
 
 ## 🛡️ 自动化漏洞探测与恶意爬虫防御 (Top 5)
 
