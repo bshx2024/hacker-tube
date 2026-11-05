@@ -5,27 +5,27 @@ import { FAQ_ITEMS } from "@/data/faq";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.hacker-tube.net"),
-  title: "Hacker Tube – Curated Tech Videos | HackerTube",
+  title: "HackerTube – Anti-Algorithm Video App (Karpathy Concept)",
   description:
-    "Hacker Tube (HackerTube) curates high-signal tech videos and AI lectures from Hacker News. Free from clickbait and algorithmic slop with honest previews.",
+    "The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub.",
   keywords: [
-    "Hacker Tube",
     "HackerTube",
-    "hacker tube",
-    "hackertube",
+    "Hacker Tube",
     "hacker tube karpathy",
+    "hacker tube app",
+    "hacker tube github",
+    "hackertube",
+    "hacker tube",
     "anti algorithm video platform",
     "hacker news videos",
     "curated tech talks",
     "AI lectures",
     "no clickbait youtube",
-    "hackerbooks",
-    "hacker tube github",
-    "hacker tube app"
+    "hackerbooks"
   ],
-  authors: [{ name: "Hacker Tube Community" }],
+  authors: [{ name: "HackerTube Community" }],
   creator: "Andrej Karpathy Community Concept",
-  publisher: "Hacker Tube",
+  publisher: "HackerTube",
   robots: {
     index: true,
     follow: true,
@@ -38,11 +38,11 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Hacker Tube – Curated Tech Videos | HackerTube",
+    title: "HackerTube – Anti-Algorithm Video App (Karpathy Concept)",
     description:
-      "Hacker Tube (HackerTube) curates high-signal tech videos and AI lectures from Hacker News. Free from clickbait and algorithmic slop with honest previews.",
+      "The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub.",
     url: "https://www.hacker-tube.net/",
-    siteName: "Hacker Tube",
+    siteName: "HackerTube",
     locale: "en_US",
     type: "website",
     images: [
@@ -50,15 +50,15 @@ export const metadata: Metadata = {
         url: "https://www.hacker-tube.net/images/hero-showcase.jpg",
         width: 1200,
         height: 630,
-        alt: "Hacker Tube Curated Tech Video Platform",
+        alt: "HackerTube Anti-Algorithm Video Platform",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hacker Tube – Curated Tech Videos | HackerTube",
+    title: "HackerTube – Anti-Algorithm Video App (Karpathy Concept)",
     description:
-      "Hacker Tube (HackerTube) curates high-signal tech videos and AI lectures from Hacker News with honest previews.",
+      "The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub.",
     images: ["https://www.hacker-tube.net/images/hero-showcase.jpg"],
   },
   alternates: {
@@ -91,7 +91,7 @@ export default function RootLayout({
     name: "HackerTube",
     url: "https://www.hacker-tube.net",
     description:
-      "The anti-algorithm video platform curating technical and scientific videos recommended across Hacker News comments.",
+      "The anti-algorithm video platform inspired by Andrej Karpathy. Curating high-signal tech talks and AI lectures from Hacker News with honest previews.",
     potentialAction: {
       "@type": "SearchAction",
       target: "https://www.hacker-tube.net/?q={search_term_string}",

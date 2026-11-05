@@ -32,12 +32,12 @@
 
 #### 首页 Title
 ```html
-<title>HackerTube – Human-Curated Tech Videos, No Slop & No Clickbait</title>
+<title>HackerTube – Anti-Algorithm Video App (Karpathy Concept)</title>
 ```
 
 #### 首页 Meta Description
 ```html
-<meta name="description" content="Tired of YouTube's algorithm and clickbait slop? HackerTube curates the highest-signal tech talks, AI lectures, and deep dives organically recommended by Hacker News engineers. Clean mid-frame thumbnails, zero tracking, open-source on GitHub." />
+<meta name="description" content="The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub." />
 ```
 
 #### 关键词矩阵 (Keywords Matrix)
