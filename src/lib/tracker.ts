@@ -83,6 +83,13 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
           first_source: attr.first_source,
           geek_source: attr.geek_source,
         });
+
+        // If engagement_time_msec is provided (heartbeat), explicitly ping GA4 user_engagement
+        if (properties?.engagement_time_msec && typeof properties.engagement_time_msec === "number") {
+          window.gtag("event", "user_engagement", {
+            engagement_time_msec: properties.engagement_time_msec,
+          });
+        }
       } catch {
         // Ignore gtag failure
       }
@@ -177,3 +184,21 @@ export function trackSearch(query: string, resultCount: number): void {
     result_count: resultCount,
   });
 }
+
+/**
+ * Active Engagement Heartbeat
+ * Solves GA4 YouTube iframe focus loss & tracks real foreground reading/studying dwell time.
+ */
+export function trackEngagementHeartbeat(
+  context: "video_modal" | "page_reading",
+  seconds: number,
+  details?: Record<string, unknown>
+): void {
+  trackEvent("user_engagement_heartbeat", {
+    context,
+    seconds_active: seconds,
+    engagement_time_msec: seconds * 1000,
+    ...details,
+  });
+}
+

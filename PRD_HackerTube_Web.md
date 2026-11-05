@@ -94,10 +94,24 @@ HackerTube 站点结构
 ### 3.1 核心页面交互细节
 
 #### (1) Hero 区域
-- **大标题**：`Stop Watching Slop.`
-- **副标题**：*Human-curated tech talks from Hacker News comments. No algorithms, no clickbait thumbnails, pure high-signal learning.*
-- **CTA 按钮组**：
-  - `[ ▶ Explore Videos ]`（平滑滚动至视频列表）
+- **Hero Pill 徽章**：`⚡ Inspired by Andrej Karpathy • 20 Years of Hacker News Consensus`
+- **大标题 (H1)**：`HackerTube: Stop Watching Slop.`
+- **副标题**：*HackerTube is the anti-algorithm video web app inspired by Andrej Karpathy. Every lecture was organically recommended across 20 years of Hacker News—with zero clickbait, 50% runtime previews, and exportable AI study notes.*
+- **主 CTA 按钮组**（聚焦站内探索与交互，避免过早跳出）：
+  - `[ ▶ Explore All Curated Talks ({total}) ]`（平滑滚动至视频列表）
+  - `[ 🧠 AI Study Companion & Derivations ]`（呼出精选演讲 AI 导读）
+- **次级生态与概念外链行**（轻量居中外链，不抢主操作视觉焦点）：
+  - `💡 Andrej Karpathy's Blog Post ↗`
+  - `📺 Apple TV Client (tvOS) ↗`
+  - `⭐ Open Source on GitHub ↗`
+- **Library 区域大标题 (H2)**：`HackerTube Curated Archive: High-Signal Talks & AI Study Notes`
+
+#### (2) 活跃停留与真实时长心跳监测 (Engagement Heartbeat Telemetry)
+- **解决痛点**：用户点击嵌入式 YouTube 播放器或阅读 AI 笔记时，浏览器焦点离开主窗口导致 GA4 将停留时长误判为 15~17 秒。
+- **机制**：
+  - 在 `VideoModal` 开启状态下，每 20 秒发送一次活跃心跳（带视频 ID 与激活 Tab）；
+  - 在首页阅读状态下，每 30 秒发送一次前台心跳；
+  - 双通道分发：向第一方 `/api/track` 上报同时，向 GA4 派发 `user_engagement` 事件（携带 `engagement_time_msec`），修正停留时间统计。
   - `[ ⭐️ Open Source on GitHub ]`（承接 `hacker tube github` 搜索）
   - `[ 📱 Get Client / Apple TV ]`（承接 `hacker tube app` 搜索）
 

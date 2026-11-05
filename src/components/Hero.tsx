@@ -62,54 +62,112 @@ export const Hero: React.FC<HeroProps> = ({
       <div className="container">
         <div className="hero-pill">
           <span className="hero-pill-pulse"></span>
-          <span>Curated from 20 Years of Hacker News (2007–2026)</span>
+          <span>⚡ Inspired by Andrej Karpathy • 20 Years of Hacker News Consensus</span>
         </div>
 
         <h1 className="hero-title">
-          Hacker Tube: Stop Watching <span className="hero-title-gradient">Slop.</span>
+          HackerTube: Stop Watching <span className="hero-title-gradient">Slop.</span>
         </h1>
 
         <p className="hero-subtitle">
-          <strong>Hacker Tube</strong> (HackerTube) is the anti-algorithm video platform for hackers, engineers, and deep thinkers.
-          Every video on Hacker Tube was organically recommended by real humans in Hacker News discussions—with zero
-          clickbait thumbnails, zero tracking, and pure technical signal.
+          <strong>HackerTube</strong> is the anti-algorithm video web app inspired by Andrej Karpathy. Every lecture was organically recommended across 20 years of Hacker News—with zero clickbait, 50% runtime previews, and exportable AI study notes.
         </p>
 
-        <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "40px" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "20px" }}>
           <button
             onClick={onExplore}
             className="nav-btn nav-btn-primary"
-            style={{ padding: "12px 24px", fontSize: "15px" }}
+            style={{ padding: "12px 26px", fontSize: "15px" }}
             id="hero-explore-btn"
           >
             <span>▶</span>
-            <span>Explore All Curated Talks</span>
+            <span>Explore All Curated Talks ({totalVideos})</span>
           </button>
 
+          <button
+            onClick={() => onOpenStudy(activeVideo)}
+            className="nav-btn"
+            style={{
+              padding: "12px 22px",
+              fontSize: "15px",
+              borderColor: "rgba(56, 189, 248, 0.4)",
+              color: "var(--accent-sky)",
+              background: "rgba(56, 189, 248, 0.08)",
+            }}
+            id="hero-study-btn"
+            title="Open AI Study Companion for the featured talk"
+          >
+            <span>🧠</span>
+            <span>AI Study Companion &amp; Derivations</span>
+          </button>
+        </div>
+
+        {/* Provenance & Ecosystem Badges (Subtle to avoid immediate outbound bounce) */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "14px",
+            flexWrap: "wrap",
+            fontSize: "13px",
+            color: "var(--text-muted)",
+            marginBottom: "36px",
+          }}
+        >
+          <span style={{ color: "var(--text-muted)" }}>Concept Origin:</span>
           <a
             href="https://karpathy.bearblog.dev/hacker-tube/"
             target="_blank"
             rel="noopener noreferrer"
-            className="nav-btn"
-            style={{ padding: "12px 24px", fontSize: "15px" }}
             id="hero-karpathy-btn"
             onClick={() => trackOutboundClick("karpathy_blog", "hero")}
+            style={{
+              color: "var(--accent-emerald)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              textDecoration: "underline",
+              textUnderlineOffset: "3px",
+            }}
           >
-            <span>💡</span>
-            <span>Inspired by Andrej Karpathy</span>
+            <span>💡 Andrej Karpathy&apos;s Blog Post ↗</span>
           </a>
-
+          <span>•</span>
           <a
             href="https://github.com/Jnaina/hackertube-tvos"
             target="_blank"
             rel="noopener noreferrer"
-            className="nav-btn"
-            style={{ padding: "12px 24px", fontSize: "15px" }}
             id="hero-tvos-btn"
             onClick={() => trackOutboundClick("apple_tv", "hero")}
+            style={{
+              color: "var(--text-secondary)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              textDecoration: "underline",
+              textUnderlineOffset: "3px",
+            }}
           >
-            <span>📺</span>
-            <span>Apple TV Client</span>
+            <span>📺 Apple TV Client (tvOS) ↗</span>
+          </a>
+          <span>•</span>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            id="hero-github-btn"
+            onClick={() => trackOutboundClick("github", "hero")}
+            style={{
+              color: "var(--text-secondary)",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "4px",
+              textDecoration: "underline",
+              textUnderlineOffset: "3px",
+            }}
+          >
+            <span>⭐ Open Source on GitHub ↗</span>
           </a>
         </div>
 

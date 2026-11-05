@@ -3,7 +3,12 @@
 import React, { useState, useEffect } from "react";
 import { VideoItem } from "@/data/videos";
 import { getStudyNoteForVideo, StudyNote } from "@/data/studyNotes";
-import { trackExportNotes, trackHnClick, trackStudyOpen } from "@/lib/tracker";
+import {
+  trackExportNotes,
+  trackHnClick,
+  trackStudyOpen,
+  trackEngagementHeartbeat,
+} from "@/lib/tracker";
 
 interface VideoModalProps {
   video: VideoItem | null;
@@ -44,6 +49,25 @@ export const VideoModal: React.FC<VideoModalProps> = ({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
+
+  // Active Engagement Heartbeat (solves GA4 iframe focus loss & tracks true dwell time)
+  useEffect(() => {
+    if (!video) return;
+
+    let elapsed = 0;
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        elapsed += 20;
+        trackEngagementHeartbeat("video_modal", 20, {
+          video_id: video.id,
+          tab: activeTab,
+          total_seconds: elapsed,
+        });
+      }
+    }, 20000);
+
+    return () => clearInterval(interval);
+  }, [video, activeTab]);
 
   if (!video) return null;
 

@@ -19,6 +19,7 @@ import {
   trackFilterTopic,
   trackVideoPlay,
   trackStudyOpen,
+  trackEngagementHeartbeat,
 } from "@/lib/tracker";
 
 export default function HomePage() {
@@ -46,6 +47,23 @@ export default function HomePage() {
     initAttributionTracker();
     trackPageView();
   }, []);
+
+  // Page Foreground Dwell Heartbeat (keeps GA4 active & logs reading retention)
+  useEffect(() => {
+    let dwellSeconds = 0;
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        dwellSeconds += 30;
+        trackEngagementHeartbeat("page_reading", 30, {
+          total_seconds: dwellSeconds,
+          is_saved_view: isSavedView,
+          selected_topic: selectedTopic,
+        });
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [isSavedView, selectedTopic]);
 
   const handlePlayVideo = useCallback((v: VideoItem) => {
     trackVideoPlay(v);
@@ -209,7 +227,7 @@ export default function HomePage() {
         <div className="container">
           <div className="section-title-wrap" style={{ marginTop: "48px", marginBottom: "24px" }}>
             <div className="section-eyebrow">The Curated Library</div>
-            <h2 className="section-title">Hacker Tube Curated Video Archive</h2>
+            <h2 className="section-title">HackerTube Curated Archive: High-Signal Talks &amp; AI Study Notes</h2>
           </div>
 
           <Controls
