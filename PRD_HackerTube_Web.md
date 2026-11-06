@@ -170,6 +170,7 @@ HackerTube 站点结构
 | **数据层** | **静态 JSON + SQLite/Supabase** | 视频元数据提前生成静态索引，毫秒级响应，零数据库并发压力。 |
 | **播放核心** | **YouTube IFrame API** | 严格遵守 YouTube API 服务条款（TOS），CDN 流量由 Google 承载。 |
 | **数据巡检管线** | **Node.js / Python 每日脚本** | 自动轮询校验视频 HTTP/API 状态，剔除 404/私享/禁止嵌入视频。 |
+| **日志与访客遥测** | **Umami Analytics (自建) + First-Party API** | 零 Cookie、GDPR/CCPA 合规、原生免疫 AdBlock，精准捕获真实访客、来源国家与极客事件。 |
 | **部署托管** | **Cloudflare Pages / Vercel** | 全球边缘极速分发，免费 HTTPS，完全免疫高并发流量冲击。 |
 
 ### 4.1 核心合规与配额规避机制

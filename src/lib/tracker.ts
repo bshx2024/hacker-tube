@@ -20,10 +20,16 @@ export interface TrackEventPayload {
   geek_source?: string;
 }
 
-// Global declaration for window.gtag
+// Global declaration for window.gtag and window.umami
 declare global {
   interface Window {
     gtag?: (command: string, action: string, params?: Record<string, unknown>) => void;
+    umami?: {
+      track: (
+        eventName: string | Record<string, unknown>,
+        eventData?: Record<string, unknown>
+      ) => void;
+    };
   }
 }
 
@@ -92,6 +98,20 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
         }
       } catch {
         // Ignore gtag failure
+      }
+    }
+
+    // 4. Dual-dispatch to Umami Analytics (Self-hosted, Privacy-first, AdBlock Immune)
+    if (typeof window.umami?.track === "function") {
+      try {
+        window.umami.track(eventName, {
+          ...properties,
+          anonymous_id: attr.anonymous_id,
+          first_source: attr.first_source,
+          geek_source: attr.geek_source,
+        });
+      } catch {
+        // Silently swallow Umami tracking errors
       }
     }
   } catch (err) {

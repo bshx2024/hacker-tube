@@ -116,6 +116,13 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
+        {/* Umami Analytics (Self-hosted, Privacy-first, AdBlock Immune) */}
+        <Script
+          strategy="afterInteractive"
+          src="https://umami-three-lac.vercel.app/script.js"
+          data-website-id="1bf290ac-ebd2-4346-9b44-af0193597bf3"
+        />
+
         {gaId && (
           <>
             <Script
