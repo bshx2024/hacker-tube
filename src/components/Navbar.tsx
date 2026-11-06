@@ -7,6 +7,7 @@ interface NavbarProps {
   savedCount: number;
   onOpenSaved: () => void;
   onOpenShortcuts: () => void;
+  onOpenSuggest?: () => void;
   isSavedView: boolean;
   onResetView: () => void;
 }
@@ -15,6 +16,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   savedCount,
   onOpenSaved,
   onOpenShortcuts,
+  onOpenSuggest,
   isSavedView,
   onResetView,
 }) => {
@@ -30,6 +32,22 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
 
         <div className="nav-actions">
+          <button
+            className="nav-btn"
+            onClick={onOpenSuggest}
+            title="Suggest a high-signal video from Hacker News"
+            id="btn-suggest-talk"
+            style={{
+              background: "rgba(16, 185, 129, 0.08)",
+              borderColor: "rgba(16, 185, 129, 0.3)",
+              color: "var(--accent-emerald)",
+              fontWeight: 600,
+            }}
+          >
+            <span>＋</span>
+            <span>Suggest Talk</span>
+          </button>
+
           <button
             className="nav-btn"
             onClick={onOpenShortcuts}

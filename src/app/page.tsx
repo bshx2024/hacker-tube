@@ -10,6 +10,7 @@ import { VideoModal } from "@/components/VideoModal";
 import { FAQSection } from "@/components/FAQSection";
 import { Footer } from "@/components/Footer";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
+import { SuggestVideoModal } from "@/components/SuggestVideoModal";
 import { SlopContrastSection } from "@/components/SlopContrastSection";
 import { ChannelWelcomeBanner } from "@/components/ChannelWelcomeBanner";
 import { initAttributionTracker } from "@/lib/attribution";
@@ -41,6 +42,7 @@ export default function HomePage() {
   const [modalInitialTab, setModalInitialTab] = useState<"player" | "study">("player");
   const [keyboardIndex, setKeyboardIndex] = useState<number>(-1);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [isSuggestOpen, setIsSuggestOpen] = useState(false);
 
   // Initialize First-Party Channel Attribution & Dispatch Page View
   useEffect(() => {
@@ -198,6 +200,7 @@ export default function HomePage() {
         savedCount={savedIds.length}
         onOpenSaved={() => setIsSavedView(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
+        onOpenSuggest={() => setIsSuggestOpen(true)}
         isSavedView={isSavedView}
         onResetView={handleResetToAll}
       />
@@ -311,6 +314,12 @@ export default function HomePage() {
       <KeyboardShortcutsModal
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}
+      />
+
+      {/* Community Suggestion Modal */}
+      <SuggestVideoModal
+        isOpen={isSuggestOpen}
+        onClose={() => setIsSuggestOpen(false)}
       />
     </>
   );

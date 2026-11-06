@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "analyze:logs": "node scripts/analyze_crawlers.mjs"
+    "analyze:logs": "node scripts/analyze_crawlers.mjs",
+    "sync:hn": "node scripts/sync_hn_videos.mjs"
   },
   "dependencies": {
     "next": "16.4.4",

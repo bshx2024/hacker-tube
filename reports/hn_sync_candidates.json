@@ -1,0 +1,30 @@
+{
+  "lastSyncedAt": "2026-11-06T01:05:54.084Z",
+  "totalCandidates": 2,
+  "candidates": [
+    {
+      "youtubeId": "Rswz0sghYCw",
+      "midframeThumb": "https://img.youtube.com/vi/Rswz0sghYCw/hqdefault.jpg",
+      "hnAuthor": "mahmud",
+      "hnYear": 2009,
+      "hnStoryTitle": "[dead]",
+      "hnUrl": "https://news.ycombinator.com/item?id=999721",
+      "excerpt": "I enjoy corporate-racism, specially \"overseas\", where their dirty secrets are usually not spotted. Here is a fun little ad by Vaseline: http://www.youtube.com/watch?v=Rswz0sghYCw (http://www.youtube.com/watch?v=Rswz0sghYCw) Vaseline is a br...",
+      "matchedKeywords": [],
+      "frequency": 1,
+      "score": 43
+    },
+    {
+      "youtubeId": "qqOSNI7l0bQ",
+      "midframeThumb": "https://img.youtube.com/vi/qqOSNI7l0bQ/hqdefault.jpg",
+      "hnAuthor": "rmason",
+      "hnYear": 2009,
+      "hnStoryTitle": "San Francisco: The Worst-Run Big City in the U.S.",
+      "hnUrl": "https://news.ycombinator.com/item?id=999763",
+      "excerpt": "Much as I hate to diss my poor suffering state all you need to look at is the five terms of Detroit mayor Coleman Young if you want to see poor leadership. Time magazine said he is 'singularly responsible for the demise of Detroit'. San Fra...",
+      "matchedKeywords": [],
+      "frequency": 1,
+      "score": 32
+    }
+  ]
+}

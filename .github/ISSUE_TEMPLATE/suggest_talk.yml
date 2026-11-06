@@ -1,0 +1,71 @@
+name: "🎬 Suggest a High-Signal Talk"
+description: "Propose a timeless technical lecture or computer science video from Hacker News discussions"
+title: "[Talk Proposal]: "
+labels: ["community-curation", "video-proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping keep **HackerTube** pure and free of algorithmic slop!
+        Every submission must meet our anti-slop rules:
+        - Must be organically recommended by real humans in Hacker News discussions.
+        - Zero clickbait, zero content farms, zero financial get-rich-quick tutorials.
+        - Must feature genuine educational, engineering, or scientific substance.
+
+  - type: input
+    id: youtube_url
+    attributes:
+      label: "YouTube Video URL or ID"
+      description: "e.g., https://www.youtube.com/watch?v=M3B63EGmIbc or M3B63EGmIbc"
+      placeholder: "https://www.youtube.com/watch?v=..."
+    validations:
+      required: true
+
+  - type: input
+    id: talk_title
+    attributes:
+      label: "Talk Title"
+      description: "Official or clear engineering title of the lecture."
+      placeholder: "e.g. Building micrograd from scratch"
+    validations:
+      required: true
+
+  - type: input
+    id: speaker_channel
+    attributes:
+      label: "Speaker / Channel"
+      placeholder: "e.g. Andrej Karpathy, Bret Victor, Rich Hickey"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: "Topic Category"
+      options:
+        - "AI & Machine Learning"
+        - "Systems & Architecture"
+        - "Math & Science"
+        - "Retro & History"
+        - "Engineering Culture"
+        - "Security & Hacking"
+    validations:
+      required: true
+
+  - type: input
+    id: hn_discussion_url
+    attributes:
+      label: "Hacker News Thread Link"
+      description: "Link to the HN thread where this talk was organically praised/recommended."
+      placeholder: "https://news.ycombinator.com/item?id=..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: hn_quote_or_takeaways
+    attributes:
+      label: "Why is this talk high-signal?"
+      description: "Provide the top HN comment quote, or 3 key engineering takeaways."
+      placeholder: "This tutorial clarifies autograd without any PyTorch black magic..."
+    validations:
+      required: true
