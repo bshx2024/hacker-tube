@@ -86,7 +86,18 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         </div>
 
         <h3 className="card-title" title={video.title}>
-          {video.title}
+          <a
+            href={`/v/${video.id}`}
+            onClick={(e) => {
+              if (!e.metaKey && !e.ctrlKey) {
+                e.preventDefault();
+                handleCardClick();
+              }
+            }}
+            style={{ color: "inherit", textDecoration: "none" }}
+          >
+            {video.title}
+          </a>
         </h3>
 
         <div className="card-channel">

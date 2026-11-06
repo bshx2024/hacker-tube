@@ -1,6 +1,7 @@
 # Robots.txt for HackerTube
 User-agent: *
 Allow: /
+Disallow: /api/
 
 # GEO & LLM Bots - Explicitly Allowed for RAG and Generative Search
 User-agent: GPTBot
@@ -24,7 +25,5 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-# Sitemaps and LLM standards
+# Sitemaps & Search Standards
 Sitemap: https://www.hacker-tube.net/sitemap.xml
-# LLM Manifest
-# https://www.hacker-tube.net/llms.txt

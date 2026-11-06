@@ -5,21 +5,24 @@ import { FAQ_ITEMS } from "@/data/faq";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.hacker-tube.net"),
-  title: "HackerTube – Anti-Algorithm Video App (Karpathy Concept)",
+  title: {
+    default: "HackerTube — Hacker News Recommended Tech Talks & AI Videos",
+    template: "%s | HackerTube",
+  },
   description:
-    "The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub.",
+    "Explore HackerTube: the anti-algorithm video platform inspired by Andrej Karpathy. Discover high-signal tech talks, AI lectures, and engineering deep dives vetted across 20 years of Hacker News comments—zero clickbait, honest 50% runtime previews, and exportable AI study notes.",
   keywords: [
-    "HackerTube",
-    "Hacker Tube",
-    "hacker tube karpathy",
-    "hacker tube app",
-    "hacker tube github",
     "hackertube",
     "hacker tube",
+    "HackerTube videos",
+    "Hacker News videos",
+    "HN recommended talks",
+    "daily tech talks",
+    "hacker tube karpathy",
     "anti algorithm video platform",
-    "hacker news videos",
-    "curated tech talks",
+    "high signal tech talks",
     "AI lectures",
+    "Andrej Karpathy HackerTube",
     "no clickbait youtube",
     "hackerbooks"
   ],
@@ -38,9 +41,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "HackerTube – Anti-Algorithm Video App (Karpathy Concept)",
+    title: "HackerTube — Hacker News Recommended Tech Talks & AI Videos",
     description:
-      "The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub.",
+      "Explore HackerTube: the anti-algorithm video platform inspired by Andrej Karpathy. Discover high-signal tech talks, AI lectures, and engineering deep dives vetted across 20 years of Hacker News comments—zero clickbait, honest 50% runtime previews, and exportable AI study notes.",
     url: "https://www.hacker-tube.net/",
     siteName: "HackerTube",
     locale: "en_US",
@@ -56,9 +59,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HackerTube – Anti-Algorithm Video App (Karpathy Concept)",
+    title: "HackerTube — Hacker News Recommended Tech Talks & AI Videos",
     description:
-      "The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub.",
+      "Explore HackerTube: the anti-algorithm video platform inspired by Andrej Karpathy. High-signal technical talks vetted across 20 years of Hacker News.",
     images: ["https://www.hacker-tube.net/images/hero-showcase.jpg"],
   },
   alternates: {

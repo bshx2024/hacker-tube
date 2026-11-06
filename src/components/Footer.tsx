@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 
 export const Footer: React.FC = () => {
   return (
@@ -51,9 +52,22 @@ export const Footer: React.FC = () => {
           </div>
 
           <div className="footer-col">
-            <h4>Standards &amp; GEO</h4>
+            <h4>Curated Topic Archives</h4>
+            <ul className="footer-links">
+              <li><Link href="/topic/ai-machine-learning">AI &amp; Machine Learning</Link></li>
+              <li><Link href="/topic/systems-architecture">Systems &amp; Architecture</Link></li>
+              <li><Link href="/topic/math-science">Math &amp; Science</Link></li>
+              <li><Link href="/topic/retro-history">Retro &amp; History</Link></li>
+              <li><Link href="/topic/engineering-culture">Engineering Culture</Link></li>
+              <li><Link href="/topic/security-hacking">Security &amp; Hacking</Link></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h4>Standards &amp; Sitemaps</h4>
             <ul className="footer-links">
               <li><a href="#faq">Frequently Asked Questions</a></li>
+              <li><a href="/sitemap.xml" target="_blank" rel="noopener noreferrer">Site Map (sitemap.xml)</a></li>
               <li><a href="/robots.txt" target="_blank" rel="noopener noreferrer">AI Crawler Policy</a></li>
               <li><a href="https://news.ycombinator.com" target="_blank" rel="noopener noreferrer">Hacker News (Y Combinator)</a></li>
             </ul>

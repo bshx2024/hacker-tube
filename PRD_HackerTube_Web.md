@@ -32,22 +32,32 @@
 
 #### 首页 Title
 ```html
-<title>HackerTube – Anti-Algorithm Video App (Karpathy Concept)</title>
+<title>HackerTube — Hacker News Recommended Tech Talks &amp; AI Videos</title>
 ```
 
 #### 首页 Meta Description
 ```html
-<meta name="description" content="The anti-algorithm video platform inspired by Andrej Karpathy. Explore high-signal tech talks & AI lectures from Hacker News—zero clickbait, honest previews & open source on GitHub." />
+<meta name="description" content="Explore HackerTube: the anti-algorithm video platform inspired by Andrej Karpathy. Discover high-signal tech talks, AI lectures, and engineering deep dives vetted across 20 years of Hacker News comments—zero clickbait, honest 50% runtime previews, and exportable AI study notes." />
 ```
 
 #### 关键词矩阵 (Keywords Matrix)
-- **核心主词**：`HackerTube`, `Hacker Tube`, `Anti-Algorithm Video Platform`, `Curated Tech Talks`
-- **长尾与意图承接词**：`hacker tube karpathy`, `hacker tube github`, `hacker tube app`, `hacker news videos`, `hackerbooks`
+- **核心主词**：`hackertube`, `hacker tube`, `HackerTube videos`, `Hacker News videos`, `HN recommended talks`, `daily tech talks`
+- **长尾与意图承接词**：`hacker tube karpathy`, `anti algorithm video platform`, `high signal tech talks`, `AI lectures`, `no clickbait youtube`, `hackerbooks`
 - **严防负向干扰词**：**全站绝对禁止出现** `hacker typer`, `devices hackers use`, `hacker rules` 等容易导致搜索引擎词义混淆的无关词。
 
 ### 2.2 GEO（大模型友好度）专项实现
 
 1. **部署 `/llms.txt` 标准文件**：
+   - 遵循最新的 `llms.txt` 规范，在根目录提供机器友好型 Markdown 摘要，供 Perplexity、Claude、ChatGPT 爬虫瞬间理解 HackerTube 的产品定位、数据源（Hacker News）、核心特点及技术分类。
+
+### 2.3 程序化 SEO 矩阵与静态站点地图 (Programmatic SEO & XML Sitemap)
+- **动态 XML 站点地图 (`src/app/sitemap.ts`)**：
+  - 自动遍历全站根页面、所有主题分类路由及全部独立演讲深读页面，按权重配置 `priority` 与 `changeFrequency`；
+  - 彻底规避爬虫访问 `sitemap.xml` 发生 404 错误。
+- **分类独立路由 (`/topic/[slug]`)**：
+  - 预渲染 6 大细分领域的独立静态落地页（AI、系统架构、数学科学、计算历史、工程文化、安全黑客），具备独立 TDK、BreadcrumbList 与 ItemList 结构化数据。
+- **独立演讲知识详情页 (`/v/[id]`)**：
+  - 针对每个技术演讲提供独立 SSG 静态落地页，SSR 直出包含 LaTeX 数学公式、50% 中帧截图、核心推导、HN 讨论争议、VideoObject 与 TechArticle 结构化数据的完整语义 HTML，让搜索引擎爬虫与大模型 RAG 引擎能 100% 索引每篇技术笔记。
    - 在站点根目录提供标准的 Markdown 格式概览，简述网站数据来源、分类体系、API 及开源数据集位置。
 2. **`robots.txt` 放行 AI 爬虫**：
    - 显式声明允许 `GPTBot`, `PerplexityBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended` 无障碍爬取全站 HTML。
