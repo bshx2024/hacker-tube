@@ -110,7 +110,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 > **Speaker**: ${video.channelTitle} (${video.publishedYear}) | **Duration**: ${video.duration} | **Topic**: ${video.topic}
 > **Hacker News Thread**: [${video.hnMentions} points by @${video.hnAuthor}](${video.hnDiscussionUrl})
 > **Stream & AI Notes**: [HackerTube](https://www.hacker-tube.net/?v=${video.id}&ref=obsidian_notes) • [Original YouTube](https://youtu.be/${video.youtubeId})
-> **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=obsidian_notes) (High-Throughput Model Gateway for Engineers)
+> **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge) (High-Throughput Model Gateway for Engineers)
 
 ---
 
@@ -432,7 +432,7 @@ ${studyNote.hnDebates
                 <span>
                   <strong>Builder Sandbox:</strong> Ready to prototype with OpenAI, Claude, or DeepSeek models? Test endpoints on{" "}
                   <a
-                    href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
+                    href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: "var(--accent-sky)", fontWeight: 700, textDecoration: "underline" }}
@@ -457,7 +457,7 @@ ${studyNote.hnDebates
                 <span>
                   <strong style={{ color: "var(--accent-sky)" }}>⚡ Inference Infrastructure:</strong> AI structured derivations &amp; takeaways computed via{" "}
                   <a
-                    href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
+                    href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="infrastructure-link"
@@ -469,7 +469,7 @@ ${studyNote.hnDebates
                 </span>
               </div>
               <a
-                href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
+                href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="infrastructure-cta"
@@ -595,7 +595,7 @@ ${studyNote.hnDebates
                 <span>
                   <strong>Builder Sandbox:</strong> Ready to prototype with OpenAI, Claude, or DeepSeek models? Test endpoints on{" "}
                   <a
-                    href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
+                    href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: "var(--accent-sky)", fontWeight: 700, textDecoration: "underline" }}

@@ -129,7 +129,7 @@ HackerTube 站点结构
   - **AI 导读顶部算力徽章**：`⚡ Inference Infrastructure: AI structured derivations computed via APIVALE.com`，附带 `Free Playground & Key ↗`；
   - **Obsidian / Notion 导出笔记**：自动将 `Inference Infrastructure: APIVALE Cloud` 永久存入开发者本地知识库；
   - **Footer 生态外链**：收录 `APIVALE Cloud (LLM Gateway) ↗`，双向传递技术站权重；
-  - **多层归因闭环**：携带 `utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes`，确保 APIVALE 的 GA4、前端会话与 PostgreSQL `users` 表 100% 精确捕获。
+  - **多层归因闭环**：携带专用落地路径与追踪参数 `https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge`，确保 APIVALE 的 GA4、前端会话与专属 Landing Page 100% 精确捕获来自 HackerTube 的极客流量。
 
 #### (4) 极客裂变分享与直达深度链接 (Viral Deep-Linking & Geek Outflow System)
 - **定位**：基于“极客社交货币”（反算法劣质内容、高信噪比技术硬核）与“工程工作流效用”，实现自然的口碑裂变自增长。

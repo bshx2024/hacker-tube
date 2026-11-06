@@ -30,7 +30,7 @@ export const Footer: React.FC = () => {
               <li><a href="https://github.com/Jnaina/hackertube-tvos" target="_blank" rel="noopener noreferrer">HackerTube for Apple TV</a></li>
               <li>
                 <a
-                  href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=footer_partner"
+                  href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
                   target="_blank"
                   rel="noopener noreferrer"
                   title="High-concurrency LLM Gateway & Asset Management for Builders"

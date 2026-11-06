@@ -580,7 +580,7 @@ export default async function VideoPage(props: VideoPageProps) {
               </div>
             </div>
             <a
-              href="https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=video_page_badge"
+              href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
               target="_blank"
               rel="noopener noreferrer"
               className="nav-btn"
