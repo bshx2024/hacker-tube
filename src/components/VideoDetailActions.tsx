@@ -31,7 +31,7 @@ export const VideoDetailActions: React.FC<VideoDetailActionsProps> = ({
 > **Speaker**: ${video.channelTitle} (${video.publishedYear}) | **Duration**: ${video.duration} | **Topic**: ${video.topic}
 > **Hacker News Thread**: [${video.hnMentions} points by @${video.hnAuthor}](${video.hnDiscussionUrl})
 > **Stream & AI Notes**: [HackerTube](https://www.hacker-tube.net/?v=${video.id}&ref=obsidian_notes) • [Original YouTube](https://youtu.be/${video.youtubeId})
-> **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge) (High-Throughput Model Gateway for Engineers)
+> **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge) (High-Throughput Gateway for DeepSeek, Qwen & Frontier Models)
 
 ---
 

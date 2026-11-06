@@ -110,7 +110,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 > **Speaker**: ${video.channelTitle} (${video.publishedYear}) | **Duration**: ${video.duration} | **Topic**: ${video.topic}
 > **Hacker News Thread**: [${video.hnMentions} points by @${video.hnAuthor}](${video.hnDiscussionUrl})
 > **Stream & AI Notes**: [HackerTube](https://www.hacker-tube.net/?v=${video.id}&ref=obsidian_notes) • [Original YouTube](https://youtu.be/${video.youtubeId})
-> **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge) (High-Throughput Model Gateway for Engineers)
+> **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge) (High-Throughput Gateway for DeepSeek, Qwen & Frontier Models)
 
 ---
 
@@ -430,7 +430,7 @@ ${studyNote.hnDebates
               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                 <span>🛠️</span>
                 <span>
-                  <strong>Builder Sandbox:</strong> Ready to prototype with OpenAI, Claude, or DeepSeek models? Test endpoints on{" "}
+                  <strong>Builder Sandbox:</strong> Ready to prototype with DeepSeek, Qwen, GLM, or Kimi? Test endpoints on{" "}
                   <a
                     href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
                     target="_blank"
@@ -465,7 +465,7 @@ ${studyNote.hnDebates
                   >
                     APIVALE.com
                   </a>
-                  {" "}— High-concurrency LLM gateway for developers.
+                  {" "}— Unified gateway for DeepSeek, Qwen &amp; frontier Chinese models.
                 </span>
               </div>
               <a
@@ -474,7 +474,7 @@ ${studyNote.hnDebates
                 rel="noopener noreferrer"
                 className="infrastructure-cta"
                 onClick={() => trackOutboundClick("apivale", "study_companion")}
-                title="Get unified API access for OpenAI, Claude, DeepSeek & GLM models"
+                title="Get unified API access for DeepSeek, Qwen, GLM, Kimi & Doubao models"
               >
                 <span>Free Playground &amp; Key ↗</span>
               </a>
@@ -593,7 +593,7 @@ ${studyNote.hnDebates
               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                 <span>🛠️</span>
                 <span>
-                  <strong>Builder Sandbox:</strong> Ready to prototype with OpenAI, Claude, or DeepSeek models? Test endpoints on{" "}
+                  <strong>Builder Sandbox:</strong> Ready to prototype with DeepSeek, Qwen, GLM, or Kimi? Test endpoints on{" "}
                   <a
                     href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=builder_footer"
                     target="_blank"

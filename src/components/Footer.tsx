@@ -33,9 +33,9 @@ export const Footer: React.FC = () => {
                   href="https://apivale.com/hackertube?utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes&utm_content=inference_badge"
                   target="_blank"
                   rel="noopener noreferrer"
-                  title="High-concurrency LLM Gateway & Asset Management for Builders"
+                  title="High-throughput API Gateway for DeepSeek, Qwen, GLM & Frontier Chinese Models"
                 >
-                  APIVALE Cloud (LLM Gateway) ↗
+                  APIVALE Cloud (Model Gateway) ↗
                 </a>
               </li>
             </ul>

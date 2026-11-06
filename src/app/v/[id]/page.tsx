@@ -576,7 +576,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 <span style={{ color: "var(--accent-sky)" }}>APIVALE Cloud</span>
               </div>
               <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
-                High-throughput, low-latency LLM gateway powering AI study companion synthesis.
+                High-throughput, low-latency gateway for DeepSeek, Qwen, GLM, Kimi &amp; frontier Chinese models.
               </div>
             </div>
             <a
@@ -590,6 +590,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 borderColor: "rgba(56, 189, 248, 0.4)",
                 color: "var(--accent-sky)",
               }}
+              title="Get unified API access for DeepSeek, Qwen, GLM, Kimi & Doubao"
             >
               Free Playground &amp; Key ↗
             </a>

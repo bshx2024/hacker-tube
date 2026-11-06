@@ -124,7 +124,7 @@ HackerTube 站点结构
   - 双通道分发：向第一方 `/api/track` 上报同时，向 GA4 派发 `user_engagement` 事件（携带 `engagement_time_msec`），修正停留时间统计。
 
 #### (3) 极客开发者生态与算力基础设施伙伴 (APIVALE Cloud Integration)
-- **定位**：零反感、原生高信噪比的技术算力支持，顺承用户学完算法硬核视频后的模型调用实操需求。
+- **定位**：零反感、原生高信噪比的技术算力支持，面向全球开发者提供中国主流前沿大模型（DeepSeek、通义千问 Qwen、智谱 GLM、月之暗面 Kimi、字节豆包 Doubao）的高吞吐统一网关支持，顺承用户学完算法硬核视频后的模型调用实操需求。
 - **植入触点与链路**：
   - **AI 导读顶部算力徽章**：`⚡ Inference Infrastructure: AI structured derivations computed via APIVALE.com`，附带 `Free Playground & Key ↗`；
   - **Obsidian / Notion 导出笔记**：自动将 `Inference Infrastructure: APIVALE Cloud` 永久存入开发者本地知识库；
