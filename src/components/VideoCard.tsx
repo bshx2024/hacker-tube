@@ -11,6 +11,7 @@ interface VideoCardProps {
   isSaved: boolean;
   onToggleSave: (id: string, e: React.MouseEvent) => void;
   isSelectedKeyboard: boolean;
+  onShare?: (v: VideoItem, e: React.MouseEvent) => void;
 }
 
 export const VideoCard: React.FC<VideoCardProps> = ({
@@ -20,6 +21,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   isSaved,
   onToggleSave,
   isSelectedKeyboard,
+  onShare,
 }) => {
   // Use mid-video frame (hqdefault or 0.jpg which represents middle/preview)
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
@@ -98,6 +100,20 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         <div className="card-footer">
           <span>via @{video.hnAuthor} ({video.hnYear})</span>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            {onShare && (
+              <button
+                className="card-action-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onShare(video, e);
+                }}
+                title="Share talk with deep link, 𝕏 post, Reddit or Markdown embed"
+                aria-label="Share talk"
+              >
+                <span>↗</span>
+                <span>Share</span>
+              </button>
+            )}
             <button
               className="card-action-btn"
               onClick={handleStudyClick}

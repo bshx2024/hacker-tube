@@ -11,6 +11,7 @@ import { FAQSection } from "@/components/FAQSection";
 import { Footer } from "@/components/Footer";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
 import { SuggestVideoModal } from "@/components/SuggestVideoModal";
+import { ShareModal } from "@/components/ShareModal";
 import { SlopContrastSection } from "@/components/SlopContrastSection";
 import { ChannelWelcomeBanner } from "@/components/ChannelWelcomeBanner";
 import { initAttributionTracker } from "@/lib/attribution";
@@ -21,6 +22,7 @@ import {
   trackVideoPlay,
   trackStudyOpen,
   trackEngagementHeartbeat,
+  trackDeepLinkLanding,
 } from "@/lib/tracker";
 
 export default function HomePage() {
@@ -38,16 +40,81 @@ export default function HomePage() {
       return [];
     }
   });
-  const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
-  const [modalInitialTab, setModalInitialTab] = useState<"player" | "study">("player");
+  const [activeVideo, setActiveVideo] = useState<VideoItem | null>(() => {
+    if (typeof window === "undefined") return null;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const videoParam = params.get("v") || params.get("video");
+      if (videoParam) {
+        return (
+          CURATED_VIDEOS.find(
+            (v) =>
+              v.id.toLowerCase() === videoParam.toLowerCase() ||
+              v.youtubeId.toLowerCase() === videoParam.toLowerCase()
+          ) || null
+        );
+      }
+    } catch {
+      // Storage/query fallback
+    }
+    return null;
+  });
+  const [modalInitialTab, setModalInitialTab] = useState<"player" | "study">(() => {
+    if (typeof window === "undefined") return "player";
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("tab") === "study" ? "study" : "player";
+    } catch {
+      return "player";
+    }
+  });
   const [keyboardIndex, setKeyboardIndex] = useState<number>(-1);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const [shareVideo, setShareVideo] = useState<VideoItem | null>(null);
+
+  // Synchronize browser address bar query params without triggering page reload
+  const updateUrlQuery = useCallback((videoId?: string, tab?: "player" | "study") => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    if (videoId) {
+      url.searchParams.set("v", videoId);
+      if (tab === "study") {
+        url.searchParams.set("tab", "study");
+      } else {
+        url.searchParams.delete("tab");
+      }
+    } else {
+      url.searchParams.delete("v");
+      url.searchParams.delete("video");
+      url.searchParams.delete("tab");
+    }
+    window.history.replaceState({}, "", url.toString());
+  }, []);
 
   // Initialize First-Party Channel Attribution & Dispatch Page View
   useEffect(() => {
     initAttributionTracker();
     trackPageView();
+
+    // Deep Link landing telemetry
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const videoParam = params.get("v") || params.get("video");
+      const refParam = params.get("ref");
+
+      if (videoParam) {
+        const matchedVideo = CURATED_VIDEOS.find(
+          (v) =>
+            v.id.toLowerCase() === videoParam.toLowerCase() ||
+            v.youtubeId.toLowerCase() === videoParam.toLowerCase()
+        );
+        if (matchedVideo) {
+          trackDeepLinkLanding(matchedVideo.id, refParam || undefined);
+        }
+      }
+    }
   }, []);
 
   // Page Foreground Dwell Heartbeat (keeps GA4 active & logs reading retention)
@@ -71,12 +138,24 @@ export default function HomePage() {
     trackVideoPlay(v);
     setActiveVideo(v);
     setModalInitialTab("player");
-  }, []);
+    updateUrlQuery(v.id, "player");
+  }, [updateUrlQuery]);
 
   const handleOpenStudy = useCallback((v: VideoItem) => {
     trackStudyOpen(v);
     setActiveVideo(v);
     setModalInitialTab("study");
+    updateUrlQuery(v.id, "study");
+  }, [updateUrlQuery]);
+
+  const handleCloseModal = useCallback(() => {
+    setActiveVideo(null);
+    updateUrlQuery(undefined);
+  }, [updateUrlQuery]);
+
+  const handleOpenShare = useCallback((v: VideoItem) => {
+    setShareVideo(v);
+    setIsShareOpen(true);
   }, []);
 
   // Save bookmarks to localStorage and track event
@@ -223,6 +302,7 @@ export default function HomePage() {
           onOpenStudy={handleOpenStudy}
           isSaved={(id) => savedIds.includes(id)}
           onToggleSave={handleToggleSave}
+          onShare={handleOpenShare}
         />
 
         <SlopContrastSection />
@@ -262,6 +342,7 @@ export default function HomePage() {
                   isSaved={savedIds.includes(video.id)}
                   onToggleSave={handleToggleSave}
                   isSelectedKeyboard={keyboardIndex === idx}
+                  onShare={(v) => handleOpenShare(v)}
                 />
               ))}
             </div>
@@ -304,10 +385,19 @@ export default function HomePage() {
       {/* Video Player Modal */}
       <VideoModal
         video={activeVideo}
-        onClose={() => setActiveVideo(null)}
+        onClose={handleCloseModal}
         isSaved={activeVideo ? savedIds.includes(activeVideo.id) : false}
         onToggleSave={handleToggleSave}
         initialTab={modalInitialTab}
+        onShare={handleOpenShare}
+        onTabChange={(tab) => updateUrlQuery(activeVideo?.id, tab)}
+      />
+
+      {/* Viral Talk Share Modal */}
+      <ShareModal
+        isOpen={isShareOpen}
+        video={shareVideo}
+        onClose={() => setIsShareOpen(false)}
       />
 
       {/* Shortcuts Guide Modal */}

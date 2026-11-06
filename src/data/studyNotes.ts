@@ -132,7 +132,7 @@ self.grad += (1.0 - t**2) * out.grad`
 title: "The Spelled-Out Intro to Neural Networks and Backpropagation: Building micrograd"
 speaker: "Andrej Karpathy"
 source: "HackerTube"
-url: "https://www.hacker-tube.net"
+url: "https://www.hacker-tube.net/?v=karpathy-micrograd&ref=obsidian_notes"
 youtubeId: "M3B63EGmIbc"
 tags:
   - machine-learning
@@ -205,7 +205,7 @@ created: ${new Date().toISOString().slice(0, 10)}
 title: "Inventing on Principle"
 speaker: "Bret Victor"
 source: "HackerTube"
-url: "https://www.hacker-tube.net"
+url: "https://www.hacker-tube.net/?v=bret-victor-inventing-on-principle&ref=obsidian_notes"
 youtubeId: "1bUy-1hGZpI"
 tags:
   - engineering-culture
@@ -270,7 +270,7 @@ created: ${new Date().toISOString().slice(0, 10)}
 title: "Simple Made Easy"
 speaker: "Rich Hickey"
 source: "HackerTube"
-url: "https://www.hacker-tube.net"
+url: "https://www.hacker-tube.net/?v=rich-hickey-simple-made-easy&ref=obsidian_notes"
 youtubeId: "h_L4Rixya64"
 tags:
   - architecture
@@ -374,7 +374,7 @@ out = wei @ v # (B, T, head_size)`
 title: "Let's build GPT: from scratch, in code, spelled out"
 speaker: "Andrej Karpathy"
 source: "HackerTube"
-url: "https://www.hacker-tube.net"
+url: "https://www.hacker-tube.net/?v=karpathy-build-gpt&ref=obsidian_notes"
 youtubeId: "kCc8FmEb1nY"
 tags:
   - deep-learning
@@ -462,7 +462,7 @@ f32 Area = CTable[Shape.Type] * Shape.Width * Shape.Height;`
 title: "'Clean' Code, Horrible Performance"
 speaker: "Casey Muratori"
 source: "HackerTube"
-url: "https://www.hacker-tube.net"
+url: "https://www.hacker-tube.net/?v=casey-muratori-clean-code-horrible-performance&ref=obsidian_notes"
 youtubeId: "tD5NrevFtbU"
 tags:
   - systems
@@ -556,7 +556,7 @@ created: ${new Date().toISOString().slice(0, 10)}
 title: "Fast Inverse Square Root: A Quake III Algorithm Deep Dive"
 speaker: "Nemean"
 source: "HackerTube"
-url: "https://www.hacker-tube.net"
+url: "https://www.hacker-tube.net/?v=carmack-quake-graphics&ref=obsidian_notes"
 youtubeId: "443UNeGrFoM"
 tags:
   - graphics
@@ -626,7 +626,7 @@ export function getStudyNoteForVideo(videoId: string, title: string, channel: st
 title: "${title.replace(/"/g, '\\"')}"
 speaker: "${channel}"
 source: "HackerTube"
-url: "https://www.hacker-tube.net"
+url: "https://www.hacker-tube.net/?v=${videoId}&ref=obsidian_notes"
 youtubeId: "${youtubeId}"
 topic: "${topic}"
 tags:

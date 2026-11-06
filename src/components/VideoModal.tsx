@@ -17,6 +17,8 @@ interface VideoModalProps {
   isSaved: boolean;
   onToggleSave: (id: string, e: React.MouseEvent) => void;
   initialTab?: "player" | "study";
+  onShare?: (v: VideoItem) => void;
+  onTabChange?: (tab: "player" | "study") => void;
 }
 
 export const VideoModal: React.FC<VideoModalProps> = ({
@@ -25,10 +27,20 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   isSaved,
   onToggleSave,
   initialTab = "player",
+  onShare,
+  onTabChange,
 }) => {
   const [activeTab, setActiveTab] = useState<"player" | "study">(initialTab);
   const [seekSeconds, setSeekSeconds] = useState<number>(0);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const handleTabSwitch = (tab: "player" | "study") => {
+    setActiveTab(tab);
+    onTabChange?.(tab);
+    if (tab === "study" && video) {
+      trackStudyOpen(video);
+    }
+  };
 
   // Sync state when video or initialTab prop changes (React recommended pattern)
   const [prevVideoId, setPrevVideoId] = useState(video?.id);
@@ -97,7 +109,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 
 > **Speaker**: ${video.channelTitle} (${video.publishedYear}) | **Duration**: ${video.duration} | **Topic**: ${video.topic}
 > **Hacker News Thread**: [${video.hnMentions} points by @${video.hnAuthor}](${video.hnDiscussionUrl})
-> **Stream**: [HackerTube](https://www.hacker-tube.net) • [Original YouTube](https://youtu.be/${video.youtubeId})
+> **Stream & AI Notes**: [HackerTube](https://www.hacker-tube.net/?v=${video.id}&ref=obsidian_notes) • [Original YouTube](https://youtu.be/${video.youtubeId})
 > **Inference Infrastructure**: [APIVALE Cloud](https://apivale.com/?utm_source=hackertube&utm_medium=referral&utm_campaign=obsidian_notes) (High-Throughput Model Gateway for Engineers)
 
 ---
@@ -209,17 +221,14 @@ ${studyNote.hnDebates
           <div className="modal-tab-group">
             <button
               className={`modal-tab-btn ${activeTab === "player" ? "active" : ""}`}
-              onClick={() => setActiveTab("player")}
+              onClick={() => handleTabSwitch("player")}
             >
               <span>📺</span>
               <span>Overview &amp; Player</span>
             </button>
             <button
               className={`modal-tab-btn ${activeTab === "study" ? "active" : ""}`}
-              onClick={() => {
-                trackStudyOpen(video);
-                setActiveTab("study");
-              }}
+              onClick={() => handleTabSwitch("study")}
             >
               <span>🧠</span>
               <span>AI Study Companion</span>
@@ -228,6 +237,18 @@ ${studyNote.hnDebates
           </div>
 
           <div className="second-brain-toolbar">
+            {onShare && (
+              <button
+                className="export-tool-btn"
+                onClick={() => onShare(video)}
+                title="Share talk with deep link, 𝕏 post, Reddit or Markdown embed"
+                style={{ borderColor: "rgba(56, 189, 248, 0.4)", color: "#38bdf8" }}
+              >
+                <span>↗</span>
+                <span>Share Talk</span>
+              </button>
+            )}
+
             <button
               className="export-tool-btn primary"
               onClick={handleCopyMarkdown}
@@ -313,14 +334,28 @@ ${studyNote.hnDebates
                 </div>
               </div>
 
-              <button
-                className={`card-action-btn ${isSaved ? "saved" : ""}`}
-                style={{ padding: "8px 16px", fontSize: "14px" }}
-                onClick={(e) => onToggleSave(video.id, e)}
-              >
-                <span>{isSaved ? "✓" : "＋"}</span>
-                <span>{isSaved ? "Bookmarked" : "Bookmark Lecture"}</span>
-              </button>
+              <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
+                {onShare && (
+                  <button
+                    className="card-action-btn"
+                    style={{ padding: "8px 16px", fontSize: "14px", borderColor: "rgba(56, 189, 248, 0.4)", color: "#38bdf8" }}
+                    onClick={() => onShare(video)}
+                    title="Share talk with deep link, 𝕏 post, Reddit or Markdown embed"
+                  >
+                    <span>↗</span>
+                    <span>Share Talk</span>
+                  </button>
+                )}
+
+                <button
+                  className={`card-action-btn ${isSaved ? "saved" : ""}`}
+                  style={{ padding: "8px 16px", fontSize: "14px" }}
+                  onClick={(e) => onToggleSave(video.id, e)}
+                >
+                  <span>{isSaved ? "✓" : "＋"}</span>
+                  <span>{isSaved ? "Bookmarked" : "Bookmark Lecture"}</span>
+                </button>
+              </div>
             </div>
 
             {/* Fast Study Jump Banner */}
@@ -344,10 +379,7 @@ ${studyNote.hnDebates
               <button
                 className="nav-btn nav-btn-primary"
                 style={{ padding: "6px 14px", fontSize: "12px" }}
-                onClick={() => {
-                  trackStudyOpen(video);
-                  setActiveTab("study");
-                }}
+                onClick={() => handleTabSwitch("study")}
               >
                 Open Study Notes ➔
               </button>

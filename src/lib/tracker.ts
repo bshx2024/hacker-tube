@@ -202,3 +202,24 @@ export function trackEngagementHeartbeat(
   });
 }
 
+/**
+ * Viral Growth & Referral Sharing Telemetry
+ */
+export function trackShare(
+  videoId: string,
+  platform: "twitter" | "reddit" | "hackernews" | "linkedin" | "copy_link" | "markdown_embed"
+): void {
+  trackEvent("share_talk", {
+    video_id: videoId,
+    platform,
+  });
+}
+
+export function trackDeepLinkLanding(videoId: string, refParam?: string): void {
+  trackEvent("viral_deep_link_land", {
+    video_id: videoId,
+    ref: refParam || "direct_link",
+  });
+}
+
+

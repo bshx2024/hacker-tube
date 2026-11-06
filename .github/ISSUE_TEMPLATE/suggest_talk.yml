@@ -69,3 +69,4 @@ body:
       placeholder: "This tutorial clarifies autograd without any PyTorch black magic..."
     validations:
       required: true
+

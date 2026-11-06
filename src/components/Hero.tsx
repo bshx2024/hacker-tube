@@ -12,6 +12,7 @@ interface HeroProps {
   onOpenStudy: (v: VideoItem) => void;
   isSaved: (id: string) => boolean;
   onToggleSave: (id: string, e?: React.MouseEvent) => void;
+  onShare?: (v: VideoItem) => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -22,6 +23,7 @@ export const Hero: React.FC<HeroProps> = ({
   onOpenStudy,
   isSaved,
   onToggleSave,
+  onShare,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -323,6 +325,25 @@ export const Hero: React.FC<HeroProps> = ({
                   >
                     <span>{saved ? "✓ Bookmarked" : "＋ Bookmark Lecture"}</span>
                   </button>
+
+                  {onShare && (
+                    <button
+                      className="card-action-btn"
+                      style={{
+                        padding: "10px 18px",
+                        fontSize: "14px",
+                        borderColor: "rgba(56, 189, 248, 0.4)",
+                        color: "#38bdf8",
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onShare(activeVideo);
+                      }}
+                      title="Share Talk (Deep Link, 𝕏, Reddit, Markdown)"
+                    >
+                      <span>↗ Share Talk</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

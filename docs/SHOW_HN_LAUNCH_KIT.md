@@ -106,3 +106,4 @@ I built HackerTube: An anti-algorithm video directory with honest 50% previews a
 - [ ] 视频在 50% 进度处是否有清晰的代码、幻灯片或演讲现场？
 - [ ] 是否排除了任何营销号、引战、纯商业宣传内容？
 - [ ] 是否配置了 3 句式 AI 核心技术要点（Key Takeaways）？
+

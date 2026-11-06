@@ -121,6 +121,22 @@ HackerTube 站点结构
   - **Footer 生态外链**：收录 `APIVALE Cloud (LLM Gateway) ↗`，双向传递技术站权重；
   - **多层归因闭环**：携带 `utm_source=hackertube&utm_medium=referral&utm_campaign=ai_study_notes`，确保 APIVALE 的 GA4、前端会话与 PostgreSQL `users` 表 100% 精确捕获。
 
+#### (4) 极客裂变分享与直达深度链接 (Viral Deep-Linking & Geek Outflow System)
+- **定位**：基于“极客社交货币”（反算法劣质内容、高信噪比技术硬核）与“工程工作流效用”，实现自然的口碑裂变自增长。
+- **直达深度链接机制 (URL Query Deep-Linking)**：
+  - 支持 `?v=${videoId}`（以及 `&tab=study` 与 `&ref=${channel}`），访客访问链接可直接呼起对应演讲视频及 AI 伴读笔记；
+  - 用户打开弹窗、关闭弹窗、切换 Tab 时，页面通过 `window.history.replaceState` 无刷新动态同步浏览器地址栏，用户复制 URL 即自动携带视频 ID；
+  - 页面初次加载检测到 `?v=` 参数时自动派发 `viral_deep_link_land` 埋点，记录裂变回流率。
+- **一键极客分享中心 (`ShareModal.tsx`)**：
+  - **触发入口**：Hero 推荐位 `[ ↗ Share Talk ]`、视频卡片操作行 `[ ↗ Share ]`、播放器顶部工具栏 `[ ↗ Share Talk ]`；
+  - **预览摘要**：50% 真实中帧缩略图、HN 点赞数、所属主题与核心技术要点；
+  - **1-Click 复制直链**：内置专属 `&ref=share` 参数，一键写入剪贴板；
+  - **1-Click 开发者社区广播**：支持一键跳转 𝕏 / Twitter（预填高信噪比反算法文案）、Reddit（r/programming、r/MachineLearning）、Hacker News 及 LinkedIn；
+  - **Markdown 嵌入卡片**：提供专为 GitHub README、技术博客、开发笔记设计的 Markdown 卡片代码，一键复制；
+  - **遥测上报**：每次分享行为均上报 `share_talk`，细分渠道平台分布。
+- **第二大脑知识沉淀回流 (Second-Brain Knowledge Outflow)**：
+  - 导出至 Obsidian / Notion 的 Markdown frontmatter 与底部链接均包含对应视频的专属反向回流深度链接 `https://www.hacker-tube.net/?v=${video.id}&ref=obsidian_notes`，当笔记被团队共享或提交至公开 GitHub 仓库时持续形成自然反向链接。
+
 #### (2) 视频卡片 (Video Card)
 - **缩略图**：采用视频中段（50% 时间点）生成的真实画面，悬浮时轻微放大并显示播放指示器。
 - **标识徽章**：
