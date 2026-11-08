@@ -402,7 +402,7 @@ export default async function VideoPage(props: VideoPageProps) {
               ⚡ High-Signal Brief
             </div>
             <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "14px", color: "var(--text-primary)" }}>
-              Executive Summary &amp; Core Mental Models
+              {studyNote.h2ExecutiveSummary || "Executive Summary & Core Mental Models"}
             </h2>
             <p style={{ fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.65, marginBottom: "20px" }}>
               {studyNote.executiveSummary}
@@ -434,7 +434,7 @@ export default async function VideoPage(props: VideoPageProps) {
               ⏱️ Navigation Index
             </div>
             <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
-              Key Timestamps &amp; Slide Breakdown
+              {studyNote.h2Timestamps || "Key Timestamps & Slide Breakdown"}
             </h2>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -496,7 +496,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 📐 First-Principles Rigor
               </div>
               <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
-                Mathematical Derivations &amp; Code Insights
+                {studyNote.h2Derivations || "Mathematical Derivations & Code Insights"}
               </h2>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -567,7 +567,7 @@ export default async function VideoPage(props: VideoPageProps) {
               💬 Hacker News Peer Review
             </div>
             <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
-              Community Consensus &amp; Critical Debates
+              {studyNote.h2Debates || "Community Consensus & Critical Debates"}
             </h2>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -622,7 +622,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 ❓ Technical Q&amp;A
               </div>
               <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
-                Frequently Asked Technical Questions
+                {studyNote.h2Faq || "Frequently Asked Technical Questions"}
               </h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
                 {studyNote.faqs.map((faq, idx) => (
