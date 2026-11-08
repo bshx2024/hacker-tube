@@ -21,19 +21,29 @@ export interface HnDebate {
   author: string;
 }
 
+export interface LectureFaq {
+  question: string;
+  answer: string;
+}
+
 export interface StudyNote {
   videoId: string;
+  seoTitle?: string;
+  seoDescription?: string;
   executiveSummary: string;
   coreMentalModels: string[];
   keyTimestamps: KeyTimestamp[];
   mathDerivations: MathDerivation[];
   hnDebates: HnDebate[];
+  faqs?: LectureFaq[];
   obsidianFrontmatter: string;
 }
 
 export const STUDY_NOTES_MAP: Record<string, StudyNote> = {
   "karpathy-micrograd": {
     videoId: "karpathy-micrograd",
+    seoTitle: "Building micrograd: Karpathy AI Notes",
+    seoDescription: "Build a scalar DAG autograd engine in ~100 lines of Python. Full chain-rule calculus derivations, slide index, and HN consensus. Free study notes.",
     executiveSummary:
       "A bottom-up, zero-magic reconstruction of backpropagation and deep learning foundations. Karpathy builds micrograd—a minimalist scalar autograd engine—in ~100 lines of pure Python, demonstrating that PyTorch is fundamentally an orchestration layer around computational graphs (DAGs) and calculus chain rule accumulators.",
     coreMentalModels: [
@@ -128,12 +138,30 @@ self.grad += (1.0 - t**2) * out.grad`
         author: "eigen_state"
       }
     ],
+    faqs: [
+      {
+        question: "What is the fundamental difference between micrograd and PyTorch?",
+        answer: "Micrograd operates entirely on scalar Values in pure Python to demonstrate reverse-mode automatic differentiation clearly, whereas PyTorch operates on multidimensional Tensors with parallelized C++/CUDA kernels for production tensor contractions and GPU execution."
+      },
+      {
+        question: "Why is topological sort mandatory before executing the backward pass?",
+        answer: "In a Directed Acyclic Graph (DAG), an operand variable can be referenced by multiple downstream child nodes. Topological ordering ensures that all incoming gradient contributions are fully computed and accumulated via += before backpropagating further upstream to parent nodes."
+      },
+      {
+        question: "Why must gradients accumulate with += instead of assignment (=)?",
+        answer: "When a variable is reused in multiple operations (such as a = 2*b + 3*b), multivariate calculus states that the total derivative is the sum of partial derivatives across all execution paths. Assignment (=) overwrites gradients from earlier branches, producing mathematically incorrect derivatives."
+      },
+      {
+        question: "Can micrograd train real-world deep neural networks?",
+        answer: "Yes, micrograd can train multi-layer perceptrons (MLPs) and binary classifiers on small datasets (like the moon dataset), but because it stores Python objects for every scalar value, its memory overhead and CPU execution speed make it an educational autograd engine rather than a production framework."
+      }
+    ],
     obsidianFrontmatter: `---
 title: "The Spelled-Out Intro to Neural Networks and Backpropagation: Building micrograd"
 speaker: "Andrej Karpathy"
 source: "HackerTube"
 url: "https://www.hacker-tube.net/?v=karpathy-micrograd&ref=obsidian_notes"
-youtubeId: "M3B63EGmIbc"
+youtubeId: "VMj-3S1tku0"
 tags:
   - machine-learning
   - neural-networks
@@ -282,6 +310,8 @@ created: ${new Date().toISOString().slice(0, 10)}
   },
   "karpathy-build-gpt": {
     videoId: "karpathy-build-gpt",
+    seoTitle: "Build GPT from Scratch: Karpathy Notes",
+    seoDescription: "Implement nanoGPT from scratch: causal self-attention, QKV projections, multi-head transformer blocks, and residual scaling in pure PyTorch. Free notes.",
     executiveSummary:
       "A masterclass deconstruction of the GPT architecture from first principles. Karpathy constructs a complete, decoder-only Transformer in ~300 lines of pure PyTorch, progressing systematically from character tokenization and bigram baselines to causal multi-head self-attention, feed-forward projections, residual stream connections, and LayerNorm stabilization.",
     coreMentalModels: [
@@ -370,6 +400,24 @@ out = wei @ v # (B, T, head_size)`
         author: "jeremyphoward"
       }
     ],
+    faqs: [
+      {
+        question: "Why do we scale QK^T by 1/sqrt(d_k) in Scaled Dot-Product Attention?",
+        answer: "When the head dimension d_k is large, the dot products grow large in magnitude, pushing the softmax function into regions where gradients are extremely small (gradient vanishing). Scaling by 1/sqrt(d_k) preserves unit variance and maintains healthy gradient flow."
+      },
+      {
+        question: "What is the mathematical role of the causal attention mask (tril)?",
+        answer: "The causal mask sets future token affinities to -infinity before the softmax operation, ensuring that during autoregressive decoding, token t can only attend to previous tokens <= t, preventing future information leakage."
+      },
+      {
+        question: "Why are residual skip connections critical in deep Transformer architectures?",
+        answer: "Residual connections create direct gradient superhighways through identity additions (x + f(x)), allowing backpropagation gradients to travel directly from the loss function to early embedding layers without degradation across dozens of layers."
+      },
+      {
+        question: "How does nanoGPT compare to Hugging Face Transformers or OpenAI GPT-3?",
+        answer: "NanoGPT is a lightweight, readable, pedagogical implementation that strips out layers of enterprise abstractions. It implements the exact decoder-only transformer architecture of GPT-2 and GPT-3, making the end-to-end mechanism fully comprehensible."
+      }
+    ],
     obsidianFrontmatter: `---
 title: "Let's build GPT: from scratch, in code, spelled out"
 speaker: "Andrej Karpathy"
@@ -382,6 +430,119 @@ tags:
   - gpt
   - ai-architecture
   - karpathy
+created: ${new Date().toISOString().slice(0, 10)}
+---`
+  },
+  "karpathy-intro-llm": {
+    videoId: "karpathy-intro-llm",
+    seoTitle: "Intro to LLMs: Karpathy AI Lecture",
+    seoDescription: "Karpathy 1-hour LLM masterclass: lossy internet compression, pre-training, SFT, RLHF alignment, System 1 vs 2 thinking & LLM OS architecture. Free notes.",
+    executiveSummary: "Andrej Karpathy's premier 1-hour overview of foundational LLMs. Deconstructs the training pipeline from web-scale pre-training (the lossy zip file of the internet) to supervised fine-tuning (SFT) and RLHF alignment, culminating in the mental model of the LLM as a new operating system kernel (LLM OS).",
+    coreMentalModels: [
+      "The LLM as a Lossy Zip File: Pre-training compresses terabytes of public web text into parameter weights, retaining a probabilistic world model of syntax and facts.",
+      "Base Model vs. Assistant Model: Raw base models simply complete documents; fine-tuning (SFT) and RLHF transform them into compliant dialogue agents.",
+      "Thinking Fast vs. Thinking Slow: Autoregressive decoding spends equal compute per token (System 1); future frontier reasoning models explore tree search (System 2).",
+      "The LLM OS Paradigm: The transformer neural net acts as the CPU kernel, context window as RAM, vector RAG databases as disk storage, and APIs as I/O peripherals."
+    ],
+    keyTimestamps: [
+      {
+        time: "00:00",
+        seconds: 0,
+        title: "Introduction: LLM as Lossy Zip Compression",
+        slideConcept: "Compressing 10TB of internet text into 140GB network weights",
+        keyTakeaway: "Neural networks model probability distributions, not database row retrieval."
+      },
+      {
+        time: "12:30",
+        seconds: 750,
+        title: "Stage 1: Pre-training on GPU Superclusters",
+        slideConcept: "Unsupervised next-token prediction across trillions of tokens",
+        keyTakeaway: "Pre-training consumes 99% of total compute budget and produces base models."
+      },
+      {
+        time: "25:40",
+        seconds: 1540,
+        title: "Stage 2 & 3: Supervised Fine-Tuning & RLHF",
+        slideConcept: "Instruction-response datasets and reward model policy optimization",
+        keyTakeaway: "Post-training aligns raw probability text completion into safe assistant persona."
+      },
+      {
+        time: "41:15",
+        seconds: 2475,
+        title: "System 1 vs. System 2 Reasoning Trajectories",
+        slideConcept: "Linear autoregressive token emitting vs. tree-search deliberation",
+        keyTakeaway: "Frontier research is enabling models to pause, deliberate, and self-correct."
+      },
+      {
+        time: "51:00",
+        seconds: 3060,
+        title: "The LLM Operating System & Security Vulnerabilities",
+        slideConcept: "Transformer as CPU, Context Window as RAM, Tools as Peripherals",
+        keyTakeaway: "Prompt injection is the structural buffer overflow of language models."
+      }
+    ],
+    mathDerivations: [
+      {
+        title: "Cross-Entropy Loss for Next-Token Prediction",
+        formula: "L = - \\frac{1}{N} \\sum_{i=1}^N \\log P(w_i \\mid w_1, \\dots, w_{i-1})",
+        explanation: "During pre-training, the model minimizes the negative log likelihood of predicting the true next token given the preceding sequence context.",
+        codeSnippet: `# PyTorch Cross-Entropy Loss over Vocab Logits
+loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))`
+      },
+      {
+        title: "RLHF Reward Objective with KL Regularization",
+        formula: "\\max_\\theta \\mathbb{E}_{(x, y) \\sim D} \\left[ r(x, y) - \\beta \\mathbb{D}_{\\text{KL}}(\\pi_\\theta(y \\mid x) \\parallel \\pi_{\\text{ref}}(y \\mid x)) \\right]",
+        explanation: "Reinforcement learning tunes policy parameters to maximize human reward while the KL penalty prevents the model from collapsing away from the base policy.",
+        codeSnippet: `# KL divergence penalty preventing reward hacking
+kl_divergence = F.kl_div(policy_log_probs, ref_log_probs, reduction='batchmean')`
+      }
+    ],
+    hnDebates: [
+      {
+        topic: "Lossy Internet Compression vs. Database Retrieval",
+        consensus: "The compression analogy is the clearest conceptual framework for understanding why hallucinations occur naturally.",
+        counterArgument: "Engineers noted that while compression explains statistical patterns, real-world business applications require deterministic RAG pipelines to eliminate factual drift.",
+        topCommentQuote: "Karpathy's lossy zip explanation made LLMs instantly click for my entire engineering leadership team.",
+        author: "simonw"
+      },
+      {
+        topic: "Prompt Injection as an Incurable Security Architecture Flaw",
+        consensus: "Mixing instructions and untrusted data in the same token stream is fundamentally equivalent to early Von Neumann architecture buffer overflows.",
+        counterArgument: "Security practitioners argue that dual-LLM verifier architectures and strict sandboxing can contain injection attacks even without architectural redesign.",
+        topCommentQuote: "Until we separate data channels from instruction channels at the model level, prompt injection will remain unsolved.",
+        author: "tptacek"
+      }
+    ],
+    faqs: [
+      {
+        question: "What does Karpathy mean by describing LLMs as a 'lossy zip file of the internet'?",
+        answer: "During pre-training, petabytes of web text are compressed into a few hundred gigabytes of neural network weights. The model does not memorize exact text files like a lossless .zip archive; rather, it compresses statistical grammar, common sense, and semantic facts. When prompted, it decompresses ideas probabilistically, explaining both reasoning abilities and hallucinations."
+      },
+      {
+        question: "What is the fundamental difference between Base Models and Instruct/Chat Models?",
+        answer: "A Base Model is trained solely on next-token prediction across raw web documents; if given a prompt like 'How do I make coffee?', it might simply output another question or complete the text as a forum thread. An Instruct/Chat model has undergone Supervised Fine-Tuning (SFT) and RLHF on curated conversation datasets, training it to act as a helpful assistant."
+      },
+      {
+        question: "How does Karpathy's LLM OS analogy map to modern software architectures?",
+        answer: "In the LLM OS model, the transformer neural network acts as the CPU kernel; the active context window acts as RAM; external document repositories, vector embeddings, and RAG databases act as hard disk storage; external APIs, code execution sandbox runners, and web search engines act as I/O peripherals."
+      },
+      {
+        question: "Why are prompt injections and jailbreaks so difficult to eliminate permanently?",
+        answer: "In conventional computing, executable code and data streams are separated in memory. In an LLM context window, system developer instructions and untrusted third-party input data are concatenated into a single linear sequence of tokens. Because the neural network evaluates all tokens within the same attention matrix, malicious input can hijack the model's instruction-following attention heads."
+      }
+    ],
+    obsidianFrontmatter: `---
+title: "Intro to Large Language Models (1hr Talk)"
+speaker: "Andrej Karpathy"
+source: "HackerTube"
+url: "https://www.hacker-tube.net/?v=karpathy-intro-llm&ref=obsidian_notes"
+youtubeId: "zjkBMFhNj_g"
+tags:
+  - machine-learning
+  - large-language-models
+  - system-architecture
+  - karpathy
+  - ai-foundations
 created: ${new Date().toISOString().slice(0, 10)}
 ---`
   },

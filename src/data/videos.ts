@@ -37,7 +37,7 @@ export const TOPIC_CATEGORIES: TopicCategory[] = [
 export const CURATED_VIDEOS: VideoItem[] = [
   {
     id: "karpathy-micrograd",
-    youtubeId: "M3B63EGmIbc",
+    youtubeId: "VMj-3S1tku0",
     title: "The Spelled-Out Intro to Neural Networks and Backpropagation: Building micrograd",
     channelTitle: "Andrej Karpathy",
     duration: "2:25:34",
@@ -57,7 +57,7 @@ export const CURATED_VIDEOS: VideoItem[] = [
   },
   {
     id: "bret-victor-principle",
-    youtubeId: "1bUy-1hGZpI",
+    youtubeId: "PUv66718DII",
     title: "Inventing on Principle",
     channelTitle: "Bret Victor",
     duration: "54:19",
@@ -77,7 +77,7 @@ export const CURATED_VIDEOS: VideoItem[] = [
   },
   {
     id: "mother-of-all-demos",
-    youtubeId: "yDYCf4bNwN4",
+    youtubeId: "M5PgQS3ZBWA",
     title: "The Mother of All Demos, presented by Douglas Engelbart (1968)",
     channelTitle: "SRI International",
     duration: "1:40:02",
@@ -117,7 +117,7 @@ export const CURATED_VIDEOS: VideoItem[] = [
   },
   {
     id: "rich-hickey-simple-made-easy",
-    youtubeId: "h_L4Rixya64",
+    youtubeId: "SxdOUGdseq4",
     title: "Simple Made Easy",
     channelTitle: "Rich Hickey (Strange Loop)",
     duration: "1:01:28",
@@ -197,7 +197,7 @@ export const CURATED_VIDEOS: VideoItem[] = [
   },
   {
     id: "carmack-quake-graphics",
-    youtubeId: "443UNeGrFoM",
+    youtubeId: "p8u_k2LIZyo",
     title: "Fast Inverse Square Root: A Quake III Algorithm Deep Dive",
     channelTitle: "Nemean",
     duration: "14:28",
@@ -237,7 +237,7 @@ export const CURATED_VIDEOS: VideoItem[] = [
   },
   {
     id: "bret-victor-future-programming",
-    youtubeId: "8hly31xKli0",
+    youtubeId: "8pTEmbeENF4",
     title: "The Future of Programming",
     channelTitle: "Bret Victor (DBX 2013)",
     duration: "32:45",
@@ -257,7 +257,7 @@ export const CURATED_VIDEOS: VideoItem[] = [
   },
   {
     id: "dan-boneh-crypto-intro",
-    youtubeId: "a1pZ9H3v4uY",
+    youtubeId: "9hJNw2i1dL4",
     title: "Zero Knowledge Proofs and Modern Cryptography Foundations",
     channelTitle: "Stanford Online",
     duration: "1:18:12",

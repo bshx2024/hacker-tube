@@ -27,9 +27,24 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
     };
   }
 
+  const studyNote = getStudyNoteForVideo(
+    video.id,
+    video.title,
+    video.channelTitle,
+    video.topic,
+    video.aiKeyTakeaways,
+    video.hnExcerpt,
+    video.hnAuthor,
+    video.youtubeId
+  );
+
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
-  const pageTitle = `${video.title} (${video.channelTitle}) — AI Study Notes & HN Consensus`;
-  const pageDesc = `${video.aiKeyTakeaways[0] || video.hnExcerpt} Full derivations, slide index, and Hacker News consensus. Free & anti-slop on HackerTube.`;
+  const pageTitle =
+    studyNote.seoTitle ||
+    `${video.title.length > 38 ? video.title.slice(0, 38) + "..." : video.title} | ${video.channelTitle}`;
+  const pageDesc =
+    studyNote.seoDescription ||
+    `${video.aiKeyTakeaways[0] || video.hnExcerpt} Free AI study notes, derivations & HN consensus on HackerTube.`;
 
   return {
     title: pageTitle,
@@ -87,63 +102,100 @@ export default async function VideoPage(props: VideoPageProps) {
 
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
 
+  const videoObject: Record<string, any> = {
+    "@type": "VideoObject",
+    name: video.title,
+    description: studyNote.seoDescription || video.aiKeyTakeaways.join(". ") || video.hnExcerpt,
+    thumbnailUrl: [midframeThumb],
+    uploadDate: `${video.publishedYear}-01-01T00:00:00Z`,
+    duration: `PT${Math.floor(video.durationSeconds / 60)}M${video.durationSeconds % 60}S`,
+    contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,
+    embedUrl: `https://www.youtube-nocookie.com/embed/${video.youtubeId}`,
+    author: {
+      "@type": "Person",
+      name: video.channelTitle,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "HackerTube",
+      url: "https://www.hacker-tube.net",
+    },
+  };
+
+  if (studyNote.keyTimestamps && studyNote.keyTimestamps.length > 0) {
+    videoObject.hasPart = studyNote.keyTimestamps.map((item, idx, arr) => {
+      const nextItem = arr[idx + 1];
+      const endOffset = nextItem ? nextItem.seconds : video.durationSeconds;
+      return {
+        "@type": "Clip",
+        name: item.title,
+        startOffset: item.seconds,
+        endOffset: endOffset,
+        url: `https://www.hacker-tube.net/v/${video.id}#t=${item.seconds}`,
+      };
+    });
+  }
+
+  const graphList: any[] = [
+    videoObject,
+    {
+      "@type": "TechArticle",
+      headline: `${video.title}: AI Study Notes & Technical Derivations`,
+      description: studyNote.executiveSummary,
+      image: midframeThumb,
+      author: {
+        "@type": "Person",
+        name: video.channelTitle,
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "HackerTube",
+        url: "https://www.hacker-tube.net",
+      },
+      articleBody: `${studyNote.executiveSummary} ${studyNote.coreMentalModels.join(" ")}`,
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://www.hacker-tube.net",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: video.topic,
+          item: `https://www.hacker-tube.net/topic/${topicSlug}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: video.title,
+          item: `https://www.hacker-tube.net/v/${video.id}`,
+        },
+      ],
+    },
+  ];
+
+  if (studyNote.faqs && studyNote.faqs.length > 0) {
+    graphList.push({
+      "@type": "FAQPage",
+      mainEntity: studyNote.faqs.map((f) => ({
+        "@type": "Question",
+        name: f.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: f.answer,
+        },
+      })),
+    });
+  }
+
   const jsonLd = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "VideoObject",
-        name: video.title,
-        description: video.aiKeyTakeaways.join(". ") || video.hnExcerpt,
-        thumbnailUrl: [midframeThumb],
-        uploadDate: `${video.publishedYear}-01-01T00:00:00Z`,
-        duration: `PT${Math.floor(video.durationSeconds / 60)}M${video.durationSeconds % 60}S`,
-        contentUrl: `https://www.youtube.com/watch?v=${video.youtubeId}`,
-        embedUrl: `https://www.youtube-nocookie.com/embed/${video.youtubeId}`,
-        author: {
-          "@type": "Person",
-          name: video.channelTitle,
-        },
-      },
-      {
-        "@type": "TechArticle",
-        headline: `${video.title}: AI Study Notes & Technical Derivations`,
-        description: studyNote.executiveSummary,
-        image: midframeThumb,
-        author: {
-          "@type": "Organization",
-          name: "HackerTube Knowledge Community",
-        },
-        publisher: {
-          "@type": "Organization",
-          name: "HackerTube",
-          url: "https://www.hacker-tube.net",
-        },
-        articleBody: `${studyNote.executiveSummary} ${studyNote.coreMentalModels.join(" ")}`,
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: "https://www.hacker-tube.net",
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: video.topic,
-            item: `https://www.hacker-tube.net/topic/${topicSlug}`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: video.title,
-            item: `https://www.hacker-tube.net/v/${video.id}`,
-          },
-        ],
-      },
-    ],
+    "@graph": graphList,
   };
 
   return (
@@ -554,6 +606,62 @@ export default async function VideoPage(props: VideoPageProps) {
               ))}
             </div>
           </section>
+
+          {/* Section: Lecture-Specific FAQ */}
+          {studyNote.faqs && studyNote.faqs.length > 0 && (
+            <section
+              style={{
+                background: "var(--bg-secondary)",
+                border: "1px solid var(--border-subtle)",
+                borderRadius: "var(--radius-xl)",
+                padding: "32px",
+                marginBottom: "32px",
+              }}
+            >
+              <div className="section-eyebrow" style={{ color: "var(--accent-sky)", marginBottom: "8px" }}>
+                ❓ Technical Q&amp;A
+              </div>
+              <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
+                Frequently Asked Technical Questions
+              </h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                {studyNote.faqs.map((faq, idx) => (
+                  <details
+                    key={idx}
+                    open={idx === 0}
+                    style={{
+                      padding: "16px 18px",
+                      background: "rgba(0, 0, 0, 0.3)",
+                      border: "1px solid var(--border-subtle)",
+                      borderRadius: "var(--radius-md)",
+                    }}
+                  >
+                    <summary
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: 700,
+                        color: "var(--text-primary)",
+                        cursor: "pointer",
+                        outline: "none",
+                      }}
+                    >
+                      {faq.question}
+                    </summary>
+                    <p
+                      style={{
+                        marginTop: "12px",
+                        fontSize: "14px",
+                        color: "var(--text-secondary)",
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {faq.answer}
+                    </p>
+                  </details>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Section 5: APIVALE Ecosystem Partner Attribution */}
           <div
