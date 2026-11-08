@@ -49,20 +49,20 @@ export const STUDY_NOTES_MAP: Record<string, StudyNote> = {
     videoId: "karpathy-micrograd",
     seoTitle: "The Spelled-Out Intro to Neural Networks: micrograd Notes",
     seoDescription:
-      "The spelled-out intro to neural networks and backpropagation by Andrej Karpathy. Master scalar DAG autograd engines, calculus chain rule derivations & Python code.",
-    h2ExecutiveSummary: "Executive Summary: Spelled-Out Intro to Neural Networks & micrograd",
+      "The spelled-out intro to neural networks and backpropagation by Andrej Karpathy. Master scalar DAG autograd engines, calculus chain rule derivations and Python code.",
+    h2ExecutiveSummary: "Executive Summary: Spelled-Out Intro to Neural Networks and micrograd",
     h2Timestamps: "Key Timestamps: Spelled-Out Neural Networks Lecture Breakdown",
     h2Derivations: "Mathematical Derivations: Backpropagation in Neural Networks",
-    h2Debates: "Community Consensus: Hacker News Debates on Neural Networks & micrograd",
-    h2Faq: "Technical FAQ: Neural Networks, Backpropagation & Training Recipe",
+    h2Debates: "Community Consensus: Hacker News Debates on Neural Networks and micrograd",
+    h2Faq: "Technical FAQ: Neural Networks, Backpropagation and Training Recipe",
     executiveSummary:
-      "A bottom-up, zero-magic reconstruction of backpropagation and deep neural networks foundations from Andrej Karpathy's renowned 'Neural Networks: Zero to Hero' lecture series. Karpathy builds micrograd—a minimalist scalar autograd engine—in approximately 100 lines of pure Python, demonstrating that modern deep learning frameworks like PyTorch are fundamentally orchestration layers around computational directed acyclic graphs (DAGs) and calculus chain rule accumulators. This spelled-out intro to neural networks explains how scalar values, forward computation graphs, and reverse topological gradient backpropagation cooperate to train neural networks without high-level library black boxes.",
+      "A bottom-up, zero-magic reconstruction of backpropagation and deep neural networks foundations from Andrej Karpathy’s renowned “Neural Networks: Zero to Hero” lecture series. Karpathy builds micrograd—a minimalist scalar autograd engine—in approximately 100 lines of pure Python, demonstrating that modern deep learning frameworks like PyTorch are fundamentally orchestration layers around computational directed acyclic graphs (DAGs) and calculus chain rule accumulators. This spelled-out intro to neural networks explains how scalar values, forward computation graphs, and reverse topological gradient backpropagation cooperate to train neural networks without high-level library black boxes.",
     coreMentalModels: [
       "The Computational Graph as a directed acyclic graph (DAG) where nodes are scalar Values and edges are mathematical operations (+, *, tanh).",
-      "Local Gradients & Calculus Chain Rule: Every arithmetic primitive knows how to compute its local partial derivative with respect to its immediate parents.",
+      "Local Gradients and Calculus Chain Rule: Every arithmetic primitive knows how to compute its local partial derivative with respect to its immediate parents.",
       "Global Derivative Accumulation: Backpropagation in neural networks is reverse topological sorting over the DAG, multiplying local derivatives along path branches.",
       "Gradient Accumulation (+=): Crucial insight: gradients must accumulate with += rather than assignment (=) to handle multi-variable reuse and multi-path graph flow correctly.",
-      "Loss Function & Optimization Step: Mean Squared Error (MSE) loss quantifies network error, and stochastic gradient descent iteratively nudges scalar weights opposite to their gradient directions.",
+      "Loss Function and Optimization Step: Mean Squared Error (MSE) loss quantifies network error, and stochastic gradient descent iteratively nudges scalar weights opposite to their gradient directions.",
       "From Scalar Autograd to Tensor Networks: Understanding micrograd demystifies how PyTorch tensors parallelize identical scalar graph rules across GPU matrix multiply CUDA kernels."
     ],
     keyTimestamps: [
@@ -70,8 +70,8 @@ export const STUDY_NOTES_MAP: Record<string, StudyNote> = {
         time: "00:00",
         seconds: 0,
         title: "Derivative Intuition via Infinitesimals in Neural Networks",
-        slideConcept: "Definition of derivative f'(x) = lim h->0 [f(x+h) - f(x)] / h",
-        keyTakeaway: "Thinking of derivatives as 'nudging' inputs and observing the directional sensitivity of the scalar output in computational graphs."
+        slideConcept: "Definition of derivative f’(x) = lim h->0 [f(x+h) - f(x)] / h",
+        keyTakeaway: "Thinking of derivatives as “nudging” inputs and observing the directional sensitivity of the scalar output in computational graphs."
       },
       {
         time: "14:20",
@@ -92,7 +92,7 @@ export const STUDY_NOTES_MAP: Record<string, StudyNote> = {
         seconds: 4530,
         title: "Automating Reverse Topological Sort for Backpropagation",
         slideConcept: "Recursive DFS graph traversal to establish reverse evaluation order",
-        keyTakeaway: "All child nodes must finish their forward passes before their parents' backpropagation can fire safely."
+        keyTakeaway: "All child nodes must finish their forward passes before their parents’ backpropagation can fire safely."
       },
       {
         time: "1:48:00",
@@ -104,7 +104,7 @@ export const STUDY_NOTES_MAP: Record<string, StudyNote> = {
       {
         time: "2:10:45",
         seconds: 7845,
-        title: "Training a 2-Layer Neural Network & Debugging Gradients",
+        title: "Training a 2-Layer Neural Network and Debugging Gradients",
         slideConcept: "Zeroing grad buffers, forward pass, loss calculation, backward pass, and parameter update",
         keyTakeaway: "The universal 5-step training loop common to every neural network from toy micrograd to multi-billion parameter LLMs."
       }
@@ -174,21 +174,21 @@ self.grad += local_derivative * out.grad`
         author: "eigen_state"
       },
       {
-        topic: "Karpathy's Neural Networks: Zero to Hero vs Traditional University Curriculums",
+        topic: "Karpathy’s Neural Networks: Zero to Hero vs Traditional University Curriculums",
         consensus: "Building an autograd engine from first principles in pure Python imparts stronger architectural intuition than abstract matrix calculus lectures.",
         counterArgument:
           "Academic researchers argued that production AI engineering requires deep familiarity with numerical stability, half-precision float formats (fp16/bf16), and GPU tensor contraction algorithms not covered in scalar micrograd.",
         topCommentQuote:
-          "Andrej's teaching method turns the deep learning black box into glass. You realize a neural network is not magic, it's literally just chained arithmetic with gradient tape.",
+          "Andrej’s teaching method turns the deep learning black box into glass. You realize a neural network is not magic, it’s literally just chained arithmetic with gradient tape.",
         author: "vector_field"
       },
       {
-        topic: "A Recipe for Training Neural Networks: Andrej Karpathy's Debugging Philosophy",
+        topic: "A Recipe for Training Neural Networks: Andrej Karpathy’s Debugging Philosophy",
         consensus: "Always overfit a single tiny batch to zero loss first to verify backpropagation math and gradient flow before scaling model parameters or tuning hyperparameters.",
         counterArgument:
           "Practitioners pointed out that modern pre-trained models rarely train from scratch, making transfer learning and checkpoint fine-tuning recipes more immediately useful in day-to-day work.",
         topCommentQuote:
-          "Karpathy's golden rule of neural networks: do not look at hyperparameters until you have visually verified your gradients and overfit one batch. That single discipline saves weeks.",
+          "Karpathy’s golden rule of neural networks: do not look at hyperparameters until you have visually verified your gradients and overfit one batch. That single discipline saves weeks.",
         author: "loss_divergence"
       }
     ],
@@ -206,12 +206,12 @@ self.grad += local_derivative * out.grad`
         answer: "When a variable is reused in multiple operations (such as a = 2*b + 3*b), multivariate calculus states that the total derivative is the sum of partial derivatives across all execution paths. Assignment (=) overwrites gradients from earlier branches, producing mathematically incorrect derivatives."
       },
       {
-        question: "What is Andrej Karpathy's recipe for training neural networks and debugging backpropagation?",
-        answer: "Karpathy's famous recipe emphasizes starting with a minimal baseline: first inspect input data distributions, verify initialization loss matches theoretical random chance (-ln(1/C)), overfit a tiny batch of 4 examples until loss reaches 0.0 to confirm backpropagation correctness, and only then scale dataset volume, layers, and learning rates."
+        question: "What is Andrej Karpathy’s recipe for training neural networks and debugging backpropagation?",
+        answer: "Karpathy’s famous recipe emphasizes starting with a minimal baseline: first inspect input data distributions, verify initialization loss matches theoretical random chance (-ln(1/C)), overfit a tiny batch of 4 examples until loss reaches 0.0 to confirm backpropagation correctness, and only then scale dataset volume, layers, and learning rates."
       },
       {
-        question: "How does micrograd connect to Andrej Karpathy's 'Neural Networks: Zero to Hero' GitHub course series?",
-        answer: "Building micrograd is the foundational Chapter 1 of the 'Neural Networks: Zero to Hero' curriculum. It establishes the autograd mathematical foundations before advancing into makemore (bigram, MLP, CNN, WaveNet character language models) and ultimately building nanoGPT and transformer architectures."
+        question: "How does micrograd connect to Andrej Karpathy’s “Neural Networks: Zero to Hero” GitHub course series?",
+        answer: "Building micrograd is the foundational Chapter 1 of the “Neural Networks: Zero to Hero” curriculum. It establishes the autograd mathematical foundations before advancing into makemore (bigram, MLP, CNN, WaveNet character language models) and ultimately building nanoGPT and transformer architectures."
       },
       {
         question: "Can micrograd train real-world deep neural networks?",
@@ -374,14 +374,14 @@ created: ${new Date().toISOString().slice(0, 10)}
     videoId: "karpathy-build-gpt",
     seoTitle: "Build GPT from Scratch: Karpathy nanoGPT Notes",
     seoDescription:
-      "Build GPT from scratch with Andrej Karpathy: implement nanoGPT in pure PyTorch with causal self-attention, multi-head transformer blocks & calculus study notes.",
+      "Build GPT from scratch with Andrej Karpathy: implement nanoGPT in pure PyTorch with causal self-attention, multi-head transformer blocks and calculus study notes.",
     h2ExecutiveSummary: "Executive Summary: Build GPT from Scratch with nanoGPT",
     h2Timestamps: "Key Timestamps: Build GPT from Scratch Lecture Breakdown",
-    h2Derivations: "Mathematical Derivations: Transformers & Build GPT from Scratch",
+    h2Derivations: "Mathematical Derivations: Transformers and Build GPT from Scratch",
     h2Debates: "Community Consensus: Hacker News Debates on Building GPT from Scratch",
-    h2Faq: "Technical FAQ: Build GPT from Scratch, nanoGPT & Transformer Training",
+    h2Faq: "Technical FAQ: Build GPT from Scratch, nanoGPT and Transformer Training",
     executiveSummary:
-      "A masterclass deconstruction of how to build GPT from scratch from first principles. In this legendary video tutorial from the 'Neural Networks: Zero to Hero' curriculum, Andrej Karpathy constructs a complete, decoder-only Transformer in ~300 lines of pure PyTorch. The lecture systematically progresses from character tokenization and bigram baselines to causal multi-head self-attention, feed-forward projections, residual stream connections, and LayerNorm stabilization, culminating in training nanoGPT live on a GPU to generate Shakespearean English.",
+      "A masterclass deconstruction of how to build GPT from scratch from first principles. In this legendary video tutorial from the “Neural Networks: Zero to Hero” curriculum, Andrej Karpathy constructs a complete, decoder-only Transformer in ~300 lines of pure PyTorch. The lecture systematically progresses from character tokenization and bigram baselines to causal multi-head self-attention, feed-forward projections, residual stream connections, and LayerNorm stabilization, culminating in training nanoGPT live on a GPU to generate Shakespearean English.",
     coreMentalModels: [
       "Attention as Communication: Nodes in a sequence aggregate information from previous nodes by weighted averages where weights are determined by content alignment (Query-Key dot product).",
       "Causal Masking: When building GPT from scratch, future tokens must be strictly isolated by masking attention logits with -inf prior to Softmax so tokens only communicate backward in time.",
@@ -394,7 +394,7 @@ created: ${new Date().toISOString().slice(0, 10)}
       {
         time: "00:00",
         seconds: 0,
-        title: "Tokenization & Tiny Shakespeare Dataset",
+        title: "Tokenization and Tiny Shakespeare Dataset",
         slideConcept: "Character-level vocabulary mapping and train/val splitting for GPT models",
         keyTakeaway: "Understanding discrete token sequences as integer arrays before feeding into neural embedding tables."
       },
@@ -408,28 +408,28 @@ created: ${new Date().toISOString().slice(0, 10)}
       {
         time: "41:20",
         seconds: 2480,
-        title: "Self-Attention Mechanism & Q/K/V Matrices",
+        title: "Self-Attention Mechanism and Q/K/V Matrices",
         slideConcept: "Mathematical derivation of Queries, Keys, and Values in causal self-attention",
         keyTakeaway: "Queries ask what to look for, Keys advertise what is present, and Values communicate the actual message vector."
       },
       {
         time: "1:04:10",
         seconds: 3850,
-        title: "Multi-Head Attention & Causal Truncation Mask",
+        title: "Multi-Head Attention and Causal Truncation Mask",
         slideConcept: "Multiple communication channels in parallel with lower-triangular masking (tril)",
         keyTakeaway: "Multi-head attention lets tokens query different linguistic, syntactic, and semantic facets simultaneously."
       },
       {
         time: "1:26:00",
         seconds: 5160,
-        title: "Residual Connections, LayerNorm & FeedForward",
+        title: "Residual Connections, LayerNorm and FeedForward",
         slideConcept: "Computation layers as incremental additions onto the persistent residual stream",
         keyTakeaway: "The residual stream preserves representation integrity while sublayers incrementally enrich features."
       },
       {
         time: "1:45:30",
         seconds: 6330,
-        title: "Scaling Up nanoGPT & Text Generation",
+        title: "Scaling Up nanoGPT and Text Generation",
         slideConcept: "Hyperparameter scaling (block_size, n_embd, n_head, n_layer) to build GPT from scratch",
         keyTakeaway: "Trained mini-GPT produces syntactically plausible Shakespeare passages directly from random weights."
       }
@@ -447,7 +447,7 @@ k = self.key(x)   # (B, T, head_size)
 v = self.value(x) # (B, T, head_size)
 
 wei = q @ k.transpose(-2, -1) * (1.0 / math.sqrt(k.size(-1)))
-wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf'))
+wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf"))
 wei = F.softmax(wei, dim=-1)
 out = wei @ v # (B, T, head_size)`
       },
@@ -458,7 +458,7 @@ out = wei @ v # (B, T, head_size)`
           "Because every token queries every preceding token in the sequence of length T, computing the attention matrix requires quadratic memory and compute, motivating modern linear and FlashAttention optimizations."
       },
       {
-        title: "LayerNorm Normalization & Stabilization",
+        title: "LayerNorm Normalization and Stabilization",
         formula: "y = \\frac{x - \\mathrm{E}[x]}{\\sqrt{\\mathrm{Var}[x] + \\epsilon}} \\cdot \\gamma + \\beta",
         explanation:
           "Unlike BatchNorm which normalizes across batch samples, LayerNorm normalizes across feature dimensions independently for each token, ensuring consistent activation scales across deep Transformer layers.",
@@ -497,13 +497,13 @@ def forward(self, x):
         author: "dr_karpathy_fan"
       },
       {
-        topic: "Karpathy's nanoGPT vs Sebastian Raschka's 'Build a Large Language Model (from Scratch)'",
+        topic: "Karpathy’s nanoGPT vs Sebastian Raschka’s “Build a Large Language Model (from Scratch)”",
         consensus:
-          "Karpathy's lecture offers unmatched rapid algorithmic intuition in ~2 hours, while Raschka's book and GitHub repo provide meticulous chapter-by-chapter production refinements (BPE tokenization, fine-tuning, DPO).",
+          "Karpathy’s lecture offers unmatched rapid algorithmic intuition in ~2 hours, while Raschka’s book and GitHub repo provide meticulous chapter-by-chapter production refinements (BPE tokenization, fine-tuning, DPO).",
         counterArgument:
           "Both resources complement each other perfectly: Karpathy provides the high-signal video walkthrough, while Raschka provides the comprehensive printed textbook reference.",
         topCommentQuote:
-          "Start with Karpathy's video over the weekend, then read Raschka's book to implement BPE tokenizers and instruction tuning from scratch.",
+          "Start with Karpathy’s video over the weekend, then read Raschka’s book to implement BPE tokenizers and instruction tuning from scratch.",
         author: "transformer_dev"
       },
       {
@@ -513,7 +513,7 @@ def forward(self, x):
         counterArgument:
           "For educational models with block size 256 or 512, quadratic attention is trivial to run on modern consumer GPUs or even MacBooks.",
         topCommentQuote:
-          "Tri Dao's FlashAttention is an engineering marvel, but Andrej's manual tril masking is what makes you understand WHY FlashAttention was necessary.",
+          "Tri Dao’s FlashAttention is an engineering marvel, but Andrej’s manual tril masking is what makes you understand WHY FlashAttention was necessary.",
         author: "cuda_kernel_dev"
       }
     ],
@@ -531,8 +531,8 @@ def forward(self, x):
         answer: "Residual connections create direct gradient superhighways through identity additions (x + f(x)), allowing backpropagation gradients to travel directly from the loss function to early embedding layers without degradation across dozens of layers."
       },
       {
-        question: "How does nanoGPT compare to Sebastian Raschka's 'Build a Large Language Model (from Scratch)' GitHub repo?",
-        answer: "Karpathy's nanoGPT is a lean, hackable single-file PyTorch implementation designed for immediate conceptual clarity and lightning-fast experimentation. Sebastian Raschka's 'Build a Large Language Model from Scratch' book provides an expanded, production-oriented companion exploring byte-pair encoding (BPE), GPT-2 weights loading, and instruction fine-tuning."
+        question: "How does nanoGPT compare to Sebastian Raschka’s “Build a Large Language Model (from Scratch)” GitHub repo?",
+        answer: "Karpathy’s nanoGPT is a lean, hackable single-file PyTorch implementation designed for immediate conceptual clarity and lightning-fast experimentation. Sebastian Raschka’s “Build a Large Language Model from Scratch” book provides an expanded, production-oriented companion exploring byte-pair encoding (BPE), GPT-2 weights loading, and instruction fine-tuning."
       },
       {
         question: "What hardware is required to build GPT from scratch following this tutorial?",
@@ -567,16 +567,16 @@ created: ${new Date().toISOString().slice(0, 10)}
     h2Timestamps: "Key Timestamps: Intro to Large Language Models Lecture Breakdown",
     h2Derivations: "Mathematical Derivations: Large Language Models Training Objectives",
     h2Debates: "Community Consensus: Hacker News Debates on Large Language Models",
-    h2Faq: "Technical FAQ: Intro to Large Language Models & LLM OS",
+    h2Faq: "Technical FAQ: Intro to Large Language Models and LLM OS",
     executiveSummary:
-      "Andrej Karpathy's premier 1-hour talk providing the definitive intro to large language models. The lecture systematically deconstructs the generative AI stack from first principles without marketing hype: starting from web-scale unsupervised pre-training (conceptualized as a lossy zip file of the public internet) through supervised fine-tuning (SFT) and reinforcement learning from human feedback (RLHF) alignment. Karpathy culminates with the groundbreaking mental model of the LLM OS—viewing large language models as a new operating system kernel orchestrating memory, multi-modal I/O, tool execution, and deliberate System 2 reasoning trajectories.",
+      "Andrej Karpathy’s premier 1-hour talk providing the definitive intro to large language models. The lecture systematically deconstructs the generative AI stack from first principles without marketing hype: starting from web-scale unsupervised pre-training (conceptualized as a lossy zip file of the public internet) through supervised fine-tuning (SFT) and reinforcement learning from human feedback (RLHF) alignment. Karpathy culminates with the groundbreaking mental model of the LLM OS—viewing large language models as a new operating system kernel orchestrating memory, multi-modal I/O, tool execution, and deliberate System 2 reasoning trajectories.",
     coreMentalModels: [
       "The LLM as a Lossy Zip File: Pre-training compresses terabytes of public web text into neural network parameter weights, retaining a probabilistic world model of syntax, common sense, and semantic facts.",
       "Base Model vs Assistant Model: Raw base models simply complete internet text; Supervised Fine-Tuning (SFT) and RLHF transform them into obedient conversational assistants with helpful personas.",
       "Thinking Fast vs Thinking Slow: Autoregressive decoding spends fixed compute per token (System 1); frontier reasoning models explore tree-search deliberation and self-correction loops (System 2).",
       "The LLM OS Paradigm: The transformer neural net acts as the CPU kernel, the context window acts as RAM, vector RAG databases act as hard disk storage, and external APIs act as I/O peripherals.",
       "Jailbreaks as Buffer Overflows: Prompt injection occurs because instructions and untrusted user data are concatenated into the same linear token stream without hardware-level memory boundaries.",
-      "Compute & Hardware Economics: Modern LLM pre-training requires thousands of specialized GPUs running continuously for months, bound by empirical scaling laws governing FLOPs, dataset tokens, and parameter counts."
+      "Compute and Hardware Economics: Modern LLM pre-training requires thousands of specialized GPUs running continuously for months, bound by empirical scaling laws governing FLOPs, dataset tokens, and parameter counts."
     ],
     keyTimestamps: [
       {
@@ -589,28 +589,28 @@ created: ${new Date().toISOString().slice(0, 10)}
       {
         time: "12:30",
         seconds: 750,
-        title: "Stage 1: Pre-training on GPU Superclusters & Scaling Laws",
+        title: "Stage 1: Pre-training on GPU Superclusters and Scaling Laws",
         slideConcept: "Unsupervised next-token prediction across trillions of tokens on massive GPU clusters",
         keyTakeaway: "Pre-training consumes 99% of the computational budget and produces foundation base models."
       },
       {
         time: "25:40",
         seconds: 1540,
-        title: "Stage 2 & 3: Supervised Fine-Tuning (SFT) & RLHF Alignment",
+        title: "Stage 2 and 3: Supervised Fine-Tuning (SFT) and RLHF Alignment",
         slideConcept: "Curated dialogue datasets and reward model policy optimization via PPO / DPO",
         keyTakeaway: "Post-training aligns raw text continuation into a compliant, safe, and helpful AI assistant persona."
       },
       {
         time: "41:15",
         seconds: 2475,
-        title: "System 1 vs System 2 Reasoning & Deliberate Problem Solving",
+        title: "System 1 vs System 2 Reasoning and Deliberate Problem Solving",
         slideConcept: "Linear autoregressive token generation vs deliberate tree-search exploration",
         keyTakeaway: "Enabling models to pause, deliberate, and verify intermediate steps unlocks complex multi-step reasoning."
       },
       {
         time: "51:00",
         seconds: 3060,
-        title: "The LLM Operating System & Security Vulnerabilities",
+        title: "The LLM Operating System and Security Vulnerabilities",
         slideConcept: "Transformer as CPU kernel, context window as RAM, tool use, and prompt injection vectors",
         keyTakeaway: "Prompt injection represents the structural buffer overflow vulnerability of the language model era."
       }
@@ -630,7 +630,7 @@ loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))`
         explanation:
           "Reinforcement learning tunes policy parameters to maximize human preference reward scores while the KL penalty prevents the policy from drifting catastrophically far from the initial base model.",
         codeSnippet: `# KL divergence penalty preventing reward model hacking
-kl_loss = F.kl_div(policy_log_probs, ref_log_probs, reduction='batchmean')`
+kl_loss = F.kl_div(policy_log_probs, ref_log_probs, reduction="batchmean")`
       },
       {
         title: "Chinchilla Compute-Optimal Pre-Training Scaling Law",
@@ -651,11 +651,11 @@ flops = 6 * 7e9 * 2e12 # ~8.4e22 FLOPs`
       {
         topic: "Lossy Internet Compression vs Deterministic Database Retrieval",
         consensus:
-          "Karpathy's lossy compression analogy is the clearest conceptual framework for understanding why hallucinations occur naturally rather than being software bugs.",
+          "Karpathy’s lossy compression analogy is the clearest conceptual framework for understanding why hallucinations occur naturally rather than being software bugs.",
         counterArgument:
           "Enterprise engineers noted that while compression explains statistical patterns, mission-critical applications require hybrid retrieval-augmented generation (RAG) to guarantee factual auditability.",
         topCommentQuote:
-          "Karpathy's lossy zip explanation made LLMs instantly click for our entire executive engineering team. It dispels the myth that AI is a magic factual lookup.",
+          "Karpathy’s lossy zip explanation made LLMs instantly click for our entire executive engineering team. It dispels the myth that AI is a magic factual lookup.",
         author: "simonw"
       },
       {
@@ -685,13 +685,13 @@ flops = 6 * 7e9 * 2e12 # ~8.4e22 FLOPs`
         counterArgument:
           "Hyperscalers maintain an edge in capital expenditure, multi-thousand H100 cluster orchestration, and private real-time browsing tool infrastructure.",
         topCommentQuote:
-          "The combination of Karpathy's open educational lectures and open-source models like Llama has democratized AI engineering globally.",
+          "The combination of Karpathy’s open educational lectures and open-source models like Llama has democratized AI engineering globally.",
         author: "meta_ai_eng"
       }
     ],
     faqs: [
       {
-        question: "What does Karpathy mean by describing LLMs as a 'lossy zip file of the internet'?",
+        question: "What does Karpathy mean by describing LLMs as a “lossy zip file of the internet”?",
         answer: "During pre-training, petabytes of web text are compressed into a few hundred gigabytes of neural network weights. The model does not memorize exact text files like a lossless .zip archive; rather, it compresses statistical grammar, common sense, and semantic facts. When prompted, it decompresses ideas probabilistically, explaining both reasoning abilities and hallucinations."
       },
       {
@@ -699,12 +699,12 @@ flops = 6 * 7e9 * 2e12 # ~8.4e22 FLOPs`
         answer: "A Base Model is trained solely on next-token prediction across raw web documents; if given a prompt like 'How do I make coffee?', it might simply output another question or complete the text as a forum thread. An Instruct/Chat model has undergone Supervised Fine-Tuning (SFT) and RLHF on curated conversation datasets, training it to act as a helpful assistant."
       },
       {
-        question: "How does Karpathy's LLM OS analogy map to modern software architectures?",
+        question: "How does Karpathy’s LLM OS analogy map to modern software architectures?",
         answer: "In the LLM OS model, the transformer neural network acts as the CPU kernel; the active context window acts as RAM; external document repositories, vector embeddings, and RAG databases act as hard disk storage; external APIs, code execution sandbox runners, and web search engines act as I/O peripherals."
       },
       {
         question: "Why are prompt injections and jailbreaks so difficult to eliminate permanently?",
-        answer: "In conventional computing, executable code and data streams are separated in memory. In an LLM context window, system developer instructions and untrusted third-party input data are concatenated into a single linear sequence of tokens. Because the neural network evaluates all tokens within the same attention matrix, malicious input can hijack the model's instruction-following attention heads."
+        answer: "In conventional computing, executable code and data streams are separated in memory. In an LLM context window, system developer instructions and untrusted third-party input data are concatenated into a single linear sequence of tokens. Because the neural network evaluates all tokens within the same attention matrix, malicious input can hijack the model’s instruction-following attention heads."
       },
       {
         question: "What are the computational and financial costs of training large language models from scratch?",

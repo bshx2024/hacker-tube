@@ -44,7 +44,7 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
     `${video.title.length > 38 ? video.title.slice(0, 38) + "..." : video.title} | ${video.channelTitle}`;
   const pageDesc =
     studyNote.seoDescription ||
-    `${video.aiKeyTakeaways[0] || video.hnExcerpt} Free AI study notes, derivations & HN consensus on HackerTube.`;
+    `${video.aiKeyTakeaways[0] || video.hnExcerpt} Free AI study notes, derivations and HN consensus on HackerTube.`;
 
   return {
     title: pageTitle,
@@ -85,6 +85,7 @@ export default async function VideoPage(props: VideoPageProps) {
   }
 
   const topicSlug = getSlugByTopicName(video.topic);
+  const displayTopic = video.topic.replace("&", "and");
   const studyNote = getStudyNoteForVideo(
     video.id,
     video.title,
@@ -258,7 +259,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 className="nav-btn"
                 style={{ padding: "6px 14px", fontSize: "13px" }}
               >
-                ← {video.topic}
+                ← {displayTopic}
               </Link>
               <Link
                 href={`/?v=${video.id}`}
@@ -290,7 +291,7 @@ export default async function VideoPage(props: VideoPageProps) {
             </Link>
             <span>/</span>
             <Link href={`/topic/${topicSlug}`} style={{ color: "var(--accent-sky)" }}>
-              {video.topic}
+              {displayTopic}
             </Link>
             <span>/</span>
             <span style={{ color: "var(--text-secondary)" }}>{video.title}</span>
@@ -326,7 +327,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 className="card-topic-tag"
                 style={{ fontSize: "12px", padding: "3px 10px" }}
               >
-                {video.topic}
+                {displayTopic}
               </Link>
               <span style={{ fontSize: "12.5px", color: "var(--accent-amber)", fontWeight: 700 }}>
                 ▲ {video.hnMentions} points on Hacker News
@@ -381,7 +382,7 @@ export default async function VideoPage(props: VideoPageProps) {
               💬 TOP HACKER NEWS PEER ENDORSEMENT
             </div>
             <p style={{ fontSize: "14px", color: "#e2e8f0", fontStyle: "italic", lineHeight: 1.5 }}>
-              &ldquo;{video.hnExcerpt}&rdquo;
+              “{video.hnExcerpt}”
             </p>
             <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "6px" }}>
               — Recommended by @{video.hnAuthor} on Hacker News ({video.hnYear})
@@ -402,7 +403,7 @@ export default async function VideoPage(props: VideoPageProps) {
               ⚡ High-Signal Brief
             </div>
             <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "14px", color: "var(--text-primary)" }}>
-              {studyNote.h2ExecutiveSummary || "Executive Summary & Core Mental Models"}
+              {studyNote.h2ExecutiveSummary || "Executive Summary and Core Mental Models"}
             </h2>
             <p style={{ fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.65, marginBottom: "20px" }}>
               {studyNote.executiveSummary}
@@ -434,7 +435,7 @@ export default async function VideoPage(props: VideoPageProps) {
               ⏱️ Navigation Index
             </div>
             <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
-              {studyNote.h2Timestamps || "Key Timestamps & Slide Breakdown"}
+              {studyNote.h2Timestamps || "Key Timestamps and Slide Breakdown"}
             </h2>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -496,7 +497,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 📐 First-Principles Rigor
               </div>
               <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
-                {studyNote.h2Derivations || "Mathematical Derivations & Code Insights"}
+                {studyNote.h2Derivations || "Mathematical Derivations and Code Insights"}
               </h2>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -567,7 +568,7 @@ export default async function VideoPage(props: VideoPageProps) {
               💬 Hacker News Peer Review
             </div>
             <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
-              {studyNote.h2Debates || "Community Consensus & Critical Debates"}
+              {studyNote.h2Debates || "Community Consensus and Critical Debates"}
             </h2>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -588,7 +589,7 @@ export default async function VideoPage(props: VideoPageProps) {
                     <strong style={{ color: "var(--accent-emerald)" }}>Consensus:</strong> {debate.consensus}
                   </div>
                   <div style={{ fontSize: "13.5px", color: "#cbd5e1", marginBottom: "10px" }}>
-                    <strong style={{ color: "var(--accent-amber)" }}>Counter-Arguments &amp; Trade-offs:</strong>{" "}
+                    <strong style={{ color: "var(--accent-amber)" }}>Counter-Arguments and Trade-offs:</strong>{" "}
                     {debate.counterArgument}
                   </div>
                   <blockquote
@@ -600,7 +601,7 @@ export default async function VideoPage(props: VideoPageProps) {
                       paddingLeft: "10px",
                     }}
                   >
-                    &ldquo;{debate.topCommentQuote}&rdquo; — @{debate.author}
+                    “{debate.topCommentQuote}” — @{debate.author}
                   </blockquote>
                 </div>
               ))}
@@ -619,7 +620,7 @@ export default async function VideoPage(props: VideoPageProps) {
               }}
             >
               <div className="section-eyebrow" style={{ color: "var(--accent-sky)", marginBottom: "8px" }}>
-                ❓ Technical Q&amp;A
+                ❓ Technical Questions and Answers
               </div>
               <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "16px", color: "var(--text-primary)" }}>
                 {studyNote.h2Faq || "Frequently Asked Technical Questions"}
@@ -684,7 +685,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 <span style={{ color: "var(--accent-sky)" }}>APIVALE Cloud</span>
               </div>
               <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
-                High-throughput, low-latency gateway for DeepSeek, Qwen, GLM, Kimi &amp; frontier Chinese models.
+                High-throughput, low-latency gateway for DeepSeek, Qwen, GLM, Kimi and frontier Chinese models.
               </div>
             </div>
             <a
@@ -698,9 +699,9 @@ export default async function VideoPage(props: VideoPageProps) {
                 borderColor: "rgba(56, 189, 248, 0.4)",
                 color: "var(--accent-sky)",
               }}
-              title="Get unified API access for DeepSeek, Qwen, GLM, Kimi & Doubao"
+              title="Get unified API access for DeepSeek, Qwen, GLM, Kimi and Doubao"
             >
-              Free Playground &amp; Key ↗
+              Free Playground and Key ↗
             </a>
           </div>
 
@@ -708,7 +709,7 @@ export default async function VideoPage(props: VideoPageProps) {
           {relatedVideos.length > 0 && (
             <div>
               <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>
-                More High-Signal {video.topic} Lectures
+                More High-Signal {displayTopic} Lectures
               </h2>
               <div
                 style={{
