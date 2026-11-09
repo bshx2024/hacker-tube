@@ -2,6 +2,14 @@ import { MetadataRoute } from "next";
 import { CURATED_VIDEOS } from "@/data/videos";
 import { TOPIC_METADATA } from "@/data/topics";
 
+const KEYWORD_ALIASES = [
+  "fast-inverse-square-root",
+  "simple-made-easy",
+  "essence-of-calculus-chapter-1",
+  "zero-knowledge-proofs",
+  "inventing-on-principle",
+];
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://www.hacker-tube.net";
   const now = new Date();
@@ -33,6 +41,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
+    });
+  });
+
+  // 4. Keyword-Rich Deep-Dive Study Guides (Alias routes for high-intent queries)
+  KEYWORD_ALIASES.forEach((alias) => {
+    routes.push({
+      url: `${baseUrl}/v/${alias}`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.88,
     });
   });
 

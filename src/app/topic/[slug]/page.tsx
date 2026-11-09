@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CURATED_VIDEOS } from "@/data/videos";
 import { TOPIC_METADATA, getTopicBySlug } from "@/data/topics";
+import { Footer } from "@/components/Footer";
 
 interface TopicPageProps {
   params: Promise<{ slug: string }>;
@@ -447,22 +448,7 @@ export default async function TopicPage(props: TopicPageProps) {
           </div>
         </main>
 
-        {/* Footer */}
-        <footer
-          style={{
-            borderTop: "1px solid var(--border-subtle)",
-            padding: "24px 0",
-            textAlign: "center",
-            fontSize: "13px",
-            color: "var(--text-muted)",
-          }}
-        >
-          <div className="container">
-            <p>
-              HackerTube • Inspired by Andrej Karpathy • 20 Years of Organic Hacker News Consensus
-            </p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

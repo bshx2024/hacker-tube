@@ -81,6 +81,17 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSurvey }) => {
           </div>
 
           <div className="footer-col">
+            <h4>Featured Study Guides</h4>
+            <ul className="footer-links">
+              <li><Link href="/v/fast-inverse-square-root">Fast Inverse Square Root (Quake III)</Link></li>
+              <li><Link href="/v/simple-made-easy">Simple Made Easy (Rich Hickey)</Link></li>
+              <li><Link href="/v/essence-of-calculus-chapter-1">Essence of Calculus (3Blue1Brown)</Link></li>
+              <li><Link href="/v/zero-knowledge-proofs">Zero Knowledge Proofs (Dan Boneh)</Link></li>
+              <li><Link href="/v/inventing-on-principle">Inventing on Principle (Bret Victor)</Link></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
             <h4>Standards &amp; Sitemaps</h4>
             <ul className="footer-links">
               <li><a href="#faq">Frequently Asked Questions</a></li>

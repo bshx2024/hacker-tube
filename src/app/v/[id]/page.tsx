@@ -6,6 +6,7 @@ import { CURATED_VIDEOS } from "@/data/videos";
 import { getStudyNoteForVideo } from "@/data/studyNotes";
 import { getSlugByTopicName } from "@/data/topics";
 import { VideoDetailActions } from "@/components/VideoDetailActions";
+import { Footer } from "@/components/Footer";
 
 interface VideoPageProps {
   params: Promise<{ id: string }>;
@@ -18,6 +19,10 @@ const ALIAS_MAP: Record<string, string> = {
   "essence-of-calculus-chapter-1": "3b1b-essence-of-calculus",
   "simple-made-easy": "rich-hickey-simple-made-easy",
 };
+
+const REVERSE_ALIAS_MAP: Record<string, string> = Object.fromEntries(
+  Object.entries(ALIAS_MAP).map(([alias, target]) => [target, alias])
+);
 
 export function generateStaticParams() {
   const baseParams = CURATED_VIDEOS.map((video) => ({
@@ -113,9 +118,17 @@ export default async function VideoPage(props: VideoPageProps) {
     video.youtubeId
   );
 
-  const relatedVideos = CURATED_VIDEOS.filter(
+  const sameTopic = CURATED_VIDEOS.filter(
     (v) => v.topic === video.topic && v.id !== video.id
-  ).slice(0, 3);
+  );
+  const crossTopic = CURATED_VIDEOS.filter(
+    (v) => v.topic !== video.topic && v.id !== video.id
+  ).sort((a, b) => b.hnMentions - a.hnMentions);
+  const relatedVideos = [...sameTopic, ...crossTopic].slice(0, 3);
+  const relatedHeading =
+    sameTopic.length > 0
+      ? `More High-Signal ${displayTopic} Lectures`
+      : `More High-Signal Foundational Tech Lectures`;
 
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
 
@@ -337,7 +350,7 @@ export default async function VideoPage(props: VideoPageProps) {
 
           {/* Video Metadata Header */}
           <div style={{ marginBottom: "28px" }}>
-            <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px" }}>
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", marginBottom: "8px", flexWrap: "wrap" }}>
               <Link
                 href={`/topic/${topicSlug}`}
                 className="card-topic-tag"
@@ -352,6 +365,40 @@ export default async function VideoPage(props: VideoPageProps) {
               <span style={{ fontSize: "12.5px", color: "var(--text-muted)" }}>
                 By @{video.hnAuthor} ({video.hnYear})
               </span>
+              {ALIAS_MAP[id.toLowerCase()] && (
+                <Link
+                  href={`/v/${video.id}`}
+                  style={{
+                    fontSize: "12px",
+                    color: "var(--accent-sky)",
+                    background: "rgba(56, 189, 248, 0.1)",
+                    padding: "2px 8px",
+                    borderRadius: "4px",
+                    textDecoration: "none",
+                    border: "1px solid rgba(56, 189, 248, 0.2)",
+                  }}
+                  title="Canonical lecture page"
+                >
+                  Canonical: {video.id}
+                </Link>
+              )}
+              {REVERSE_ALIAS_MAP[video.id] && id.toLowerCase() === video.id.toLowerCase() && (
+                <Link
+                  href={`/v/${REVERSE_ALIAS_MAP[video.id]}`}
+                  style={{
+                    fontSize: "12px",
+                    color: "var(--accent-emerald)",
+                    background: "rgba(16, 185, 129, 0.1)",
+                    padding: "2px 8px",
+                    borderRadius: "4px",
+                    textDecoration: "none",
+                    border: "1px solid rgba(16, 185, 129, 0.2)",
+                  }}
+                  title="Target search query deep dive"
+                >
+                  Guide: /{REVERSE_ALIAS_MAP[video.id]}
+                </Link>
+              )}
             </div>
 
             <h1
@@ -741,11 +788,11 @@ export default async function VideoPage(props: VideoPageProps) {
             </a>
           </div>
 
-          {/* Section 6: Related Lectures in Same Topic */}
+          {/* Section 6: Related High-Signal Lectures */}
           {relatedVideos.length > 0 && (
             <div>
               <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>
-                More High-Signal {displayTopic} Lectures
+                {relatedHeading}
               </h2>
               <div
                 style={{
@@ -770,7 +817,7 @@ export default async function VideoPage(props: VideoPageProps) {
                     }}
                   >
                     <span style={{ fontSize: "11px", color: "var(--accent-amber)", fontWeight: 700 }}>
-                      ▲ {r.hnMentions} HN pts • {r.duration}
+                      ▲ {r.hnMentions} HN pts • {r.duration} • {r.topic}
                     </span>
                     <h3 style={{ fontSize: "13.5px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.4 }}>
                       {r.title}
@@ -783,22 +830,7 @@ export default async function VideoPage(props: VideoPageProps) {
           )}
         </main>
 
-        {/* Footer */}
-        <footer
-          style={{
-            borderTop: "1px solid var(--border-subtle)",
-            padding: "24px 0",
-            textAlign: "center",
-            fontSize: "13px",
-            color: "var(--text-muted)",
-          }}
-        >
-          <div className="container">
-            <p>
-              HackerTube • Inspired by Andrej Karpathy • High-Signal Tech Talks without Algorithmic Slop
-            </p>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );
