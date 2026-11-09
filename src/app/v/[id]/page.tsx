@@ -407,6 +407,26 @@ export default async function VideoPage(props: VideoPageProps) {
             <h2 style={{ fontSize: "20px", fontWeight: 800, marginBottom: "14px", color: "var(--text-primary)" }}>
               {studyNote.h2ExecutiveSummary || "Executive Summary and Core Mental Models"}
             </h2>
+
+            <div
+              style={{
+                marginBottom: "20px",
+                borderRadius: "var(--radius-lg)",
+                overflow: "hidden",
+                border: "1px solid var(--border-subtle)",
+                maxWidth: "520px",
+              }}
+            >
+              <img
+                src={midframeThumb}
+                alt={`${video.title} - ${video.channelTitle} High Definition Keyframe`}
+                width={480}
+                height={360}
+                style={{ width: "100%", height: "auto", display: "block" }}
+                loading="lazy"
+              />
+            </div>
+
             <p style={{ fontSize: "15px", color: "var(--text-secondary)", lineHeight: 1.65, marginBottom: "20px" }}>
               {studyNote.executiveSummary}
             </p>
