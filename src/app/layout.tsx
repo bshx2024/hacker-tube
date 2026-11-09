@@ -1,7 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 import { FAQ_ITEMS } from "@/data/faq";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#090d16",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.hacker-tube.net"),

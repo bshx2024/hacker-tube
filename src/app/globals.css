@@ -1913,24 +1913,269 @@ input {
   100% { height: 12px; }
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for Mobile & Tablets (max-width: 768px) */
 @media (max-width: 768px) {
-  .hero-section {
-    padding: 40px 0 20px;
+  /* 1. Global Container & Navbar */
+  .container {
+    padding: 0 16px;
   }
-  .controls-panel {
-    padding: 16px;
+
+  .nav-inner {
+    height: 60px;
+    gap: 8px;
   }
-  .video-grid {
-    grid-template-columns: 1fr;
+
+  .logo-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
   }
-  .nav-btn span {
+
+  .brand-text {
+    font-size: 17px;
+  }
+
+  .brand-tag {
+    display: none; /* Hide 'ANTI-ALGORITHM' badge in navbar on mobile to conserve space */
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  /* In navbar on mobile, show only icons for compact clean pill buttons */
+  .navbar .nav-btn {
+    padding: 6px 10px;
+    min-height: 36px;
+  }
+
+  .navbar .nav-btn span:not(:first-child) {
     display: none;
   }
+
+  /* Hide desktop-only controls on mobile */
+  #btn-shortcuts,
+  #btn-dataset,
+  .shortcut-hint {
+    display: none !important;
+  }
+
+  /* 2. Hero Section */
+  .hero-section {
+    padding: 28px 0 16px;
+  }
+
+  .hero-pill {
+    font-size: 11.5px;
+    padding: 5px 12px;
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .hero-title {
+    font-size: clamp(28px, 8vw, 40px);
+    letter-spacing: -1px;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+
+  .hero-subtitle {
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 20px;
+    padding: 0 4px;
+  }
+
+  .hero-showcase-container {
+    margin-top: 20px;
+  }
+
+  .showcase-window-bar {
+    padding: 8px 12px;
+  }
+
+  .window-address-bar {
+    display: none; /* Hide simulated browser URL to prevent overlapping */
+  }
+
+  .window-status-pill {
+    font-size: 10.5px;
+  }
+
+  .spotlight-content {
+    padding: 16px;
+  }
+
+  .spotlight-title {
+    font-size: 17px;
+    line-height: 1.35;
+  }
+
+  .spotlight-badges-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .spotlight-quote-box {
+    display: none; /* Keep hero spotlight clean on small screens */
+  }
+
+  .spotlight-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+
+  /* 3. Controls & Filter Panel */
+  .controls-panel {
+    padding: 14px;
+    margin-bottom: 24px;
+  }
+
+  .search-input {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .filters-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  /* Swipeable horizontal category pills */
+  .category-pills {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+    margin: 0 -4px;
+    scrollbar-width: none;
+  }
+
+  .category-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cat-pill {
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding: 6px 13px;
+    font-size: 12.5px;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .secondary-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    gap: 8px;
+  }
+
+  .filter-select {
+    width: 100%;
+    font-size: 12.5px;
+    padding: 8px 10px;
+    min-height: 38px;
+  }
+
+  /* 4. Video Grid & Cards */
+  .video-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
   .audio-hook-thumb-btn {
     top: 8px;
     right: 8px;
-    padding: 6px 11px;
+    padding: 6px 10px;
+    font-size: 11.5px;
+    min-height: 32px;
+  }
+
+  /* 5. Slop Contrast Section */
+  .contrast-section {
+    padding: 40px 0 24px;
+  }
+
+  .contrast-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .simulator-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .mode-toggle-group {
+    width: 100%;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    text-align: center;
+  }
+
+  /* 6. Video Modal Bottom Sheet on Mobile */
+  .modal-backdrop {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    max-height: 94vh;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+  }
+
+  .modal-tabs-header {
+    padding: 10px 14px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .modal-tab-group {
+    width: 100%;
+    display: flex;
+  }
+
+  .modal-tab-btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    font-size: 12.5px;
+    padding: 8px 6px;
+  }
+
+  .second-brain-toolbar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .export-tool-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 8px 10px;
     font-size: 12px;
+  }
+
+  /* 7. Footer */
+  .footer {
+    padding: 36px 0 24px;
+    margin-top: 40px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    gap: 24px;
   }
 }
