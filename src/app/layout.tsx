@@ -6,19 +6,22 @@ import { FAQ_ITEMS } from "@/data/faq";
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.hacker-tube.net"),
   title: {
-    default: "HackerTube — Hacker News Recommended Tech Talks & AI Videos",
+    default: "HackerTube: Official Anti-Algorithm Web App (Karpathy)",
     template: "%s | HackerTube",
   },
   description:
-    "Explore HackerTube: the anti-algorithm video platform inspired by Andrej Karpathy. Discover high-signal tech talks, AI lectures, and engineering deep dives vetted across 20 years of Hacker News comments—zero clickbait, honest 50% runtime previews, and exportable AI study notes.",
+    "The official HackerTube web app inspired by Andrej Karpathy. Stream 20 years of organic Hacker News tech talks. Zero slop, 50% previews & study notes.",
   keywords: [
     "hackertube",
     "hacker tube",
+    "hacktube",
+    "HackerTube official",
+    "HackerTube web app",
+    "hacker tube karpathy",
     "HackerTube videos",
     "Hacker News videos",
     "HN recommended talks",
     "daily tech talks",
-    "hacker tube karpathy",
     "anti algorithm video platform",
     "high signal tech talks",
     "AI lectures",
@@ -41,9 +44,9 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "HackerTube — Hacker News Recommended Tech Talks & AI Videos",
+    title: "HackerTube: Official Anti-Algorithm Web App (Karpathy)",
     description:
-      "Explore HackerTube: the anti-algorithm video platform inspired by Andrej Karpathy. Discover high-signal tech talks, AI lectures, and engineering deep dives vetted across 20 years of Hacker News comments—zero clickbait, honest 50% runtime previews, and exportable AI study notes.",
+      "The official HackerTube web app inspired by Andrej Karpathy. Stream 20 years of organic Hacker News tech talks. Zero slop, 50% previews & study notes.",
     url: "https://www.hacker-tube.net/",
     siteName: "HackerTube",
     locale: "en_US",
@@ -59,9 +62,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "HackerTube — Hacker News Recommended Tech Talks & AI Videos",
+    title: "HackerTube: Official Anti-Algorithm Web App (Karpathy)",
     description:
-      "Explore HackerTube: the anti-algorithm video platform inspired by Andrej Karpathy. High-signal technical talks vetted across 20 years of Hacker News.",
+      "The official HackerTube web app inspired by Andrej Karpathy. Stream 20 years of organic Hacker News tech talks. Zero slop, 50% previews & study notes.",
     images: ["https://www.hacker-tube.net/images/hero-showcase.jpg"],
   },
   alternates: {
@@ -92,14 +95,73 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "HackerTube",
+    alternateName: ["Hacker Tube", "HackTube", "HackerTube App", "HackerTube Official"],
     url: "https://www.hacker-tube.net",
     description:
-      "The anti-algorithm video platform inspired by Andrej Karpathy. Curating high-signal tech talks and AI lectures from Hacker News with honest previews.",
+      "The official HackerTube web app inspired by Andrej Karpathy. Curating high-signal tech talks and AI lectures from Hacker News with honest previews.",
     potentialAction: {
       "@type": "SearchAction",
       target: "https://www.hacker-tube.net/?q={search_term_string}",
       "query-input": "required name=search_term_string",
     },
+  };
+
+  const softwareAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "HackerTube",
+    applicationCategory: "MultimediaApplication",
+    operatingSystem: "All Web Browsers, iOS, Android, macOS, Windows",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+    },
+    description:
+      "The official HackerTube web app inspired by Andrej Karpathy. Stream 20 years of organic Hacker News tech talks with zero slop.",
+    url: "https://www.hacker-tube.net",
+  };
+
+  const siteNavigationSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    itemListElement: [
+      {
+        "@type": "SiteNavigationElement",
+        position: 1,
+        name: "AI & Machine Learning Talks",
+        description: "Curated AI and machine learning lectures vetted by Hacker News.",
+        url: "https://www.hacker-tube.net/topic/ai-machine-learning",
+      },
+      {
+        "@type": "SiteNavigationElement",
+        position: 2,
+        name: "Systems & Architecture Deep Dives",
+        description: "Distributed systems, operating systems, and computer architecture talks.",
+        url: "https://www.hacker-tube.net/topic/systems-architecture",
+      },
+      {
+        "@type": "SiteNavigationElement",
+        position: 3,
+        name: "Engineering Culture Lectures",
+        description: "Software engineering craft, simplicity, and programming philosophy.",
+        url: "https://www.hacker-tube.net/topic/engineering-culture",
+      },
+      {
+        "@type": "SiteNavigationElement",
+        position: 4,
+        name: "Math & Science Intuition",
+        description: "Geometric calculus, visual math, and theoretical computer science.",
+        url: "https://www.hacker-tube.net/topic/math-science",
+      },
+      {
+        "@type": "SiteNavigationElement",
+        position: 5,
+        name: "Featured Study Guides",
+        description: "In-depth lecture notes with mathematical derivations and community consensus.",
+        url: "https://www.hacker-tube.net/v/fast-inverse-square-root",
+      },
+    ],
   };
 
   const gaId = process.env.NEXT_PUBLIC_GA_ID || "G-33901F4SMS";
@@ -111,6 +173,14 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteNavigationSchema) }}
         />
         <script
           type="application/ld+json"

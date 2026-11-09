@@ -70,7 +70,7 @@ export const ChannelWelcomeBanner: React.FC<ChannelWelcomeBannerProps> = ({
           badgeBg: "rgba(59, 130, 246, 0.18)",
           title: "Looking for Andrej Karpathy's HackerTube?",
           message:
-            "Welcome! HackerTube Web is an open-source tribute & community extension of hackertube.org. Human-curated from 20 years of Hacker News—zero ads, zero tracking.",
+            "Welcome! HackerTube is the open-source web app inspired by Andrej Karpathy's HackerTube concept. Human-curated from 20 years of Hacker News—zero ads, zero tracking.",
           ctaText: "Explore Curated Feed",
           ctaAction: onExplore,
         };
@@ -78,7 +78,7 @@ export const ChannelWelcomeBanner: React.FC<ChannelWelcomeBannerProps> = ({
         return {
           badge: "⚡ Anti-Algorithm Geek Archive",
           badgeBg: "rgba(16, 185, 129, 0.18)",
-          title: "An Open-Source Tribute to hackertube.org",
+          title: "Inspired by Andrej Karpathy's HackerTube Concept",
           message:
             "Human-curated from 20 years of Hacker News discussions. Zero algorithms, zero ads, 50% honest mid-frame previews.",
           ctaText: "Explore Curated Feed",
