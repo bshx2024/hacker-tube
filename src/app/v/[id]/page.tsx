@@ -47,7 +47,9 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
     `${video.aiKeyTakeaways[0] || video.hnExcerpt} Free AI study notes, derivations and HN consensus on HackerTube.`;
 
   return {
-    title: pageTitle,
+    title: {
+      absolute: pageTitle,
+    },
     description: pageDesc,
     alternates: {
       canonical: `https://www.hacker-tube.net/v/${video.id}`,
