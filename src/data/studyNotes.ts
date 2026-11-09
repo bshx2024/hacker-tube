@@ -1328,9 +1328,9 @@ created: 2026-11-09
       {
         time: "00:00",
         seconds: 0,
-        title: "The 3D Graphics Bottleneck: Why Vector Normalization Required the 1/sqrt(x) Root",
+        title: "The 3D Graphics Bottleneck: Vector Normalization",
         slideConcept: "Calculating surface normals and lighting rays millions of times per frame",
-        keyTakeaway: "In 1999, x86 floating-point division and square root took up to 70 CPU clock cycles.",
+        keyTakeaway: "In 1999, x86 float division and square root instructions took 70 CPU cycles.",
       },
       {
         time: "03:15",
@@ -1398,7 +1398,7 @@ created: 2026-11-09
       },
       {
         topic: "Undefined Behavior in C: Strict Aliasing and Modern Compilers",
-        consensus: "The original line `i = * ( long * ) &y;` violates C99 strict aliasing rules; modern optimizing compilers (GCC/Clang -O3) can break this code. In modern C, developers must use `memcpy` or union type punning.",
+        consensus: "The original line `i = * ( long * ) &y;` violates C99 strict aliasing; modern optimizing compilers can break this code. Developers must use `memcpy` or union type punning.",
         counterArgument: "Modern compilers compile `memcpy(&i, &y, 4)` directly to a single register move with zero function call overhead, preserving the exact bit-level hack safely.",
         topCommentQuote: "In 1999, compilers did what you told them to. In 2026, compilers assume undefined behavior means you wanted them to delete your code.",
         author: "ub_watchdog",

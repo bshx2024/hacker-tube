@@ -63,12 +63,12 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
     },
     description: pageDesc,
     alternates: {
-      canonical: `https://www.hacker-tube.net/v/${video.id}`,
+      canonical: `https://www.hacker-tube.net/v/${id}`,
     },
     openGraph: {
       title: pageTitle,
       description: pageDesc,
-      url: `https://www.hacker-tube.net/v/${video.id}`,
+      url: `https://www.hacker-tube.net/v/${id}`,
       siteName: "HackerTube",
       type: "video.other",
       images: [
