@@ -12,6 +12,7 @@ import { Footer } from "@/components/Footer";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
 import { SuggestVideoModal } from "@/components/SuggestVideoModal";
 import { ShareModal } from "@/components/ShareModal";
+import { GeekMicroSurveyModal } from "@/components/GeekMicroSurveyModal";
 import { SlopContrastSection } from "@/components/SlopContrastSection";
 import { ChannelWelcomeBanner } from "@/components/ChannelWelcomeBanner";
 import { initAttributionTracker } from "@/lib/attribution";
@@ -23,6 +24,7 @@ import {
   trackStudyOpen,
   trackEngagementHeartbeat,
   trackDeepLinkLanding,
+  trackSurveyOpen,
 } from "@/lib/tracker";
 
 export default function HomePage() {
@@ -71,6 +73,7 @@ export default function HomePage() {
   const [keyboardIndex, setKeyboardIndex] = useState<number>(-1);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [isSuggestOpen, setIsSuggestOpen] = useState(false);
+  const [isSurveyOpen, setIsSurveyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareVideo, setShareVideo] = useState<VideoItem | null>(null);
 
@@ -280,6 +283,10 @@ export default function HomePage() {
         onOpenSaved={() => setIsSavedView(true)}
         onOpenShortcuts={() => setIsShortcutsOpen(true)}
         onOpenSuggest={() => setIsSuggestOpen(true)}
+        onOpenSurvey={() => {
+          trackSurveyOpen("navbar");
+          setIsSurveyOpen(true);
+        }}
         isSavedView={isSavedView}
         onResetView={handleResetToAll}
       />
@@ -380,7 +387,12 @@ export default function HomePage() {
         <FAQSection />
       </main>
 
-      <Footer />
+      <Footer
+        onOpenSurvey={() => {
+          trackSurveyOpen("footer");
+          setIsSurveyOpen(true);
+        }}
+      />
 
       {/* Video Player Modal */}
       <VideoModal
@@ -390,6 +402,10 @@ export default function HomePage() {
         onToggleSave={handleToggleSave}
         initialTab={modalInitialTab}
         onShare={handleOpenShare}
+        onOpenSurvey={() => {
+          trackSurveyOpen("video_modal");
+          setIsSurveyOpen(true);
+        }}
         onTabChange={(tab) => updateUrlQuery(activeVideo?.id, tab)}
       />
 
@@ -410,6 +426,13 @@ export default function HomePage() {
       <SuggestVideoModal
         isOpen={isSuggestOpen}
         onClose={() => setIsSuggestOpen(false)}
+      />
+
+      {/* Geek Micro-Survey & Willingness to Pay Modal */}
+      <GeekMicroSurveyModal
+        isOpen={isSurveyOpen}
+        onClose={() => setIsSurveyOpen(false)}
+        sourceContext="homepage"
       />
     </>
   );

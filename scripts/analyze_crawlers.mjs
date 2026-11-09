@@ -511,10 +511,75 @@ function generateMarkdownReport(data) {
     md += `\n`;
   }
 
+  // 5. Micro-Survey & Monetization Intent Analysis
+  md += `## 📋 极客微问卷与商业化/付费意愿洞察 (Survey & Monetization Intent)\n\n`;
+  const surveyFile = path.join(process.cwd(), "reports", "survey_responses.jsonl");
+  let surveyList = [];
+  if (fs.existsSync(surveyFile)) {
+    try {
+      const lines = fs.readFileSync(surveyFile, "utf-8").split("\n");
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        surveyList.push(JSON.parse(line));
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  if (surveyList.length === 0) {
+    md += `*过去 ${data.windowHours} 小时内暂未收集到微问卷提交。*\n\n`;
+  } else {
+    const featureLabels = {
+      on_demand_notes: "⚡ AI 深度笔记提取器 (任意 YouTube 链接生成 LaTeX 推导)",
+      vault_sync: "📚 Obsidian & Notion Vault 自动同步插件",
+      bilingual_subtitles: "🌐 硬核技术双语字幕 (针对 AI/系统术语精调)",
+      code_sandbox: "🧠 代码推导沙箱 & 架构脑图",
+    };
+
+    const pricingLabels = {
+      sub_coffee: "☕ $3 - $5 / 月 (咖啡订阅制)",
+      sub_pro: "🚀 $10 - $15 / 月 (Pro 重度研究套件)",
+      pay_per_video: "💎 按用量充值 / 一次性买断 (~$0.10/视频)",
+      free_sponsor: "🎁 永久开源免费 (靠无干扰技术赞助)",
+    };
+
+    const featureStats = {};
+    const pricingStats = {};
+
+    surveyList.forEach((s) => {
+      featureStats[s.desiredFeature] = (featureStats[s.desiredFeature] || 0) + 1;
+      pricingStats[s.pricingPreference] = (pricingStats[s.pricingPreference] || 0) + 1;
+    });
+
+    md += `- **已收录有效微问卷**: **${surveyList.length}** 份 (来自极客主动提交)\n\n`;
+    md += `### 💡 极客最期待的 Pro 功能偏好分布\n`;
+    for (const [key, count] of Object.entries(featureStats)) {
+      const label = featureLabels[key] || key;
+      const pct = Math.round((count / surveyList.length) * 100);
+      md += `- **${label}**: **${count}** 票 (${pct}%)\n`;
+    }
+    md += `\n`;
+
+    md += `### 💰 商业模式与付费意愿承受区间\n`;
+    for (const [key, count] of Object.entries(pricingStats)) {
+      const label = pricingLabels[key] || key;
+      const pct = Math.round((count / surveyList.length) * 100);
+      md += `- **${label}**: **${count}** 票 (${pct}%)\n`;
+    }
+    md += `\n`;
+
+    md += `### 💬 极客原生反馈原声摘要\n`;
+    surveyList.filter((s) => s.feedback).forEach((s) => {
+      md += `> *" ${s.feedback} "* — \`[${s.role || "developer"}] [${s.country || "GLOBAL"}]\`\n\n`;
+    });
+  }
+
   md += `---\n\n`;
   md += `> **💡 增长行动指南 (Actionable Next Steps)**:  \n`;
   md += `> 1. 若 \`PerplexityBot\` 或 \`GPTBot\` 高频抓取某一分类视频，建议针对该分类在 \`/llms.txt\` 中补充更详尽的技术摘要锚点。  \n`;
   md += `> 2. 对于来自 Hacker News 的 Level 4 极客，持续强化“一键导出至 Obsidian / Notion”体验，形成口碑裂变闭环。  \n`;
+  md += `> 3. 针对高频诉求“任意 YouTube 链接自动提取 LaTeX 笔记”，优先探索与 APIVALE 大模型网关深度联动的轻量微服务。  \n`;
 
   return md;
 }

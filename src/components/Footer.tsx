@@ -3,7 +3,11 @@
 import React from "react";
 import Link from "next/link";
 
-export const Footer: React.FC = () => {
+interface FooterProps {
+  onOpenSurvey?: () => void;
+}
+
+export const Footer: React.FC<FooterProps> = ({ onOpenSurvey }) => {
   return (
     <footer className="footer">
       <div className="container">
@@ -46,6 +50,19 @@ export const Footer: React.FC = () => {
             <ul className="footer-links">
               <li><a href="/api/dataset" target="_blank" rel="noopener noreferrer">Download Curated Dataset (JSON)</a></li>
               <li><a href="/llms.txt" target="_blank" rel="noopener noreferrer">LLM Agent Manifest (/llms.txt)</a></li>
+              <li>
+                <a
+                  href="#survey"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onOpenSurvey) onOpenSurvey();
+                  }}
+                  title="Shape HackerTube Pro roadmap (30s survey)"
+                  style={{ color: "#c084fc", fontWeight: 600 }}
+                >
+                  ⚡ Pro Roadmap Survey (30s)
+                </a>
+              </li>
               <li><a href="https://github.com/bshx2024/hacker-tube" target="_blank" rel="noopener noreferrer">GitHub Repository</a></li>
               <li><a href="https://karpathy.bearblog.dev/hacker-tube/" target="_blank" rel="noopener noreferrer">Karpathy Original Post</a></li>
             </ul>

@@ -242,4 +242,32 @@ export function trackDeepLinkLanding(videoId: string, refParam?: string): void {
   });
 }
 
+/**
+ * Community Micro-Survey & Willingness to Pay Telemetry
+ */
+export function trackSurveyOpen(source?: string): void {
+  trackEvent("survey_modal_open", {
+    source: source || "unknown",
+  });
+}
+
+export function trackSurveySubmit(data: {
+  feature: string;
+  pricing: string;
+  role?: string;
+  hasFeedback: boolean;
+  hasContact: boolean;
+  source?: string;
+}): void {
+  trackEvent("survey_submit", {
+    feature: data.feature,
+    pricing: data.pricing,
+    role: data.role || "undisclosed",
+    has_feedback: data.hasFeedback,
+    has_contact: data.hasContact,
+    source: data.source || "web_modal",
+  });
+}
+
+
 

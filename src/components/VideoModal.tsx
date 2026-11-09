@@ -18,6 +18,7 @@ interface VideoModalProps {
   onToggleSave: (id: string, e: React.MouseEvent) => void;
   initialTab?: "player" | "study";
   onShare?: (v: VideoItem) => void;
+  onOpenSurvey?: () => void;
   onTabChange?: (tab: "player" | "study") => void;
 }
 
@@ -28,6 +29,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   onToggleSave,
   initialTab = "player",
   onShare,
+  onOpenSurvey,
   onTabChange,
 }) => {
   const [activeTab, setActiveTab] = useState<"player" | "study">(initialTab);
@@ -286,6 +288,18 @@ ${studyNote.hnDebates
               <span>💬</span>
               <span>HN Thread ({video.hnMentions} pts) ↗</span>
             </a>
+
+            {onOpenSurvey && (
+              <button
+                className="export-tool-btn"
+                onClick={onOpenSurvey}
+                title="Vote on next AI Pro feature (30s survey)"
+                style={{ borderColor: "rgba(168, 85, 247, 0.4)", color: "#c084fc" }}
+              >
+                <span>⚡</span>
+                <span>Pro Survey</span>
+              </button>
+            )}
           </div>
         </div>
 

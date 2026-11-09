@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { VideoItem } from "@/data/videos";
 import { StudyNote } from "@/data/studyNotes";
 import { ShareModal } from "@/components/ShareModal";
-import { trackExportNotes, trackShare } from "@/lib/tracker";
+import { GeekMicroSurveyModal } from "@/components/GeekMicroSurveyModal";
+import { trackExportNotes, trackShare, trackSurveyOpen } from "@/lib/tracker";
 
 interface VideoDetailActionsProps {
   video: VideoItem;
@@ -17,6 +18,7 @@ export const VideoDetailActions: React.FC<VideoDetailActionsProps> = ({
 }) => {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
+  const [isSurveyOpen, setIsSurveyOpen] = useState(false);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -164,6 +166,24 @@ ${studyNote.hnDebates
           <span>💬</span>
           <span>HN Discussion ({video.hnMentions} pts) ↗</span>
         </a>
+
+        <button
+          className="nav-btn"
+          onClick={() => {
+            trackSurveyOpen("video_detail");
+            setIsSurveyOpen(true);
+          }}
+          style={{
+            padding: "8px 14px",
+            fontSize: "13px",
+            borderColor: "rgba(168, 85, 247, 0.4)",
+            color: "#c084fc",
+          }}
+          title="Vote on next AI Pro feature (30s survey)"
+        >
+          <span>⚡</span>
+          <span>Pro Survey</span>
+        </button>
       </div>
 
       {toastMsg && (
@@ -186,6 +206,12 @@ ${studyNote.hnDebates
         isOpen={isShareOpen}
         video={video}
         onClose={() => setIsShareOpen(false)}
+      />
+
+      <GeekMicroSurveyModal
+        isOpen={isSurveyOpen}
+        onClose={() => setIsSurveyOpen(false)}
+        sourceContext="video_detail"
       />
     </>
   );

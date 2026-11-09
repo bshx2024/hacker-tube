@@ -189,10 +189,13 @@ HackerTube 站点结构
 - [ ] 部署 `/llms.txt`、`robots.txt`、JSON-LD 结构化数据，完成 SEO/GEO 优化配置。
 - [ ] 上线发布至 Cloudflare Pages / Vercel。
 
-### Phase 2：AI 效率赋能与增量抓取
+### Phase 2：AI 效率赋能与极客商业化意向验证
+- [x] 上线 **极客微问卷与产品路线图共建系统 (`GeekMicroSurveyModal` & `/api/survey`)**，30秒轻量调研极客对“任意视频笔记提取”、“Obsidian/Notion 自动同步”及“$3~$5/月订阅 vs 按需用量付费”的真实意愿。
+- [x] 深度联动 Umami Analytics 与服务端第一方日志，实现问卷点击与提交遥测。
 - [ ] 接入轻量 LLM Pipeline，为 Top 1,000 热门长视频自动生成分段核心笔记与 Key Takeaways。
 - [ ] 搭建自动化增量抓取流：每周自动同步 HN 最热帖子中的新视频推荐。
 
 ### Phase 3：商业化与生态闭环
-- [ ] 开放跨端书签同步功能，支持将视频笔记一键导出至 Notion / Readwise。
+- [ ] 开放跨端书签与知识库自动同步（Obsidian / Notion Vault Auto-Sync 订阅制）。
+- [ ] 探索 HackerTube Pro：支持极客任意输入 YouTube 链接，调用 APIVALE 大模型网关快速生成技术研读笔记。
 - [ ] 联合优质技术大会、开源基金会及硬核开发者招聘，探索无干扰赞助变现模式。

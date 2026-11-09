@@ -8,6 +8,7 @@ interface NavbarProps {
   onOpenSaved: () => void;
   onOpenShortcuts: () => void;
   onOpenSuggest?: () => void;
+  onOpenSurvey?: () => void;
   isSavedView: boolean;
   onResetView: () => void;
 }
@@ -17,6 +18,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSaved,
   onOpenShortcuts,
   onOpenSuggest,
+  onOpenSurvey,
   isSavedView,
   onResetView,
 }) => {
@@ -47,6 +49,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>＋</span>
             <span>Suggest Talk</span>
           </button>
+
+          {onOpenSurvey && (
+            <button
+              className="nav-btn"
+              onClick={onOpenSurvey}
+              title="Shape HackerTube Pro roadmap (30s survey)"
+              id="btn-survey"
+              style={{
+                background: "rgba(168, 85, 247, 0.08)",
+                borderColor: "rgba(168, 85, 247, 0.35)",
+                color: "#c084fc",
+                fontWeight: 600,
+              }}
+            >
+              <span>⚡</span>
+              <span>Pro Survey</span>
+            </button>
+          )}
 
           <button
             className="nav-btn"
