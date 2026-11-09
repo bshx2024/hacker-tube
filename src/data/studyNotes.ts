@@ -196,29 +196,29 @@ self.grad += local_derivative * out.grad`
     ],
     faqs: [
       {
-        question: "What is the fundamental difference between micrograd and PyTorch?",
-        answer: "Micrograd operates entirely on scalar Values in pure Python to demonstrate reverse-mode automatic differentiation and backpropagation clearly, whereas PyTorch operates on multidimensional Tensors with parallelized C++/CUDA kernels for production GPU execution and matrix multiplications."
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "Why is topological sort mandatory before executing neural network backpropagation?",
-        answer: "In a Directed Acyclic Graph (DAG), an operand variable can be referenced by multiple downstream child nodes. Topological ordering ensures that all incoming gradient contributions are fully computed and accumulated via += before backpropagating further upstream to parent nodes."
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "Why must backpropagation gradients accumulate with += instead of assignment (=)?",
-        answer: "When a variable is reused in multiple operations (such as a = 2*b + 3*b), multivariate calculus states that the total derivative is the sum of partial derivatives across all execution paths. Assignment (=) overwrites gradients from earlier branches, producing mathematically incorrect derivatives."
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "What is Andrej Karpathy’s recipe for training neural networks and debugging backpropagation?",
-        answer: "Karpathy’s famous recipe emphasizes starting with a minimal baseline: first inspect input data distributions, verify initialization loss matches theoretical random chance (-ln(1/C)), overfit a tiny batch of 4 examples until loss reaches 0.0 to confirm backpropagation correctness, and only then scale dataset volume, layers, and learning rates."
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "How does micrograd connect to Andrej Karpathy’s “Neural Networks: Zero to Hero” GitHub course series?",
-        answer: "Building micrograd is the foundational Chapter 1 of the “Neural Networks: Zero to Hero” curriculum. It establishes the autograd mathematical foundations before advancing into makemore (bigram, MLP, CNN, WaveNet character language models) and ultimately building nanoGPT and transformer architectures."
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "Can micrograd train real-world deep neural networks?",
-        answer: "Yes, micrograd can train multi-layer perceptrons (MLPs) and binary classifiers on small datasets (like the scikit-learn moon dataset), but because it stores Python objects for every scalar value, its memory overhead and CPU execution speed make it an educational autograd engine rather than a production framework."
-      }
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
+      },
     ],
     obsidianFrontmatter: `---
 title: "The Spelled-Out Intro to Neural Networks and Backpropagation: Building micrograd"
@@ -344,28 +344,28 @@ created: ${new Date().toISOString().slice(0, 10)}
     ],
     faqs: [
       {
-        question: "What is Bret Victor’s central thesis in “Inventing on Principle”?",
-        answer: "Bret Victor’s central thesis is that the greatest technological pioneers are driven by an unyielding personal principle rather than craft, style, or profit. His personal guiding principle is that creators need an immediate, tangible connection to what they create without artificial cognitive delays.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "How does Bret Victor define the difference between a craftsman and a principled creator?",
-        answer: "A craftsman masters tools, hones execution skills, and adapts to commercial demands within an accepted paradigm. A principled creator identifies a systemic injustice in how current tools constrain human intellect and builds entirely new paradigms to dismantle that limitation.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "Why does Bret Victor argue that delayed compilation loops destroy human creativity?",
-        answer: "When a creator changes code and must wait to compile, link, and run, the feedback loop exceeds the human cognitive threshold of ~100ms. This breaks exploratory creative flow, forcing developers to blindly simulate execution in their heads rather than discovering ideas through active manipulation.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "What were the key interactive demos Bret Victor presented in the lecture?",
-        answer: "Victor presented three groundbreaking prototypes: an interactive game engine where physics constants could be scrubbed continuously in real-time, an analog electronic circuit simulator with live voltage graphs, and a binary search visualization that spatialized execution time across the screen.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "How did Bret Victor connect his principle to historical figures like Larry Tesler and Richard Stallman?",
-        answer: "Victor highlighted Larry Tesler's crusade against software modes ('No Modes'), Richard Stallman's absolute commitment that software must be free for human collaboration, and Alan Kay's vision that personal computers must empower children to think dynamically.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "What influence did “Inventing on Principle” have on modern software development?",
-        answer: "The talk directly inspired Chris Lattner to create Apple Swift Playgrounds, stimulated the development of Hot Module Replacement (HMR) in tools like Webpack and Vite, influenced Bret Victor’s research lab Dynamicland, and catalyzed modern interactive notebooks like Observable.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -492,28 +492,28 @@ created: 2026-11-09
     ],
     faqs: [
       {
-        question: "What was the NLS (oN-Line System) demonstrated in The Mother of All Demos?",
-        answer: "NLS (oN-Line System) was a revolutionary computer collaboration software system designed by Douglas Engelbart and his ARC team at SRI. It pioneered mouse input, interactive windows, hierarchical outline editing, hypertext, teleconferencing, and networked multi-user collaboration.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "What physical hardware made the first computer mouse functional in 1968?",
-        answer: "The first mouse was carved out of a block of pine wood and contained two perpendicular knife-edge metal wheels. As the user moved the device across a desk, the wheels turned analog potentiometers that measured horizontal and vertical motion, translating it to CRT cursor coordinates.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "How did Douglas Engelbart demonstrate real-time collaborative editing over network links in 1968?",
-        answer: "Engelbart’s team connected the San Francisco Civic Auditorium to the SRI mainframe in Menlo Park 30 miles away using leased microwave radio links. Two operators with separate mice and keyboards simultaneously controlled a shared video buffer, showing dual cursors and live video overlay.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "What was the purpose of the 5-key chorded keyset used alongside the mouse?",
-        answer: "The 5-key chorded keyset allowed the operator’s left hand to enter all 26 alphabet characters and punctuation using 31 binary chord combinations. This enabled continuous typing and command entry without ever lifting the right hand from the mouse.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "How did Engelbart’s concept of hypertext differ from the modern World Wide Web?",
-        answer: "In NLS, every individual paragraph, statement, and word possessed a deterministic, permanent coordinate address. Hypertext links could specify custom view filters (e.g. reveal only top 2 levels of headings) and supported two-way bidirectional integrity without link rot.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "What is the fundamental thesis of Douglas Engelbart’s “Augmenting Human Intellect” paper?",
-        answer: "Published in 1962, Engelbart’s paper argued that human problems were scaling in complexity faster than biological evolution. Computers must therefore be deployed as cognitive augmentation prosthetics that boost human problem-solving, comprehension, and collaboration capacity.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -682,29 +682,29 @@ def forward(self, x):
     ],
     faqs: [
       {
-        question: "Why do we scale QK^T by 1/sqrt(d_k) in Scaled Dot-Product Attention?",
-        answer: "When the head dimension d_k is large, the dot products grow large in magnitude, pushing the softmax function into regions where gradients are extremely small (vanishing gradient problem). Scaling by 1/sqrt(d_k) preserves unit variance and maintains healthy backpropagation gradient flow."
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "What is the mathematical role of the causal attention mask (tril)?",
-        answer: "The causal mask sets future token affinities to -infinity before the softmax operation, ensuring that during autoregressive decoding, token t can only attend to previous tokens <= t, preventing future information leakage when you build GPT from scratch."
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "Why are residual skip connections critical in deep Transformer architectures?",
-        answer: "Residual connections create direct gradient superhighways through identity additions (x + f(x)), allowing backpropagation gradients to travel directly from the loss function to early embedding layers without degradation across dozens of layers."
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "How does nanoGPT compare to Sebastian Raschka’s “Build a Large Language Model (from Scratch)” GitHub repo?",
-        answer: "Karpathy’s nanoGPT is a lean, hackable single-file PyTorch implementation designed for immediate conceptual clarity and lightning-fast experimentation. Sebastian Raschka’s “Build a Large Language Model from Scratch” book provides an expanded, production-oriented companion exploring byte-pair encoding (BPE), GPT-2 weights loading, and instruction fine-tuning."
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "What hardware is required to build GPT from scratch following this tutorial?",
-        answer: "The toy Shakespeare model demonstrated in the lecture can be trained on a free Google Colab T4 GPU, an Apple Silicon Mac, or even a modern multi-core CPU within minutes. Scaling up to train 124M parameter models (GPT-2 small) benefits from an NVIDIA GPU with 16GB+ VRAM."
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "How does nanoGPT differ from Hugging Face Transformers or OpenAI GPT-4?",
-        answer: "NanoGPT strips away thousands of lines of boilerplate configuration files, multi-modal routing, and distributed cluster hooks. It implements the pure mathematical essence of the decoder-only Transformer, making the entire forward and backward execution understandable in one sitting."
-      }
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
+      },
     ],
     obsidianFrontmatter: `---
 title: "Let's build GPT: from scratch, in code, spelled out"
@@ -727,8 +727,8 @@ created: ${new Date().toISOString().slice(0, 10)}
     h1Title: "Simple Made Easy — Rich Hickey",
     seoTitle: "Simple Made Easy: Rich Hickey Lecture Notes",
     seoDescription: "Master Simple Made Easy by Rich Hickey: simple vs easy, uncomplecting state and time, immutable values, and system architecture. Full lecture notes.",
-    h2ExecutiveSummary: "Executive Summary: Simple vs Easy and the Danger of Complecting",
-    h2Timestamps: "Key Timestamps: Simple Made Easy Strange Loop Breakdown",
+    h2ExecutiveSummary: "Executive Summary: Simple Made Easy and the Danger of Complecting",
+    h2Timestamps: "Key Timestamps: Simple Made Easy Lecture Breakdown",
     h2Derivations: "Architectural Formulations: Rich Hickey Simple Made Easy System Design",
     h2Debates: "Community Consensus: Hacker News Debates on Rich Hickey’s Philosophy",
     h2Faq: "Technical FAQ: Simplicity, Mutable State, Clojure and System Design",
@@ -830,28 +830,28 @@ created: ${new Date().toISOString().slice(0, 10)}
     ],
     faqs: [
       {
-        question: "What is the fundamental difference between “Simple” and “Easy” according to Rich Hickey?",
-        answer: "Simple is an objective property derived from the Latin simplex, meaning “having one fold or role” and being free from entanglement. Easy is subjective, derived from facilis, meaning “near at hand” or familiar to our current habits and tooling.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "What does Rich Hickey mean by the verb “to complect”?",
-        answer: "To complect means to braid, intertwine, or fold multiple distinct concerns together (from the Latin complecti). Once concepts are complected (like state and time, or identity and value), you cannot change, reason about, or test one without dragging the other along.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "Why does Rich Hickey advocate for immutable values over mutable state?",
-        answer: "Mutable state braids value and time together; reading an object requires worrying about who else might be mutating it concurrently. Immutable values represent permanent historical facts that can be freely shared across threads without locks, cached indefinitely, and trivially reasoned about.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "How does the Epochal Time Model solve concurrency issues without mutex locks?",
-        answer: "In the Epochal Model, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates occur by applying a pure function to produce a new immutable value at t+1 and swapping the reference atomically (e.g. CAS: Compare-And-Swap), allowing lock-free readers.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "Why does Rich Hickey recommend passing plain data maps instead of Object-Oriented class instances?",
-        answer: "Plain associative data maps are universally interoperable, serializable, printable, and composable with generic library functions. Wrapping data inside private OOP classes complects data representation with specific methods, forcing developers to reinvent accessor boilerplate.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "What are the primary architectural constructs Rich Hickey recommends for keeping systems simple?",
-        answer: "Hickey recommends using immutable persistent data structures, declarative data (like EDN or JSON) over custom syntax, asynchronous queues for decoupling time and space, pure functions for deterministic business logic, and runtime schema specifications for boundaries.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -979,28 +979,28 @@ created: 2026-11-09
     ],
     faqs: [
       {
-        question: "Why did Casey Muratori claim that “Clean Code” causes horrible performance?",
-        answer: "Casey Muratori proved through empirical cycle benchmarks that dogmatic Clean Code rules (such as eliminating switch statements, replacing branching with class polymorphism, and writing microscopic functions) cause a 15x to 25x CPU performance penalty due to vtable indirection, cache misses, and inhibited compiler optimizations.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "What is the CPU hardware penalty of virtual method tables (vtables)?",
-        answer: "Virtual methods require two levels of pointer dereferencing: first loading the vtable pointer from the object instance, then loading the function pointer from the vtable. This prevents compiler inlining, flushes CPU branch prediction buffers, and triggers L1/L2 cache misses when objects are scattered across heap memory.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "Why are switch statements often faster than polymorphic class hierarchies on modern processors?",
-        answer: "Compilers optimize dense integer switch statements into a single indirect jump table or vectorized lookup, requiring only 1 to 2 CPU cycles. Polymorphic class hierarchies require dynamic dispatch through vtables that cannot be inlined and scatter execution across non-contiguous instruction memory.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "What is Data-Oriented Design (DOD) and how does it differ from Object-Oriented Programming (OOP)?",
-        answer: "Object-Oriented Programming organizes software around domain entities that encapsulate data and behavior together. Data-Oriented Design organizes data around how CPU hardware fetches memory (64-byte cache lines), keeping homogeneous data contiguous in memory to maximize cache hits and SIMD vectorization.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "How does compiler inlining relate to function size in high-performance computing?",
-        answer: "Small functions are easily inlined by compilers, but when functions are virtual or split across polymorphic boundaries, compilers cannot inline them. This forces formal stack frame setup, register spilling, and prevents cross-statement loop optimizations.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "What was Robert C. Martin’s (Uncle Bob) response to Casey Muratori’s video?",
-        answer: "Uncle Bob responded by acknowledging that Clean Code rules optimize for human readability and maintainability rather than raw execution speed, arguing that when performance is critical, developers should profile and optimize hot loops while keeping the rest of the codebase clean.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -1127,28 +1127,28 @@ created: 2026-11-09
     ],
     faqs: [
       {
-        question: "How does Grant Sanderson visually derive the area of a circle in Chapter 1?",
-        answer: "Sanderson visualizes a circle as a series of thin concentric rings of thickness dr. By slicing and unrolling each ring, they become horizontal strips that stack together to form a right triangle with base 2*pi*r (circumference) and height r (radius), whose area is (1/2) * (2*pi*r) * r = pi*r^2.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "Why is the derivative of the area of a circle equal to its circumference (2*pi*r)?",
-        answer: "When you increase the radius of a circle by an infinitesimal amount dr, the new area added is a thin ring around the outer boundary. The area of this added strip is the circumference (2*pi*r) multiplied by the thickness dr, so the rate of change dA/dr is exactly 2*pi*r.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "What is the fundamental philosophical premise of calculus according to 3Blue1Brown?",
-        answer: "Calculus is the art of approximating complex, continuously changing non-linear problems by breaking them into an infinite number of simple linear pieces, solving the linear pieces, and examining what happens in the continuous limit.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "Why do higher-order infinitesimal terms like (dr)^2 vanish in differentiation?",
-        answer: "When expanding (r + dr)^2, the term 2*r*dr represents the added boundary rectangles, while (dr)^2 represents the tiny corner square. As dr approaches zero, the ratio of (dr)^2 to dr approaches zero, meaning the corner contributes zero area to the final derivative.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "How does this geometric introduction connect to deep learning and backpropagation?",
-        answer: "Deep learning neural networks are trained via gradient descent, which relies on the derivative to calculate how nudging a weight affects the loss function. The core concept that smooth non-linear surfaces are locally linear is what enables gradient descent to optimize billions of parameters.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "How does unrolling concentric rings demonstrate the Fundamental Theorem of Calculus?",
-        answer: "Summing the areas of thin rings from r=0 to R is an integral (accumulation of parts). Taking the derivative of the resulting area pi*r^2 recovers the circumference 2*pi*r (the boundary rate of change). This demonstrates that integration and differentiation are exact inverse operations.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -1275,28 +1275,28 @@ created: 2026-11-09
     ],
     faqs: [
       {
-        question: "What is the Winston Formula in Patrick Winston’s “How to Speak”?",
-        answer: "The Winston Formula is Quality = f(Knowledge, Practice, Inherent Ability). Winston argues that inherent ability has an exponent of only 0.1, meaning deliberate practice and knowledge of speaking heuristics account for over 90% of speaking success.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "Why does Patrick Winston advise against beginning a technical talk with a joke?",
-        answer: "At the start of a talk, the audience is settling in, adjusting to your voice, and not yet in a receptive state. Jokes require precise timing and shared cultural context; if a joke falls flat, it destroys initial speaker credibility immediately.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "Why does Patrick Winston advocate for chalkboards over PowerPoint slides?",
-        answer: "Writing on a chalkboard forces the speaker to pace the talk at the exact speed of human comprehension (~1 word per second). It prevents information overload, gives the audience time to take notes, and provides natural physical targets for the speaker's hands.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "What does Patrick Winston mean by “salting” a technical talk?",
-        answer: "Salting means periodically offering an intriguing teaser, a counter-intuitive puzzle, or a dramatic example every 10-15 minutes to re-engage listeners whose attention has drifted, pulling them back into the core narrative.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "What is the “Fence” concept in technical presentations?",
-        answer: "The Fence is explicitly defining the boundaries of your work: what your algorithm, thesis, or system does NOT do. Establishing a clear fence prevents critics from attacking your work for problems you never claimed to solve.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "Why does Patrick Winston insist that speakers should never end with “Thank You”?",
-        answer: "The final slide remains visible during the entire audience Q&A session. A slide reading 'Thank You' is a wasted communication opportunity. Winston insists on displaying a 'Contributions Slide' summarizing your novel insights, takeaways, and links.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -1423,28 +1423,28 @@ created: 2026-11-09
     ],
     faqs: [
       {
-        question: "What is the Fast Inverse Square Root algorithm (Q_rsqrt)?",
-        answer: "The Fast Inverse Square Root is a fast approximation algorithm for computing y = 1 / sqrt(x) for 32-bit floating-point numbers. It was used in id Software’s Quake III Arena game engine to normalize 3D physics and lighting vectors up to 4x faster than standard CPU division instructions.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "How does the magic constant 0x5f3759df work mathematically?",
-        answer: "When a 32-bit IEEE 754 float is treated as a 32-bit integer, the integer representation approximates the logarithm log2(x). Shifting the bits right by 1 bit divides the log by 2, and subtracting from 0x5f3759df computes the -1/2 power in logarithmic space.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "Why was vector normalization such a critical bottleneck in Quake III Arena?",
-        answer: "In 3D game engines, calculating surface normal vectors, diffuse reflections, physics bounces, and lighting angles requires normalizing vectors (v / |v|). In 1999, floating-point division and square roots cost up to 70 clock cycles per vertex.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "How does Newton-Raphson iteration refine the approximation in Q_rsqrt?",
-        answer: "The integer bit hack yields an approximation with ~3% error. Applying one single iteration of Newton-Raphson root-finding squares the precision, dropping the maximum relative error to less than 0.175%, which is visually imperceptible in 3D graphics.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "Who actually invented the Fast Inverse Square Root algorithm?",
-        answer: "While popularized by John Carmack in the Quake III source code, the code was originally traced back to Gary Tarolli (co-founder of 3dfx), with earlier roots dating back to Cleve Moler (creator of MATLAB) and William Kahan at Ardent Computer.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "Is the Fast Inverse Square Root hack still faster than modern hardware instructions?",
-        answer: "No. Modern x86 processors provide the dedicated hardware instruction RSQRTSS (SSE) and modern GPUs have specialized hardware interpolation units that compute reciprocal square roots in 1 clock cycle. However, the hack remains a masterclass in low-level systems engineering.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -1597,29 +1597,29 @@ flops = 6 * 7e9 * 2e12 # ~8.4e22 FLOPs`
     ],
     faqs: [
       {
-        question: "What does Karpathy mean by describing LLMs as a “lossy zip file of the internet”?",
-        answer: "During pre-training, petabytes of web text are compressed into a few hundred gigabytes of neural network weights. The model does not memorize exact text files like a lossless .zip archive; rather, it compresses statistical grammar, common sense, and semantic facts. When prompted, it decompresses ideas probabilistically, explaining both reasoning abilities and hallucinations."
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "What is the fundamental difference between Base Models and Instruct/Chat Models?",
-        answer: "A Base Model is trained solely on next-token prediction across raw web documents; if given a prompt like 'How do I make coffee?', it might simply output another question or complete the text as a forum thread. An Instruct/Chat model has undergone Supervised Fine-Tuning (SFT) and RLHF on curated conversation datasets, training it to act as a helpful assistant."
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "How does Karpathy’s LLM OS analogy map to modern software architectures?",
-        answer: "In the LLM OS model, the transformer neural network acts as the CPU kernel; the active context window acts as RAM; external document repositories, vector embeddings, and RAG databases act as hard disk storage; external APIs, code execution sandbox runners, and web search engines act as I/O peripherals."
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "Why are prompt injections and jailbreaks so difficult to eliminate permanently?",
-        answer: "In conventional computing, executable code and data streams are separated in memory. In an LLM context window, system developer instructions and untrusted third-party input data are concatenated into a single linear sequence of tokens. Because the neural network evaluates all tokens within the same attention matrix, malicious input can hijack the model’s instruction-following attention heads."
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "What are the computational and financial costs of training large language models from scratch?",
-        answer: "Pre-training a competitive 70B parameter model requires millions of GPU hours across clusters of thousands of NVIDIA H100/A100 accelerators, often costing between $2M and $10M+ in cloud electricity and compute alone, which is why open-weights community checkpoints are so transformative."
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "How do System 1 reactive generation and System 2 deliberate reasoning differ in modern AI models?",
-        answer: "System 1 generation emits tokens sequentially without reconsidering past mistakes, similar to human instinctual speech. System 2 reasoning allocates variable test-time compute to generate chain-of-thought tokens, explore alternative candidate branches, verify logic, and backtrack before outputting the final answer."
-      }
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
+      },
     ],
     obsidianFrontmatter: `---
 title: "Intro to Large Language Models (1hr Talk)"
@@ -1745,28 +1745,28 @@ created: ${new Date().toISOString().slice(0, 10)}
     ],
     faqs: [
       {
-        question: "Why did Bret Victor deliver “The Future of Programming” pretending to be in 1973?",
-        answer: "By adopting the persona of a computer scientist in 1973 using an overhead projector, Victor brilliantly showed that the most radical, forward-looking programming paradigms were already invented in the 1960s and 1970s, making our modern reliance on flat text files look antiquated.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "What are the four programming dogmas that Bret Victor challenges?",
-        answer: "Victor challenges four prevailing dogmas: 1) Code as linear text streams, 2) Sequential step-by-step execution, 3) Manual imperative state mutation, and 4) Passive data that must be explicitly manipulated.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "What was Ivan Sutherland’s Sketchpad and why is it highlighted in the talk?",
-        answer: "Created in 1963, Sketchpad was the first graphical user interface and object-oriented constraint solver. Users drew geometric lines directly with a light pen, and the computer automatically satisfied constraints (parallel lines, circles, linkages) in real time.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "Why does Bret Victor argue that programming in text is a historical accident?",
-        answer: "Text files became the dominant software medium because early computers in the 1950s borrowed teletypewriters, ASCII cables, and paper tape from telegraph networks. We kept that format for historical convenience, not because it matches human thought.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "What is constraint-based programming and how does it differ from imperative coding?",
-        answer: "In imperative coding, programmers write step-by-step instructions describing how variables mutate over time. In constraint-based programming, programmers declare invariant relationships between entities, and the system’s mathematical solver automatically finds valid states.",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "What is the ultimate takeaway of “The Future of Programming”?",
-        answer: "Victor challenges engineers not to accept the status quo of software development as permanent law. True progress requires questioning foundational assumptions and inventing computing media that amplify human reasoning.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
@@ -1893,28 +1893,28 @@ created: 2026-11-09
     ],
     faqs: [
       {
-        question: "What is a Zero Knowledge Proof (ZKP) in modern cryptography?",
-        answer: "A Zero Knowledge Proof is a cryptographic protocol where a Prover convinces a Verifier that a mathematical statement is true without revealing any secret information beyond the statement’s validity. For example, proving you know the private key to an account without revealing the key itself.",
+        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
+        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
       },
       {
-        question: "What are the three core mathematical properties of any Zero Knowledge Proof system?",
-        answer: "The three non-negotiable axioms are: 1) Completeness: if the statement is true and both parties are honest, the verifier will always be convinced. 2) Soundness: if the statement is false, a cheating prover cannot convince the verifier except with negligible probability. 3) Zero-Knowledge: the verifier learns nothing beyond the validity of the statement.",
+        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
+        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
       },
       {
-        question: "How does the “Simulation Paradigm” prove that zero information is leaked?",
-        answer: "In cryptography, zero leakage is proven by constructing a polynomial-time algorithm called the Simulator. If the Simulator can generate a conversation transcript indistinguishable from a real interaction without knowing the secret witness, the interaction cannot contain any information.",
+        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
+        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
       },
       {
-        question: "What is the Fiat-Shamir heuristic and why is it essential for practical ZKPs?",
-        answer: "The Fiat-Shamir heuristic converts an interactive multi-round proof into a non-interactive single-message proof. Instead of waiting for a live verifier to provide random challenges, the prover computes the challenge by hashing the public statement and commitment, allowing asynchronous verification.",
+        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
+        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
       },
       {
-        question: "What is the difference between a zk-SNARK and a zk-STARK?",
-        answer: "zk-SNARKs (Succinct Non-interactive Arguments of Knowledge) feature ultra-compact proof sizes (~200 bytes) and instant verification, but typically require a trusted setup. zk-STARKs (Scalable Transparent Arguments of Knowledge) use hash functions, eliminating trusted setups and offering quantum resistance, but produce larger proofs (10-50 KB).",
+        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
+        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
       },
       {
-        question: "How are arbitrary computer programs converted into arithmetic circuits for ZK verification?",
-        answer: "Programs written in C, Rust, or Python are compiled into an execution trace, which is flattened into constraints called Rank-1 Constraint Systems (R1CS) of the form A*w * B*w = C*w. These constraints are transformed via polynomial interpolation into Quadratic Arithmetic Programs (QAP) verified via elliptic curve pairings.",
+        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
+        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
       },
     ],
     obsidianFrontmatter: `---
