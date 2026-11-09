@@ -199,3 +199,26 @@ HackerTube 站点结构
 - [ ] 开放跨端书签与知识库自动同步（Obsidian / Notion Vault Auto-Sync 订阅制）。
 - [ ] 探索 HackerTube Pro：支持极客任意输入 YouTube 链接，调用 APIVALE 大模型网关快速生成技术研读笔记。
 - [ ] 联合优质技术大会、开源基金会及硬核开发者招聘，探索无干扰赞助变现模式。
+
+---
+
+## 6. 极客商业化意向验证与后续复盘准则 (Monetization Validation & Debrief Guidelines)
+
+### 6.1 核心战略：精益验证（先意愿，后开发，零反噬）
+1. **品牌护城河**：HackerTube 核心定位为“反算法、高信噪比、致敬 Karpathy”。过早加入强制付费墙（Paywall）易激起 Hacker News 与 Twitter 极客圈反感。因此采取“30秒微调研让社区共建 Roadmap”的方式，既保护极客口碑，又以零研发成本探明商业真实水温。
+2. **种子付费客户沉淀**：问卷选填栏留下的 Email / GitHub Handle 且勾选愿意付费的极客，作为首批高价值 Alpha 种子用户（Early Adopters / Whales），后续新功能上线时直接进行定向内测邀请（预估转化率 30%~50%）。
+
+### 6.2 样本积累门槛与数据复盘决策矩阵 (Go / No-Go Decision Matrix)
+
+| 阶段指标 | 观察目标值 | 决策路径与行动指引 |
+| :--- | :---: | :--- |
+| **复盘启动阈值** | **50 ~ 100 份** 有效微问卷 | 具备统计学代表性，正式召开商业化复盘与立项评审。 |
+| **分支 A：明确付费信号** | **付费意愿占比 > 35%**<br/>(选择 $3~$15/月或按次付费) | **果断立项 HackerTube Pro**：<br/>1. 聚焦投票最高的单一杀手级功能（如“任意 YouTube 链接自动提取 LaTeX 笔记”）；<br/>2. 接入 Stripe / LemonSqueezy 及轻量鉴权系统；<br/>3. 定向激活留邮箱的早期种子极客。 |
+| **分支 B：纯开源与工具偏好** | **免费开源倾向 > 65%**<br/>(选择“保持开源免费，靠赞助维持”) | **坚守 100% 免费开源，不做 C 端付费墙**：<br/>1. 强化 **APIVALE 大模型网关生态推荐**，通过开发者 API 调用分成变现；<br/>2. 探索优质技术大会、开源基金会及硬核研发岗位无干扰招聘赞助；<br/>3. 最大化保留全网高口碑与社区极客推荐势能。 |
+
+### 6.3 审计与数据源留存
+- **服务端运行时日志**：`[HT-SURVEY] { ... }`
+- **本地与分析审计快照**：[`reports/survey_responses.jsonl`](file:///e:/SaaS-Tool/hacker-tube/reports/survey_responses.jsonl)
+- **遥测归因与事件漏斗**：Umami Analytics (`survey_modal_open`, `survey_submit`)
+- **定期分析自动化命令**：`node scripts/analyze_crawlers.mjs`
+
