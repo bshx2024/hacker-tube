@@ -269,5 +269,17 @@ export function trackSurveySubmit(data: {
   });
 }
 
+/**
+ * 10-Second Instant Audio Hook & Takeaway Telemetry
+ */
+export function trackAudioHookPlay(videoId: string, title: string, source: string): void {
+  trackEvent("audio_hook_play", {
+    video_id: videoId,
+    title,
+    source,
+  });
+}
+
+
 
 

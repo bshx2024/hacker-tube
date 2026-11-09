@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { VideoItem } from "@/data/videos";
 import { StudyNote } from "@/data/studyNotes";
 import { ShareModal } from "@/components/ShareModal";
 import { GeekMicroSurveyModal } from "@/components/GeekMicroSurveyModal";
 import { trackExportNotes, trackShare, trackSurveyOpen } from "@/lib/tracker";
+import { audioHookManager } from "@/lib/audioHook";
 
 interface VideoDetailActionsProps {
   video: VideoItem;
@@ -19,6 +20,15 @@ export const VideoDetailActions: React.FC<VideoDetailActionsProps> = ({
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = audioHookManager.subscribe((isPlaying) => {
+      const active = audioHookManager.getActiveVideoId() === video.id;
+      setIsPlayingAudio(active && isPlaying);
+    });
+    return unsubscribe;
+  }, [video.id]);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
@@ -166,6 +176,42 @@ ${studyNote.hnDebates
           <span>💬</span>
           <span>HN Discussion ({video.hnMentions} pts) ↗</span>
         </a>
+
+        <button
+          className="nav-btn"
+          onClick={() => {
+            if (isPlayingAudio) {
+              audioHookManager.stop();
+            } else {
+              audioHookManager.play(video, "video_detail");
+            }
+          }}
+          style={{
+            padding: "8px 14px",
+            fontSize: "13px",
+            borderColor: isPlayingAudio ? "var(--accent-emerald)" : "rgba(56, 189, 248, 0.4)",
+            color: isPlayingAudio ? "#34d399" : "#38bdf8",
+            background: isPlayingAudio ? "rgba(56, 189, 248, 0.2)" : "rgba(56, 189, 248, 0.08)",
+          }}
+          title={isPlayingAudio ? "Stop 10s audio takeaway" : "⚡ Listen to 10s instant audio takeaway (Zero buffering)"}
+        >
+          {isPlayingAudio ? (
+            <>
+              <div className="audio-hook-equalizer">
+                <span className="eq-bar bar-1"></span>
+                <span className="eq-bar bar-2"></span>
+                <span className="eq-bar bar-3"></span>
+                <span className="eq-bar bar-4"></span>
+              </div>
+              <span>Stop 10s Audio</span>
+            </>
+          ) : (
+            <>
+              <span>🎧</span>
+              <span>10s Audio Hook</span>
+            </>
+          )}
+        </button>
 
         <button
           className="nav-btn"

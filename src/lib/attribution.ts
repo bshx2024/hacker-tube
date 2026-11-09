@@ -362,20 +362,23 @@ export function getDetectedGeekSource(): {
   if (typeof window === "undefined") return null;
 
   const traffic = parseTrafficSource();
-  if (traffic.geekSource && traffic.geekSource !== "direct") {
+  if (traffic.geekSource) {
     return {
       type: traffic.geekSource,
-      sourceName: traffic.source,
+      sourceName: traffic.source || "direct",
     };
   }
 
   const stored = getStoredTouch(STORAGE_LT_KEY, COOKIE_LT_KEY) || getStoredTouch(STORAGE_FT_KEY, COOKIE_FT_KEY);
-  if (stored && stored.geekSource && stored.geekSource !== "direct") {
+  if (stored && stored.geekSource) {
     return {
       type: stored.geekSource,
-      sourceName: stored.source,
+      sourceName: stored.source || "direct",
     };
   }
 
-  return null;
+  return {
+    type: "direct",
+    sourceName: "direct",
+  };
 }

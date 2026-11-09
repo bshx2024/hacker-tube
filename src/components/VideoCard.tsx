@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { VideoItem } from "@/data/videos";
 import { trackVideoPlay, trackStudyOpen } from "@/lib/tracker";
+import { audioHookManager } from "@/lib/audioHook";
 
 interface VideoCardProps {
   video: VideoItem;
@@ -23,6 +24,16 @@ export const VideoCard: React.FC<VideoCardProps> = ({
   isSelectedKeyboard,
   onShare,
 }) => {
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = audioHookManager.subscribe((isPlaying) => {
+      const active = audioHookManager.getActiveVideoId() === video.id;
+      setIsPlayingAudio(active && isPlaying);
+    });
+    return unsubscribe;
+  }, [video.id]);
+
   // Use mid-video frame (hqdefault or 0.jpg which represents middle/preview)
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
 
@@ -35,6 +46,15 @@ export const VideoCard: React.FC<VideoCardProps> = ({
     e.stopPropagation();
     trackStudyOpen(video);
     onOpenStudy(video);
+  };
+
+  const handleAudioHookClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (isPlayingAudio) {
+      audioHookManager.stop();
+    } else {
+      audioHookManager.play(video, "card");
+    }
   };
 
   return (
@@ -64,6 +84,32 @@ export const VideoCard: React.FC<VideoCardProps> = ({
           <span>🎯</span>
           <span>50%</span>
         </div>
+
+        {/* 10s Instant Audio Hook Button */}
+        <button
+          type="button"
+          className={`audio-hook-thumb-btn ${isPlayingAudio ? "playing" : ""}`}
+          onClick={handleAudioHookClick}
+          title={isPlayingAudio ? "Stop 10s audio takeaway" : "⚡ Listen to 10s instant audio takeaway (Zero lag / Mobile friendly)"}
+          aria-label="10s instant audio takeaway"
+        >
+          {isPlayingAudio ? (
+            <>
+              <div className="audio-hook-equalizer">
+                <span className="eq-bar bar-1"></span>
+                <span className="eq-bar bar-2"></span>
+                <span className="eq-bar bar-3"></span>
+                <span className="eq-bar bar-4"></span>
+              </div>
+              <span>Playing 10s</span>
+            </>
+          ) : (
+            <>
+              <span>🎧</span>
+              <span>10s Audio Hook</span>
+            </>
+          )}
+        </button>
 
         <div className="duration-pill">{video.duration}</div>
 
@@ -111,6 +157,19 @@ export const VideoCard: React.FC<VideoCardProps> = ({
         <div className="card-footer">
           <span>via @{video.hnAuthor} ({video.hnYear})</span>
           <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <button
+              className={`card-action-btn ${isPlayingAudio ? "saved" : ""}`}
+              onClick={handleAudioHookClick}
+              title={isPlayingAudio ? "Stop 10s Audio Takeaway" : "Listen to 10s Instant Audio Hook"}
+              style={
+                isPlayingAudio
+                  ? { borderColor: "var(--accent-sky)", color: "var(--accent-sky)", background: "rgba(56, 189, 248, 0.15)" }
+                  : undefined
+              }
+            >
+              <span>{isPlayingAudio ? "⏹" : "🎧"}</span>
+              <span>{isPlayingAudio ? "Stop" : "10s Audio"}</span>
+            </button>
             {onShare && (
               <button
                 className="card-action-btn"

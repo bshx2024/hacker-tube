@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { VideoItem } from "@/data/videos";
 import { trackOutboundClick } from "@/lib/tracker";
+import { audioHookManager } from "@/lib/audioHook";
 
 interface HeroProps {
   onExplore: () => void;
@@ -27,9 +28,18 @@ export const Hero: React.FC<HeroProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isPlayingHeroAudio, setIsPlayingHeroAudio] = useState(false);
   const autoPlayTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const activeVideo = featuredVideos[currentIndex] || featuredVideos[0];
+
+  useEffect(() => {
+    const unsubscribe = audioHookManager.subscribe((isPlaying) => {
+      const active = audioHookManager.getActiveVideoId() === activeVideo?.id;
+      setIsPlayingHeroAudio(active && isPlaying);
+    });
+    return unsubscribe;
+  }, [activeVideo?.id]);
 
   // Auto-rotate every 6 seconds unless user is hovering
   useEffect(() => {
@@ -313,6 +323,49 @@ export const Hero: React.FC<HeroProps> = ({
                   >
                     <span>🧠</span>
                     <span>AI Study Companion</span>
+                  </button>
+
+                  <button
+                    className="nav-btn"
+                    style={{
+                      padding: "10px 18px",
+                      fontSize: "14px",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      background: isPlayingHeroAudio
+                        ? "rgba(56, 189, 248, 0.25)"
+                        : "rgba(56, 189, 248, 0.1)",
+                      borderColor: isPlayingHeroAudio ? "var(--accent-emerald)" : "rgba(56, 189, 248, 0.45)",
+                      color: isPlayingHeroAudio ? "#34d399" : "#38bdf8",
+                      fontWeight: 700,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (isPlayingHeroAudio) {
+                        audioHookManager.stop();
+                      } else {
+                        audioHookManager.play(activeVideo, "hero_spotlight");
+                      }
+                    }}
+                    title="Listen to 10-second instant audio takeaway (Zero lag / Mobile friendly)"
+                  >
+                    {isPlayingHeroAudio ? (
+                      <>
+                        <div className="audio-hook-equalizer">
+                          <span className="eq-bar bar-1"></span>
+                          <span className="eq-bar bar-2"></span>
+                          <span className="eq-bar bar-3"></span>
+                          <span className="eq-bar bar-4"></span>
+                        </div>
+                        <span>Stop 10s Audio</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>🎧</span>
+                        <span>10s Audio Hook</span>
+                      </>
+                    )}
                   </button>
 
                   <button

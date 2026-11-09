@@ -39,7 +39,7 @@ export const ChannelWelcomeBanner: React.FC<ChannelWelcomeBannerProps> = ({
           return;
         }
         const source = getDetectedGeekSource();
-        if (source && source.type !== "direct" && source.type !== "search") {
+        if (source) {
           setDetected(source);
           setIsDismissed(false);
         }
@@ -64,6 +64,26 @@ export const ChannelWelcomeBanner: React.FC<ChannelWelcomeBannerProps> = ({
 
   const getConfig = (): SourceConfig => {
     switch (detected.type) {
+      case "search":
+        return {
+          badge: "🔍 Google Search Discovery",
+          badgeBg: "rgba(59, 130, 246, 0.18)",
+          title: "Looking for Andrej Karpathy's HackerTube?",
+          message:
+            "Welcome! HackerTube Web is an open-source tribute & community extension of hackertube.org. Human-curated from 20 years of Hacker News—zero ads, zero tracking.",
+          ctaText: "Explore Curated Feed",
+          ctaAction: onExplore,
+        };
+      case "direct":
+        return {
+          badge: "⚡ Anti-Algorithm Geek Archive",
+          badgeBg: "rgba(16, 185, 129, 0.18)",
+          title: "An Open-Source Tribute to hackertube.org",
+          message:
+            "Human-curated from 20 years of Hacker News discussions. Zero algorithms, zero ads, 50% honest mid-frame previews.",
+          ctaText: "Explore Curated Feed",
+          ctaAction: onExplore,
+        };
       case "hackernews":
         return {
           badge: "▲ Hacker News",
