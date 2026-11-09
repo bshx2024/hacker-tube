@@ -1315,11 +1315,11 @@ created: 2026-11-09
     h2Derivations: "Mathematical Derivations: IEEE 754 Log Approximation and Newton Method",
     h2Debates: "Community Consensus: Hacker News Debates on Fast Inverse Square Root",
     h2Faq: "Technical FAQ: IEEE 754 Magic Constant, SIMD rsqrtss and Graphics Math",
-    executiveSummary: "The Fast Inverse Square Root algorithm—immortalized in the 1999 Quake III Arena source code by id Software under the function name Q_rsqrt—is celebrated as one of the most brilliant and iconic algorithmic hacks in computer science history. In 3D graphics and physics engines, normalizing vectors requires computing y = 1 / sqrt(x), an operation that historically required floating-point division and square root instructions. The fast inverse square root algorithm solves this reciprocal square root bottleneck. Q_rsqrt computes an extraordinarily precise approximation in a tiny fraction of the time using three profound steps: interpreting a 32-bit IEEE 754 floating-point number as an integer, shifting it right by one bit, subtracting it from the enigmatic magic constant 0x5f3759df, and applying a single iteration of Newton-Raphson approximation. This deep dive systematically deconstructs the mathematical derivations behind the magic constant, demonstrating how the IEEE 754 exponent-mantissa bit layout naturally mimics the logarithm function log2(x).",
+    executiveSummary: "The Fast Inverse Square Root algorithm—immortalized in the 1999 Quake III Arena source code by id Software under the function name Q_rsqrt—is celebrated as one of the most brilliant and iconic algorithmic hacks in computer science history. In 3D graphics and physics engines, computing vector normalization requires the reciprocal root calculation y = 1 / sqrt(x), an operation that historically required floating-point division and square root instructions to find the vector root length. The fast inverse square root algorithm solves this reciprocal square root bottleneck. Q_rsqrt computes an extraordinarily precise approximation in a tiny fraction of the time using three profound steps: interpreting a 32-bit IEEE 754 floating-point number as an integer, shifting it right by one bit, subtracting it from the enigmatic magic constant 0x5f3759df, and applying a single iteration of Newton-Raphson approximation. This deep dive systematically deconstructs the mathematical derivations behind the magic constant, demonstrating how the IEEE 754 exponent-mantissa bit layout naturally mimics the logarithm function log2(x).",
     coreMentalModels: [
       "Vector Normalization Graphics Bottleneck: Every 3D graphics lighting calculation, ray reflection, and physics collision requires dividing a vector by its Euclidean square root length sqrt(x^2 + y^2 + z^2).",
       "The Logarithm Trick in IEEE 754: When an IEEE 754 float is cast directly to an integer, the resulting integer bit pattern is an affine approximation of the base-2 logarithm of the square root.",
-      "Exponent Halving via Bit Shift: Computing x^(-1/2) in log-space is equivalent to multiplying by -1/2, which maps directly to integer division by 2 via (i >> 1).",
+      "Exponent Halving via Bit Shift: Computing x^(-1/2) in log-space is equivalent to multiplying by -1/2, mapping directly to integer division by 2 via (i >> 1) for the square root reciprocal.",
       "Derivation of the Magic Constant 0x5f3759df: The magic constant minimizes the maximum relative error of the piecewise log square root approximation.",
       "Newton-Raphson Quadratic Convergence: A single iteration of Newton-Raphson on f(y) = 1/y^2 - x = 0 computes the reciprocal square root with less than 0.175% relative error.",
       "The Legacy of Hardware-Aware Software Engineering: Understanding low-level bit representation unlocks orders of magnitude performance gains before dedicated silicon instructions exist.",
@@ -1328,7 +1328,7 @@ created: 2026-11-09
       {
         time: "00:00",
         seconds: 0,
-        title: "The 3D Graphics Bottleneck: Why Vector Normalization Required 1/sqrt(x)",
+        title: "The 3D Graphics Bottleneck: Why Vector Normalization Required the 1/sqrt(x) Root",
         slideConcept: "Calculating surface normals and lighting rays millions of times per frame",
         keyTakeaway: "In 1999, x86 floating-point division and square root took up to 70 CPU clock cycles.",
       },
