@@ -11,15 +11,26 @@ interface VideoPageProps {
   params: Promise<{ id: string }>;
 }
 
+const ALIAS_MAP: Record<string, string> = {
+  "fast-inverse-square-root": "carmack-quake-graphics",
+  "inventing-on-principle": "bret-victor-principle",
+  "zero-knowledge-proofs": "dan-boneh-crypto-intro",
+};
+
 export function generateStaticParams() {
-  return CURATED_VIDEOS.map((video) => ({
+  const baseParams = CURATED_VIDEOS.map((video) => ({
     id: video.id,
   }));
+  const aliasParams = Object.keys(ALIAS_MAP).map((alias) => ({
+    id: alias,
+  }));
+  return [...baseParams, ...aliasParams];
 }
 
 export async function generateMetadata(props: VideoPageProps): Promise<Metadata> {
   const { id } = await props.params;
-  const video = CURATED_VIDEOS.find((v) => v.id.toLowerCase() === id.toLowerCase());
+  const targetId = ALIAS_MAP[id.toLowerCase()] || id;
+  const video = CURATED_VIDEOS.find((v) => v.id.toLowerCase() === targetId.toLowerCase());
 
   if (!video) {
     return {
@@ -80,7 +91,8 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
 
 export default async function VideoPage(props: VideoPageProps) {
   const { id } = await props.params;
-  const video = CURATED_VIDEOS.find((v) => v.id.toLowerCase() === id.toLowerCase());
+  const targetId = ALIAS_MAP[id.toLowerCase()] || id;
+  const video = CURATED_VIDEOS.find((v) => v.id.toLowerCase() === targetId.toLowerCase());
 
   if (!video) {
     notFound();
