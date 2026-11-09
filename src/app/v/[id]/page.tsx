@@ -15,6 +15,8 @@ const ALIAS_MAP: Record<string, string> = {
   "fast-inverse-square-root": "carmack-quake-graphics",
   "inventing-on-principle": "bret-victor-principle",
   "zero-knowledge-proofs": "dan-boneh-crypto-intro",
+  "essence-of-calculus-chapter-1": "3b1b-essence-of-calculus",
+  "simple-made-easy": "rich-hickey-simple-made-easy",
 };
 
 export function generateStaticParams() {
@@ -361,7 +363,7 @@ export default async function VideoPage(props: VideoPageProps) {
                 marginBottom: "8px",
               }}
             >
-              {video.title}
+              {studyNote.h1Title || video.title}
             </h1>
 
             <div style={{ fontSize: "14px", color: "var(--text-muted)" }}>

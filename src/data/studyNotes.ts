@@ -28,6 +28,7 @@ export interface LectureFaq {
 
 export interface StudyNote {
   videoId: string;
+  h1Title?: string;
   seoTitle?: string;
   seoDescription?: string;
   h2ExecutiveSummary?: string;
@@ -47,6 +48,7 @@ export interface StudyNote {
 export const STUDY_NOTES_MAP: Record<string, StudyNote> = {
 "karpathy-micrograd": {
     videoId: "karpathy-micrograd",
+    h1Title: "The Spelled-Out Intro to Neural Networks — Andrej Karpathy",
     seoTitle: "The Spelled-Out Intro to Neural Networks: micrograd Notes",
     seoDescription:
       "Master Andrej Karpathy'''s spelled-out intro to neural networks: scalar DAG autograd engines, calculus chain rule backpropagation, and pure Python code.",
@@ -236,6 +238,7 @@ created: ${new Date().toISOString().slice(0, 10)}
 
   "bret-victor-principle": {
     videoId: "bret-victor-principle",
+    h1Title: "Inventing on Principle — Bret Victor",
     seoTitle: "Inventing on Principle: Bret Victor Talk Notes",
     seoDescription: "Master Bret Victor’s Inventing on Principle: immediate feedback loops, reactive programming, dynamic canvases, and Hacker News debates. Full study notes.",
     h2ExecutiveSummary: "Executive Summary: Inventing on Principle and Immediate Tactile Connection",
@@ -383,6 +386,7 @@ created: 2026-11-09
 
   "mother-of-all-demos": {
     videoId: "mother-of-all-demos",
+    h1Title: "The Mother of All Demos 1968 — Douglas Engelbart",
     seoTitle: "The Mother of All Demos 1968: Douglas Engelbart",
     seoDescription: "Explore Douglas Engelbart’s 1968 Mother of All Demos: debut of the mouse, hypertext, collaborative editing, and NLS architecture. Technical study notes.",
     h2ExecutiveSummary: "Executive Summary: Augmenting Human Intellect and the NLS Debut",
@@ -530,6 +534,7 @@ created: 2026-11-09
 
 "karpathy-build-gpt": {
     videoId: "karpathy-build-gpt",
+    h1Title: "Build GPT from Scratch: nanoGPT — Andrej Karpathy",
     seoTitle: "Build GPT from Scratch: Karpathy nanoGPT Notes",
     seoDescription:
       "Build GPT from scratch with Andrej Karpathy: implement nanoGPT in pure PyTorch with causal self-attention, transformer blocks, and cross-entropy loss.",
@@ -719,6 +724,7 @@ created: ${new Date().toISOString().slice(0, 10)}
 
   "rich-hickey-simple-made-easy": {
     videoId: "rich-hickey-simple-made-easy",
+    h1Title: "Simple Made Easy — Rich Hickey",
     seoTitle: "Simple Made Easy: Rich Hickey Lecture Notes",
     seoDescription: "Master Simple Made Easy by Rich Hickey: simple vs easy, uncomplecting state and time, immutable values, and system architecture. Full lecture notes.",
     h2ExecutiveSummary: "Executive Summary: Simple vs Easy and the Danger of Complecting",
@@ -867,6 +873,7 @@ created: 2026-11-09
 
   "casey-muratori-clean-code": {
     videoId: "casey-muratori-clean-code",
+    h1Title: "'Clean' Code, Horrible Performance — Casey Muratori",
     seoTitle: "Clean Code, Horrible Performance: Casey Muratori",
     seoDescription: "Analyze Casey Muratori’s Clean Code, Horrible Performance: vtable penalties, cache misses, switch tables, and data-oriented design. Full study notes.",
     h2ExecutiveSummary: "Executive Summary: Hardware Realities vs Dogmatic Clean Code",
@@ -1014,8 +1021,9 @@ created: 2026-11-09
 
   "3b1b-essence-of-calculus": {
     videoId: "3b1b-essence-of-calculus",
-    seoTitle: "The Essence of Calculus: 3Blue1Brown Notes",
-    seoDescription: "Master The Essence of Calculus with 3Blue1Brown: geometric intuition of derivatives, concentric circle unrolling, and area integrals. Full study notes.",
+    h1Title: "The Essence of Calculus, Chapter 1 — 3Blue1Brown",
+    seoTitle: "The Essence of Calculus Chapter 1: 3Blue1Brown Notes",
+    seoDescription: "Master The Essence of Calculus Chapter 1 with 3Blue1Brown: geometric intuition of derivatives, circle unrolling, and area integrals. Full study notes.",
     h2ExecutiveSummary: "Executive Summary: Geometric Intuition of Derivatives and Integrals",
     h2Timestamps: "Key Timestamps: The Essence of Calculus Chapter 1 Breakdown",
     h2Derivations: "Mathematical Derivations: Infinitesimal Circle Area and Polynomials",
@@ -1161,6 +1169,7 @@ created: 2026-11-09
 
   "patrick-winston-how-to-speak": {
     videoId: "patrick-winston-how-to-speak",
+    h1Title: "How to Speak: MIT Lecture — Patrick Winston",
     seoTitle: "How to Speak: Patrick Winston MIT Lecture Notes",
     seoDescription: "Master Patrick Winston’s How to Speak MIT lecture: the Winston formula, chalkboard pacing, prop usage, slide design, and speech delivery. Full study notes.",
     h2ExecutiveSummary: "Executive Summary: The Winston Formula and Rules of Technical Speaking",
@@ -1308,6 +1317,7 @@ created: 2026-11-09
 
   "carmack-quake-graphics": {
     videoId: "carmack-quake-graphics",
+    h1Title: "Fast Inverse Square Root: Quake III — John Carmack",
     seoTitle: "Fast Inverse Square Root: Quake III Deep Dive",
     seoDescription: "Deconstruct Quake III’s Fast Inverse Square Root: IEEE 754 bit shifts, 0x5f3759df magic constant, and Newton-Raphson iterations. Technical study notes.",
     h2ExecutiveSummary: "Executive Summary: Fast Inverse Square Root and the 0x5f3759df Hack",
@@ -1455,6 +1465,7 @@ created: 2026-11-09
 
 "karpathy-intro-llm": {
     videoId: "karpathy-intro-llm",
+    h1Title: "[1hr Talk] Intro to Large Language Models — Andrej Karpathy",
     seoTitle: "[1hr Talk] Intro to Large Language Models: Karpathy Notes",
     seoDescription:
       "Intro to large language models notes by Andrej Karpathy: pre-training, SFT, RLHF alignment, lossy internet compression, and LLM OS architecture.",
@@ -1628,6 +1639,7 @@ created: ${new Date().toISOString().slice(0, 10)}
 
   "bret-victor-future-programming": {
     videoId: "bret-victor-future-programming",
+    h1Title: "The Future of Programming — Bret Victor",
     seoTitle: "The Future of Programming: Bret Victor DBX Notes",
     seoDescription: "Explore The Future of Programming by Bret Victor: 1973 retro lens, direct manipulation, constraint solvers, and ASCII code critique. Full study notes.",
     h2ExecutiveSummary: "Executive Summary: Escaping the Local Minima of 1970s Textual Coding",
@@ -1775,6 +1787,7 @@ created: 2026-11-09
 
   "dan-boneh-crypto-intro": {
     videoId: "dan-boneh-crypto-intro",
+    h1Title: "Zero Knowledge Proofs — Dan Boneh",
     seoTitle: "Zero Knowledge Proofs: Dan Boneh Lecture Notes",
     seoDescription: "Master Zero Knowledge Proofs with Dan Boneh: completeness, soundness, Fiat-Shamir heuristics, and zk-SNARK polynomial commitments. Free study notes.",
     h2ExecutiveSummary: "Executive Summary: Foundations of Zero Knowledge Proof Protocols",
