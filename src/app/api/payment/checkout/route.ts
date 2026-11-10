@@ -1,0 +1,99 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/core/auth';
+import { db, schema } from '@/core/db';
+import { PLANS, getStripeClient } from '@/core/payment';
+import { nanoid } from 'nanoid';
+
+export async function POST(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Please sign in to upgrade' }, { status: 401 });
+    }
+
+    const { planId = 'pro_monthly', provider = 'stripe' } = await req.json();
+    const plan = PLANS[planId];
+    if (!plan) {
+      return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 });
+    }
+
+    const orderNo = `HT-${Date.now()}-${nanoid(6).toUpperCase()}`;
+    const orderId = nanoid();
+
+    // Record created order in DB
+    await db.insert(schema.order).values({
+      id: orderId,
+      orderNo,
+      userId: session.user.id,
+      userEmail: session.user.email,
+      status: 'created',
+      amount: plan.amount,
+      currency: plan.currency,
+      productId: plan.id,
+      productName: plan.name,
+      paymentType: plan.type,
+      paymentProvider: provider,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.hacker-tube.net';
+    const stripe = getStripeClient();
+
+    if (provider === 'stripe' && stripe) {
+      const checkoutSession = await stripe.checkout.sessions.create({
+        customer_email: session.user.email,
+        line_items: [
+          {
+            price_data: {
+              currency: plan.currency.toLowerCase(),
+              product_data: {
+                name: plan.name,
+                description: plan.description,
+              },
+              unit_amount: plan.amount,
+              ...(plan.type === 'subscription' ? { recurring: { interval: plan.interval || 'month' } } : {}),
+            },
+            quantity: 1,
+          },
+        ],
+        mode: plan.type === 'subscription' ? 'subscription' : 'payment',
+        success_url: `${appUrl}/?payment=success&order_no=${orderNo}`,
+        cancel_url: `${appUrl}/?payment=cancelled`,
+        metadata: {
+          orderNo,
+          userId: session.user.id,
+          planId: plan.id,
+        },
+      });
+
+      return NextResponse.json({
+        success: true,
+        orderNo,
+        checkoutUrl: checkoutSession.url,
+      });
+    }
+
+    // Creem Checkout (MoR) fallback or sandbox checkout URL
+    if (provider === 'creem' && process.env.CREEM_API_KEY) {
+      // If Creem SDK / endpoint configured
+      const creemCheckoutUrl = `https://checkout.creem.io/pay/${plan.id}?order_no=${orderNo}&email=${encodeURIComponent(session.user.email)}`;
+      return NextResponse.json({
+        success: true,
+        orderNo,
+        checkoutUrl: creemCheckoutUrl,
+      });
+    }
+
+    // Sandbox / Mock fallback when keys are not yet configured in production
+    return NextResponse.json({
+      success: true,
+      orderNo,
+      checkoutUrl: `${appUrl}/?payment=sandbox_demo&order_no=${orderNo}&amount=${plan.amount / 100}`,
+      notice: 'Sandbox simulation mode: Live payment keys not set.',
+    });
+  } catch (err: any) {
+    console.error('Checkout error:', err);
+    return NextResponse.json({ error: err.message || 'Failed to initiate checkout' }, { status: 500 });
+  }
+}

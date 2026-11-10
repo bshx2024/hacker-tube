@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# taste-skill
-.taste-skill/
+# sqlite database
+*.db
+*.sqlite
+*.sqlite-journal
+/data/*.db
 

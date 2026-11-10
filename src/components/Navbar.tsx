@@ -2,6 +2,7 @@
 
 import React from "react";
 import { trackOutboundClick } from "@/lib/tracker";
+import { UserNavClient } from "./UserNavClient";
 
 interface NavbarProps {
   savedCount: number;
@@ -112,6 +113,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>🔖</span>
             <span>Saved {savedCount > 0 ? `(${savedCount})` : ""}</span>
           </button>
+
+          <UserNavClient />
         </div>
       </div>
     </header>
