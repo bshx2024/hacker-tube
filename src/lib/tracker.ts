@@ -166,7 +166,7 @@ export function trackHnClick(videoId: string, hnUrl: string): void {
 
 export function trackExportNotes(
   videoId: string,
-  format: "markdown" | "obsidian" | "notion"
+  format: "markdown" | "obsidian" | "obsidian_uri" | "notion"
 ): void {
   trackEvent("export_study_notes", {
     video_id: videoId,

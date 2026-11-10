@@ -274,5 +274,45 @@ export const CURATED_VIDEOS: VideoItem[] = [
       "Proving knowledge of a pre-image without revealing confidential witness parameters.",
       "Applications to privacy-preserving blockchains, verifiable computation offloading, and cryptographic audits."
     ]
+  },
+  {
+    id: "ilya-sutskever-unsupervised-learning",
+    youtubeId: "9zhrxE5PQgY",
+    title: "Deep Unsupervised Learning: Foundations of Generative Pre-training",
+    channelTitle: "Ilya Sutskever (UC Berkeley / OpenAI)",
+    duration: "54:12",
+    durationSeconds: 3252,
+    publishedYear: 2017,
+    topic: "AI & Machine Learning",
+    hnMentions: 72,
+    hnExcerpt: "Years before GPT-3, Ilya Sutskever derived why predicting the next token is equivalent to maximum likelihood compression of world structure. The true philosophical and mathematical origin of generative AI.",
+    hnAuthor: "gwern",
+    hnYear: 2017,
+    hnDiscussionUrl: "https://news.ycombinator.com/item?id=14092144",
+    aiKeyTakeaways: [
+      "Next-token prediction as compression: optimal next-step prediction mathematically forces the model to construct an internal world simulator.",
+      "Maximum likelihood estimation (MLE) over sequence distributions and the connection between cross-entropy loss and Kolmogorov complexity.",
+      "Evidence Lower Bound (ELBO) and variational autoencoders compared with purely autoregressive sequence modeling."
+    ]
+  },
+  {
+    id: "yann-lecun-world-models-jepa",
+    youtubeId: "DokLw1tILlw",
+    title: "From Machine Learning to Autonomous Intelligence: World Models & JEPA",
+    channelTitle: "Yann LeCun (Meta AI / NYU)",
+    duration: "1:08:45",
+    durationSeconds: 4125,
+    publishedYear: 2024,
+    topic: "AI & Machine Learning",
+    hnMentions: 65,
+    hnExcerpt: "Yann LeCun systematically dismantles autoregressive LLMs for reasoning, proving why generative token prediction compounds errors exponentially and deriving Energy-Based Models and Joint Embedding Predictive Architectures (JEPA).",
+    hnAuthor: "ylecun_reader",
+    hnYear: 2024,
+    hnDiscussionUrl: "https://news.ycombinator.com/item?id=39371285",
+    aiKeyTakeaways: [
+      "Why generative autoregression collapses in continuous space: predicting pixels or exact future states is fundamentally intractable under uncertainty.",
+      "Energy-Based Models (EBM): constructing scalar energy surfaces where valid real-world transitions have low energy and impossible ones have high energy.",
+      "Joint Embedding Predictive Architecture (JEPA) & VICReg regularizer: predicting abstract representations while penalizing informational collapse."
+    ]
   }
 ];

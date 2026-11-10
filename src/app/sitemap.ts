@@ -8,6 +8,8 @@ const KEYWORD_ALIASES = [
   "essence-of-calculus-chapter-1",
   "zero-knowledge-proofs",
   "inventing-on-principle",
+  "deep-unsupervised-learning",
+  "world-models-jepa",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

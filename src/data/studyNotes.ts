@@ -1933,6 +1933,255 @@ tags:
 created: 2026-11-09
 ---`
   },
+
+  "ilya-sutskever-unsupervised-learning": {
+    videoId: "ilya-sutskever-unsupervised-learning",
+    h1Title: "Deep Unsupervised Learning — Ilya Sutskever",
+    seoTitle: "Deep Unsupervised Learning: Ilya Sutskever Lecture Notes",
+    seoDescription: "Master Ilya Sutskever's deep unsupervised learning: maximum likelihood compression, next-token prediction world models, ELBO derivations, and autoregressive scaling.",
+    h2ExecutiveSummary: "Executive Summary: The Mathematical Foundations of Generative Pre-training",
+    h2Timestamps: "Key Timestamps: Ilya Sutskever Deep Unsupervised Learning Breakdown",
+    h2Derivations: "Mathematical Derivations: Maximum Likelihood, ELBO & Compression Bounds",
+    h2Debates: "Community Consensus: Hacker News Debates on Unsupervised Pre-training",
+    h2Faq: "Technical FAQ: Next-Token Prediction, Autoregressive Models and World Simulation",
+    executiveSummary:
+      "Delivered at UC Berkeley CS294, this landmark lecture by Ilya Sutskever (co-founder of OpenAI and safe superintelligence pioneer) provides the foundational theoretical and mathematical bedrock for generative pre-training. Years before GPT-3, Sutskever rigorously proves that unsupervised learning—specifically next-step autoregressive sequence prediction—is mathematically equivalent to universal data compression. By minimizing cross-entropy loss over vast corpora of sequence data, a neural network is mathematically forced to model the underlying causal mechanisms, latent variables, and logical structures of the data-generating distribution. Sutskever systematically deconstructs the spectrum of generative modeling: Autoregressive models (PixelRNN, WaveNet, Transformers), Variational Autoencoders (VAEs), and Generative Adversarial Networks (GANs), establishing why density estimation and exact likelihood optimization offer the most stable scaling laws for artificial general intelligence.",
+    coreMentalModels: [
+      "Compression as Intelligence: Optimal prediction of the next token requires an internal simulator of the physical and psychological processes that produced the sequence.",
+      "The Chain Rule of Probability: Any joint probability distribution P(x_1, ..., x_T) can be factored into an exact product of conditional probabilities without architectural loss.",
+      "Maximum Likelihood Estimation (MLE): Training a generative model under cross-entropy directly minimizes the Kullback-Leibler (KL) divergence between true data distribution and model distribution.",
+      "Latent Variable Modeling: Intractable posterior distributions can be bounded from below using the Evidence Lower Bound (ELBO) via variational distributions.",
+      "Autoregressive Tractability vs Latent Representation: Autoregressive models compute exact likelihoods without sampling approximations, providing the most reliable gradient signal for massive compute scaling.",
+      "Kolmogorov Complexity and Inductive Bias: Deep neural architectures parameterize efficient computational programs that discover compact regularities in unstructured sensory data."
+    ],
+    keyTimestamps: [
+      {
+        time: "00:00",
+        seconds: 0,
+        title: "Why Unsupervised Learning is the Core Challenge of AI",
+        slideConcept: "Supervised labels are finite; sensory data of the world is virtually infinite",
+        keyTakeaway: "Supervised learning provides only bits of feedback per sample, while predicting raw reality provides gigabits of gradient signal."
+      },
+      {
+        time: "12:30",
+        seconds: 750,
+        title: "Exact Likelihood Autoregressive Models & Sequence Factorization",
+        slideConcept: "P(x) = Prod P(x_t | x_<t) via recurrent and attention architectures",
+        keyTakeaway: "Autoregressive factorization converts arbitrary complex multi-dimensional joint distributions into 1D conditional classification tasks."
+      },
+      {
+        time: "28:45",
+        seconds: 1725,
+        title: "Variational Autoencoders and the Evidence Lower Bound (ELBO)",
+        slideConcept: "Jensen's Inequality applied to log marginal likelihood: log P(x) >= E[log P(x|z)] - KL(q(z|x) || p(z))",
+        keyTakeaway: "Derivation of variational inference, reparameterization trick, and the trade-off between reconstruction fidelity and latent manifold regularization."
+      },
+      {
+        time: "42:15",
+        seconds: 2535,
+        title: "Scaling Laws, World Models & Path to General Intelligence",
+        slideConcept: "Model capacity, compute budgets, and predicting next words as complete reasoning",
+        keyTakeaway: "Predicting the next word in an Agatha Christie novel requires knowing who committed the murder; next-token prediction is complete world modeling."
+      }
+    ],
+    mathDerivations: [
+      {
+        title: "Autoregressive Factorization & Cross-Entropy Maximum Likelihood",
+        formula: "\\mathcal{L}(\\theta) = -\\frac{1}{N}\\sum_{i=1}^N \\sum_{t=1}^{T_i} \\log P_\\theta(x_{i,t} \\mid x_{i,<t}) = \\mathbb{E}_{x \\sim P_{\\text{data}}}[-\\log P_\\theta(x)]",
+        explanation:
+          "By applying the product rule of probability, any multi-variable distribution factors exactly as a chain of conditionals. Minimizing the negative log-likelihood (cross-entropy) over data samples is mathematically equivalent to minimizing the Kullback-Leibler divergence D_KL(P_data || P_theta).",
+        codeSnippet: "def autoregressive_loss(logits, targets):\n    # logits: [batch, seq_len, vocab_size]\n    # targets: [batch, seq_len]\n    B, T, C = logits.shape\n    loss = F.cross_entropy(logits.view(B*T, C), targets.view(B*T))\n    return loss"
+      },
+      {
+        title: "The Evidence Lower Bound (ELBO) Derivation",
+        formula: "\\log P_\\theta(x) = \\mathbb{E}_{q_\\phi(z|x)}\\left[\\log \\frac{P_\\theta(x, z)}{q_\\phi(z|x)}\\right] + D_{\\text{KL}}(q_\\phi(z|x) \\parallel P_\\theta(z|x)) \\ge \\mathbb{E}_{q_\\phi(z|x)}[\\log P_\\theta(x|z)] - D_{\\text{KL}}(q_\\phi(z|x) \\parallel P(z))",
+        explanation:
+          "Because the true posterior P_theta(z|x) is intractable, we introduce a tractable variational distribution q_phi(z|x). Since KL divergence is non-negative, dropping the second term yields the ELBO, consisting of a reconstruction term and a prior regularization term."
+      },
+      {
+        title: "Information-Theoretic Compression Bound",
+        formula: "H(P_{\\text{data}}) \\le \\mathbb{E}_{x \\sim P_{\\text{data}}}\\left[-\\log_2 P_\\theta(x)\\right] = H(P_{\\text{data}}) + D_{\\text{KL}}(P_{\\text{data}} \\parallel P_\\theta)",
+        explanation:
+          "According to Shannon's source coding theorem, the optimal code length for data generated from P_data under a model P_theta is bounded by the cross-entropy. Zero KL-divergence means achieving the theoretical entropy limit of universe compression."
+      }
+    ],
+    hnDebates: [
+      {
+        topic: "Next-Token Prediction: Superficial Stochastic Parrot vs True Reasoning",
+        consensus:
+          "Hacker News engineers and researchers widely agree with Sutskever: to predict text accurately at scale, an optimizer must discover causal models of reality, physical constraints, and logic.",
+        counterArgument:
+          "Skeptics argue that pure next-token prediction lacks an explicit world simulation state, causing fragile hallucinations when encountering out-of-distribution reasoning chains.",
+        topCommentQuote:
+          "Ilya was the one who saw before anyone else that predicting the next token isn't a parlor trick—it's mathematically compression, and compression of data produced by minds is simulation of mind.",
+        author: "gwern"
+      },
+      {
+        topic: "Autoregressive Likelihood vs GAN Adversarial Minimax",
+        consensus:
+          "In 2017 when GANs were the hype, Sutskever insisted that exact likelihood models would scale far better with compute. History completely validated his thesis.",
+        counterArgument:
+          "GAN and diffusion proponents pointed out that pixel-space autoregression (PixelCNN) is computationally inefficient for high-resolution visual generation.",
+        topCommentQuote:
+          "Watching this lecture in hindsight is incredible. Everyone was obsessed with GAN stability hacks, while Ilya calmly laid out why autoregressive density estimation was the true highway to AGI.",
+        author: "soumith"
+      }
+    ],
+    faqs: [
+      {
+        question: "Why does Ilya Sutskever equate unsupervised learning with universal data compression?",
+        answer: "Under Shannon's source coding theorem, the shortest program that can predict the next token in a sequence must discover the underlying algorithmic regularities and causal invariants of the process that generated the sequence."
+      },
+      {
+        question: "What is the key advantage of Autoregressive models over Variational Autoencoders (VAEs)?",
+        answer: "Autoregressive models compute exact log-likelihoods without variational approximations or blurry average reconstructions, enabling stable optimization at massive compute scales."
+      },
+      {
+        question: "How does next-token prediction force a neural network to learn mathematics and logic?",
+        answer: "If a document states '37 + 58 = 95', the only way to predict '95' with zero loss is to execute the addition algorithm internally. Scale forces the model to generalize reasoning across all domains."
+      }
+    ],
+    obsidianFrontmatter: `---
+title: "Deep Unsupervised Learning: Foundations of Generative Pre-training"
+speaker: "Ilya Sutskever (UC Berkeley / OpenAI)"
+source: "HackerTube"
+url: "https://www.hacker-tube.net/v/ilya-sutskever-unsupervised-learning"
+youtubeId: "9zhrxE5PQgY"
+topic: "AI & Machine Learning"
+tags:
+  - machine-learning
+  - ilya-sutskever
+  - unsupervised-learning
+  - generative-pre-training
+  - mathematical-derivations
+  - hackertube-curated
+created: ${new Date().toISOString().slice(0, 10)}
+---`
+  },
+
+  "yann-lecun-world-models-jepa": {
+    videoId: "yann-lecun-world-models-jepa",
+    h1Title: "From Machine Learning to Autonomous Intelligence — Yann LeCun",
+    seoTitle: "World Models & JEPA: Yann LeCun Architecture Notes",
+    seoDescription: "Explore Yann LeCun's world models: Joint Embedding Predictive Architecture (JEPA), Energy-Based Models (EBM), and VICReg non-contrastive loss. Full study notes.",
+    h2ExecutiveSummary: "Executive Summary: Beyond Autoregressive LLMs to Joint Embedding World Models",
+    h2Timestamps: "Key Timestamps: Yann LeCun World Models and JEPA Breakdown",
+    h2Derivations: "Mathematical Derivations: Energy-Based Models, Free Energy & VICReg",
+    h2Debates: "Community Consensus: Hacker News Debates on LLMs vs World Models",
+    h2Faq: "Technical FAQ: JEPA, Representation Collapse, VICReg and Energy-Based Planning",
+    executiveSummary:
+      "In this authoritative lecture, Turing Award laureate and Meta Chief AI Scientist Yann LeCun delivers a systematic critique of contemporary autoregressive Large Language Models (LLMs) and presents the mathematical and conceptual architecture for genuine Autonomous Machine Intelligence (AMI). LeCun argues that predicting tokens one by one is an evolutionary dead end for physical understanding and planning because auto-regressive error accumulation grows exponentially (divergence from the true manifold). Furthermore, predicting exact pixels or continuous state variables in generative models fails due to multi-modal uncertainty. LeCun derives the Joint Embedding Predictive Architecture (JEPA) and Energy-Based Models (EBM), showing how hierarchical latent state representations combined with non-contrastive regularization (VICReg) allow intelligent agents to learn world models, perceive abstract invariants, and perform model-predictive control planning in abstract representation space.",
+    coreMentalModels: [
+      "Autoregressive Hallucination Theorem: Autoregressive generation compounds probability errors over sequence steps; the probability of staying on the correct manifold decays exponentially O(e^{-alpha T}).",
+      "Generative vs Joint-Embedding: Generative architectures (VAEs, diffusion, LLMs) waste enormous capacity trying to predict unpredictable details (leaf patterns, wallpaper texture); JEPA predicts only in abstract feature space.",
+      "Energy-Based Models (EBM): Rather than computing normalized probabilities P(y|x) which requires impossible integrals, EBMs assign low scalar energy to compatible (x, y) pairs and high energy to incompatible ones.",
+      "Informational Collapse Avoidance: In non-contrastive joint embedding, the network naturally wants to output a constant vector (zero energy everywhere). Regularizers like VICReg mathematically enforce non-zero variance and orthogonal covariance.",
+      "Hierarchical World Models: Multi-level JEPAs allow reasoning at multiple timescales: low-level representations predict fractions of seconds, while high-level abstractions predict hours or days.",
+      "Perception-Action-Planning Loop: Autonomous intelligence consists of a Configurator, World Model, Actor, Critic, and Perception system optimized via Gradient-Based Model Predictive Control."
+    ],
+    keyTimestamps: [
+      {
+        time: "00:00",
+        seconds: 0,
+        title: "The Limits of Autoregressive LLMs & Animal Intelligence",
+        slideConcept: "A 4-year-old child has seen 50x more visual data than all internet text combined",
+        keyTakeaway: "Animals learn intuitive physics, gravity, and object permanence effortlessly without language; current LLMs lack common sense grounded in physical reality."
+      },
+      {
+        time: "18:40",
+        seconds: 1120,
+        title: "Energy-Based Models vs Normalized Probabilistic Models",
+        slideConcept: "E(x, y) energy surface; the intractable denominator int exp(-E(x, y')) dy'",
+        keyTakeaway: "In high-dimensional continuous spaces, normalization is intractable; assigning energy scores to pairs directly solves continuous decision-making."
+      },
+      {
+        time: "36:15",
+        seconds: 2175,
+        title: "Joint Embedding Predictive Architecture (JEPA) Mechanics",
+        slideConcept: "s_x = Enc(x), s_y = Enc(y), Pred(s_x, z) -> s_y",
+        keyTakeaway: "Predicting representations rather than pixels eliminates the need to generate irrelevant background noise, focusing capacity on causal structure."
+      },
+      {
+        time: "52:30",
+        seconds: 3150,
+        title: "VICReg Formulation: Variance, Invariance, Covariance",
+        slideConcept: "Non-contrastive regularization to prevent representation collapse without negative pairs",
+        keyTakeaway: "How explicitly penalizing low coordinate variance and high cross-correlation forces orthogonal latent dimensions."
+      }
+    ],
+    mathDerivations: [
+      {
+        title: "Free Energy Formulation in Energy-Based Models",
+        formula: "\\mathcal{F}_\\beta(x, y) = -\\frac{1}{\\beta} \\log \\int_{z} e^{-\\beta E(x, y, z)} dz, \\quad \\lim_{\\beta \\to \\infty} \\mathcal{F}_\\beta(x, y) = \\min_{z} E(x, y, z)",
+        explanation:
+          "When predicting future y from x under latent uncertainty z (e.g., multiple plausible future paths), the free energy marginalizes over latent variables. At zero temperature (beta -> infty), it reduces to finding the optimal latent variable that minimizes the energy of the pair."
+      },
+      {
+        title: "JEPA Prediction Loss in Latent Space",
+        formula: "s_x = \\text{Enc}_x(x), \\quad s_y = \\text{Enc}_y(y), \\quad \\mathcal{L}_{\\text{pred}} = \\| \\text{Pred}(s_x, z) - s_y \\|_2^2",
+        explanation:
+          "Instead of predicting raw pixels y from x, JEPA maps both through encoders and predicts the representation s_y. The loss is computed strictly in representation space, making the system invariant to unpredictable high-frequency noise."
+      },
+      {
+        title: "VICReg Non-Contrastive Regularization Loss",
+        formula: "\\mathcal{L}_{\\text{VICReg}} = \\lambda \\mathcal{D}(s_x, s_y) + \\mu \\sum_{j=1}^d \\max(0, \\gamma - \\sigma(Z_{\\cdot, j})) + \\nu \\sum_{i \\ne j} [C(Z)]_{i, j}^2",
+        explanation:
+          "The three terms represent: (1) Invariance D(s_x, s_y) matching corresponding embeddings; (2) Variance ensuring every feature dimension maintains standard deviation above threshold gamma to prevent collapse to a point; (3) Covariance driving off-diagonal cross-correlations to zero to eliminate redundant representations."
+      }
+    ],
+    hnDebates: [
+      {
+        topic: "Autoregressive LLMs (Sutskever/OpenAI) vs Joint Embedding (LeCun/Meta)",
+        consensus:
+          "Hacker News engineers view this as the defining architectural debate of modern AI: while LLMs excel at symbolic text, JEPA is mathematically necessary for real-world robotics and spatial physics.",
+        counterArgument:
+          "LLM advocates argue that scaling autoregressive text with chain-of-thought and code interpreter tools has surpassed many predictions, while world model implementations remain hard to train at scale.",
+        topCommentQuote:
+          "LeCun’s paper on A Path Towards Autonomous Machine Intelligence is the cleanest conceptual critique of generative slop. You simply cannot predict the position of every dust particle to decide where to steer a car.",
+        author: "roboticist_hn"
+      },
+      {
+        topic: "Representation Collapse: Contrastive vs Non-Contrastive Approaches",
+        consensus:
+          "Non-contrastive methods like VICReg and I-JEPA provide vastly better sample efficiency because they do not require mining millions of artificial negative pairs.",
+        counterArgument:
+          "Tuning the balance between variance, invariance, and covariance loss weights (lambda, mu, nu) requires delicate hyperparameter scheduling.",
+        topCommentQuote:
+          "VICReg is one of the most elegant loss functions ever devised in self-supervised learning. It mathematically guarantees that dimensions don't collapse without needing negative samples.",
+        author: "ylecun_fan"
+      }
+    ],
+    faqs: [
+      {
+        question: "Why does Yann LeCun state that generative autoregressive models are doomed for physical planning?",
+        answer: "Because autoregression predicts exact future states in output space. In the real world, the future is uncertain and continuous. Trying to generate every pixel or token causes catastrophic error accumulation O(e^T)."
+      },
+      {
+        question: "What is the difference between Generative AI and Joint Embedding Architecture (JEPA)?",
+        answer: "Generative AI tries to reconstruct or predict the full sensory input (pixels, audio, text). JEPA predicts only the abstract feature representation, discarding irrelevant details like grass motion or background noise."
+      },
+      {
+        question: "How does VICReg prevent representation collapse without negative pairs?",
+        answer: "VICReg explicitly adds a variance loss (forcing each embedding dimension's standard deviation >= 1) and a covariance loss (forcing off-diagonal covariance to 0), making collapse mathematically impossible."
+      }
+    ],
+    obsidianFrontmatter: `---
+title: "From Machine Learning to Autonomous Intelligence: World Models & JEPA"
+speaker: "Yann LeCun (Meta AI / NYU)"
+source: "HackerTube"
+url: "https://www.hacker-tube.net/v/yann-lecun-world-models-jepa"
+youtubeId: "DokLw1tILlw"
+topic: "AI & Machine Learning"
+tags:
+  - machine-learning
+  - yann-lecun
+  - world-models
+  - jepa
+  - energy-based-models
+  - hackertube-curated
+created: ${new Date().toISOString().slice(0, 10)}
+---`
+  },
 };
 
 export function getStudyNoteForVideo(videoId: string, title: string, channel: string, topic: string, keyTakeaways: string[], hnExcerpt: string, hnAuthor: string, youtubeId: string): StudyNote {

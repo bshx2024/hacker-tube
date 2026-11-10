@@ -18,6 +18,8 @@ const ALIAS_MAP: Record<string, string> = {
   "zero-knowledge-proofs": "dan-boneh-crypto-intro",
   "essence-of-calculus-chapter-1": "3b1b-essence-of-calculus",
   "simple-made-easy": "rich-hickey-simple-made-easy",
+  "deep-unsupervised-learning": "ilya-sutskever-unsupervised-learning",
+  "world-models-jepa": "yann-lecun-world-models-jepa",
 };
 
 const REVERSE_ALIAS_MAP: Record<string, string> = Object.fromEntries(
@@ -132,7 +134,7 @@ export default async function VideoPage(props: VideoPageProps) {
 
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
 
-  const videoObject: Record<string, any> = {
+  const videoObject: Record<string, unknown> = {
     "@type": "VideoObject",
     name: video.title,
     description: studyNote.seoDescription || video.aiKeyTakeaways.join(". ") || video.hnExcerpt,
@@ -166,7 +168,7 @@ export default async function VideoPage(props: VideoPageProps) {
     });
   }
 
-  const graphList: any[] = [
+  const graphList: Record<string, unknown>[] = [
     videoObject,
     {
       "@type": "TechArticle",

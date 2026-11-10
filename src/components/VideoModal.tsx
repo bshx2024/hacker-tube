@@ -186,6 +186,20 @@ ${studyNote.hnDebates
     }
   };
 
+  const handleOpenObsidianUri = () => {
+    try {
+      const content = generateMarkdownContent();
+      const sanitizedTitle = video.title.replace(/[\\/:*?"<>|]/g, "_");
+      const noteName = `HackerTube-${sanitizedTitle}`;
+      const uri = `obsidian://new?name=${encodeURIComponent(noteName)}&content=${encodeURIComponent(content)}`;
+      window.location.href = uri;
+      trackExportNotes(video.id, "obsidian_uri");
+      showToast("✓ Opened in local Obsidian vault! (Click 'Open Obsidian' if prompted)");
+    } catch {
+      showToast("⚠️ Could not trigger Obsidian URI.");
+    }
+  };
+
   const handleCopyNotion = async () => {
     try {
       const content = generateMarkdownContent();
@@ -258,6 +272,16 @@ ${studyNote.hnDebates
             >
               <span>📋</span>
               <span>Copy Markdown</span>
+            </button>
+
+            <button
+              className="export-tool-btn"
+              onClick={handleOpenObsidianUri}
+              title="Directly create and open this note in your local Obsidian app via obsidian:// URI"
+              style={{ borderColor: "rgba(168, 85, 247, 0.45)", color: "#c084fc", fontWeight: 600 }}
+            >
+              <span>🔮</span>
+              <span>Open in Obsidian</span>
             </button>
 
             <button
