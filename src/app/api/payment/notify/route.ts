@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, schema } from '@/core/db';
-import { getStripeClient } from '@/core/payment';
+import { getPaymentGatewayConfig, getStripeClientAsync } from '@/core/payment';
 import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
@@ -8,10 +8,11 @@ export async function POST(req: NextRequest) {
   try {
     const rawBody = await req.text();
     const signature = req.headers.get('stripe-signature');
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    const gatewayConfig = await getPaymentGatewayConfig();
+    const webhookSecret = gatewayConfig.stripeWebhookSecret || process.env.STRIPE_WEBHOOK_SECRET;
 
     let event: Record<string, unknown> | null = null;
-    const stripe = getStripeClient();
+    const stripe = await getStripeClientAsync();
 
     if (stripe && signature && webhookSecret) {
       try {

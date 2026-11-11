@@ -188,3 +188,12 @@ export const subscription = sqliteTable(
     index('idx_subscription_id').on(table.subscriptionId),
   ]
 );
+
+export const systemSetting = sqliteTable('system_setting', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+    .default(sqliteNowMs)
+    .$onUpdate(() => new Date())
+    .notNull(),
+});

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/core/auth';
 import { db, schema } from '@/core/db';
-import { PLANS, getStripeClient } from '@/core/payment';
+import { PLANS, getPaymentGatewayConfig, getStripeClientAsync } from '@/core/payment';
 import { nanoid } from 'nanoid';
 
 export async function POST(req: NextRequest) {
@@ -11,7 +11,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Please sign in to upgrade' }, { status: 401 });
     }
 
-    const { planId = 'pro_monthly', provider = 'stripe' } = await req.json();
+    const gatewayConfig = await getPaymentGatewayConfig();
+    const { planId = 'pro_monthly', provider = gatewayConfig.activeProvider || 'stripe' } = await req.json();
     const plan = PLANS[planId];
     if (!plan) {
       return NextResponse.json({ error: 'Invalid plan selected' }, { status: 400 });
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
     });
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.hacker-tube.net';
-    const stripe = getStripeClient();
+    const stripe = await getStripeClientAsync();
 
     if (provider === 'stripe' && stripe) {
       const checkoutSession = await stripe.checkout.sessions.create({
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Creem Checkout (MoR) fallback or sandbox checkout URL
-    if (provider === 'creem' && process.env.CREEM_API_KEY) {
+    if (provider === 'creem' && (gatewayConfig.creemApiKey || process.env.CREEM_API_KEY)) {
       // If Creem SDK / endpoint configured
       const creemCheckoutUrl = `https://checkout.creem.io/pay/${plan.id}?order_no=${orderNo}&email=${encodeURIComponent(session.user.email)}`;
       return NextResponse.json({

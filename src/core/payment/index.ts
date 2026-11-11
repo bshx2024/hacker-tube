@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { db, schema } from '../db';
 
 export interface PlanConfig {
   id: string;
@@ -32,6 +33,34 @@ export const PLANS: Record<string, PlanConfig> = {
     credits: 10,
   },
 };
+
+export async function getPaymentGatewayConfig() {
+  let dbSettings = new Map<string, string>();
+  try {
+    const rows = await db.select().from(schema.systemSetting);
+    dbSettings = new Map(rows.map((r) => [r.key, r.value]));
+  } catch {}
+
+  const stripeSecretKey = dbSettings.get('STRIPE_SECRET_KEY') || process.env.STRIPE_SECRET_KEY || '';
+  const stripeWebhookSecret = dbSettings.get('STRIPE_WEBHOOK_SECRET') || process.env.STRIPE_WEBHOOK_SECRET || '';
+  const creemApiKey = dbSettings.get('CREEM_API_KEY') || process.env.CREEM_API_KEY || '';
+  const creemWebhookSecret = dbSettings.get('CREEM_WEBHOOK_SECRET') || process.env.CREEM_WEBHOOK_SECRET || '';
+  const activeProvider = dbSettings.get('ACTIVE_PAYMENT_PROVIDER') || (stripeSecretKey ? 'stripe' : creemApiKey ? 'creem' : 'stripe');
+
+  return {
+    stripeSecretKey,
+    stripeWebhookSecret,
+    creemApiKey,
+    creemWebhookSecret,
+    activeProvider,
+  };
+}
+
+export async function getStripeClientAsync(): Promise<Stripe | null> {
+  const config = await getPaymentGatewayConfig();
+  if (!config.stripeSecretKey) return null;
+  return new Stripe(config.stripeSecretKey);
+}
 
 export function getStripeClient(): Stripe | null {
   const secretKey = process.env.STRIPE_SECRET_KEY;

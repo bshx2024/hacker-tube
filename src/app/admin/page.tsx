@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"users" | "orders" | "subscriptions" | "surveys">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "orders" | "subscriptions" | "surveys" | "settings">("users");
 
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -66,6 +66,25 @@ export default function AdminDashboardPage() {
   const [subscriptions, setSubscriptions] = useState<AdminSubscription[]>([]);
   const [surveys, setSurveys] = useState<AdminSurvey[]>([]);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const [paymentConfig, setPaymentConfig] = useState({
+    activeProvider: "stripe",
+    isStripeConfigured: false,
+    stripeKeyMasked: "",
+    isStripeWebhookConfigured: false,
+    stripeWebhookMasked: "",
+    isCreemConfigured: false,
+    creemKeyMasked: "",
+    webhookUrl: "https://www.hacker-tube.net/api/payment/notify",
+  });
+
+  const [formStripeKey, setFormStripeKey] = useState("");
+  const [formStripeWebhook, setFormStripeWebhook] = useState("");
+  const [formCreemKey, setFormCreemKey] = useState("");
+  const [formProvider, setFormProvider] = useState("stripe");
+  const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [copiedWebhook, setCopiedWebhook] = useState(false);
 
   const refreshData = async () => {
     try {
@@ -89,6 +108,10 @@ export default function AdminDashboardPage() {
       setOrders(data.orders || []);
       setSubscriptions(data.subscriptions || []);
       setSurveys(data.surveys || []);
+      if (data.paymentConfig) {
+        setPaymentConfig(data.paymentConfig);
+        setFormProvider(data.paymentConfig.activeProvider || "stripe");
+      }
     } catch {
       setErrorMsg("Network error loading admin console.");
     } finally {
@@ -132,6 +155,10 @@ export default function AdminDashboardPage() {
         setOrders(data.orders || []);
         setSubscriptions(data.subscriptions || []);
         setSurveys(data.surveys || []);
+        if (data.paymentConfig) {
+          setPaymentConfig(data.paymentConfig);
+          setFormProvider(data.paymentConfig.activeProvider || "stripe");
+        }
         setLoading(false);
       })
       .catch(() => {
@@ -163,6 +190,38 @@ export default function AdminDashboardPage() {
       alert("Network error.");
     } finally {
       setActionLoading(null);
+    }
+  };
+
+  const handleSaveGateway = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setSaveLoading(true);
+      setSaveSuccessMsg(null);
+      const res = await fetch("/api/admin/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "save_gateway_settings",
+          stripeSecretKey: formStripeKey || undefined,
+          stripeWebhookSecret: formStripeWebhook || undefined,
+          creemApiKey: formCreemKey || undefined,
+          activeProvider: formProvider,
+        }),
+      });
+      if (res.ok) {
+        setSaveSuccessMsg("Payment gateway settings saved successfully! Live payments are now active.");
+        setFormStripeKey("");
+        setFormStripeWebhook("");
+        setFormCreemKey("");
+        await refreshData();
+      } else {
+        alert("Failed to save gateway configuration.");
+      }
+    } catch {
+      alert("Network error.");
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -357,8 +416,8 @@ export default function AdminDashboardPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid var(--border-subtle)", marginBottom: "24px" }}>
-              {(["users", "orders", "subscriptions", "surveys"] as const).map((tab) => (
+            <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid var(--border-subtle)", marginBottom: "24px", overflowX: "auto" }}>
+              {(["users", "orders", "subscriptions", "surveys", "settings"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -370,11 +429,20 @@ export default function AdminDashboardPage() {
                     color: activeTab === tab ? "var(--accent-emerald)" : "var(--text-secondary)",
                     fontWeight: activeTab === tab ? 700 : 500,
                     cursor: "pointer",
-                    textTransform: "capitalize",
+                    textTransform: tab === "settings" ? "none" : "capitalize",
                     fontSize: "14px",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  {tab === "users" ? `Users (${users.length})` : tab === "orders" ? `Orders (${orders.length})` : tab === "subscriptions" ? `Subscriptions (${subscriptions.length})` : `Surveys (${surveys.length})`}
+                  {tab === "users"
+                    ? `Users (${users.length})`
+                    : tab === "orders"
+                    ? `Orders (${orders.length})`
+                    : tab === "subscriptions"
+                    ? `Subscriptions (${subscriptions.length})`
+                    : tab === "surveys"
+                    ? `Surveys (${surveys.length})`
+                    : "⚙️ Payment Gateway (网关设置)"}
                 </button>
               ))}
             </div>
@@ -556,7 +624,243 @@ export default function AdminDashboardPage() {
               </div>
             )}
 
-            {/* Tab 4: Micro-Surveys */}
+            {/* Tab 5: Payment Gateway Settings */}
+            {activeTab === "settings" && (
+              <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+                {saveSuccessMsg && (
+                  <div
+                    style={{
+                      padding: "12px 16px",
+                      background: "rgba(16, 185, 129, 0.15)",
+                      border: "1px solid rgba(16, 185, 129, 0.4)",
+                      borderRadius: "8px",
+                      color: "#34d399",
+                      fontSize: "14px",
+                      marginBottom: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span>🎉</span>
+                    <span>{saveSuccessMsg}</span>
+                  </div>
+                )}
+
+                {/* Status Cards */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid var(--border-subtle)", borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>Stripe API Status</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "16px" }}>{paymentConfig.isStripeConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: paymentConfig.isStripeConfigured ? "var(--accent-emerald)" : "var(--text-muted)" }}>
+                        {paymentConfig.isStripeConfigured ? "Active & Ready" : "Not Configured"}
+                      </strong>
+                    </div>
+                    {paymentConfig.stripeKeyMasked && (
+                      <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", marginTop: "6px" }}>
+                        Key: {paymentConfig.stripeKeyMasked}
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid var(--border-subtle)", borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>Webhook Verification</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "16px" }}>{paymentConfig.isStripeWebhookConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: paymentConfig.isStripeWebhookConfigured ? "var(--accent-emerald)" : "var(--text-muted)" }}>
+                        {paymentConfig.isStripeWebhookConfigured ? "Verified (Auto-Upgrade)" : "Missing Secret"}
+                      </strong>
+                    </div>
+                    {paymentConfig.stripeWebhookMasked && (
+                      <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", marginTop: "6px" }}>
+                        Secret: {paymentConfig.stripeWebhookMasked}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Form card */}
+                <form
+                  onSubmit={handleSaveGateway}
+                  style={{
+                    background: "rgba(15, 23, 42, 0.8)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "16px",
+                    padding: "28px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "20px",
+                  }}
+                >
+                  <div style={{ borderBottom: "1px solid var(--border-subtle)", paddingBottom: "16px" }}>
+                    <h3 style={{ fontSize: "18px", fontWeight: 700, margin: "0 0 6px 0", color: "#f8fafc" }}>
+                      💳 Payment Gateway Direct Configuration
+                    </h3>
+                    <p style={{ margin: 0, fontSize: "13px", color: "var(--text-muted)", lineHeight: 1.5 }}>
+                      Fill in your payment credentials below. Changes are saved directly to the database and take effect immediately without redeploying to Vercel.
+                    </p>
+                  </div>
+
+                  {/* Webhook Endpoint copy box */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#93c5fd", marginBottom: "6px" }}>
+                      1. Webhook Endpoint URL (Stripe 回调通知地址)
+                    </label>
+                    <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "0 0 8px 0" }}>
+                      Paste this URL into Stripe Dashboard &gt; Developers &gt; Webhooks &gt; Add Endpoint, and listen to <code>checkout.session.completed</code>.
+                    </p>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <input
+                        type="text"
+                        readOnly
+                        value={paymentConfig.webhookUrl}
+                        style={{
+                          flex: 1,
+                          padding: "10px 12px",
+                          background: "#090d16",
+                          border: "1px solid #1e293b",
+                          borderRadius: "6px",
+                          color: "#38bdf8",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "13px",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(paymentConfig.webhookUrl);
+                          setCopiedWebhook(true);
+                          setTimeout(() => setCopiedWebhook(false), 2000);
+                        }}
+                        className="nav-btn"
+                        style={{ padding: "0 16px", fontSize: "13px" }}
+                      >
+                        {copiedWebhook ? "✅ Copied!" : "📋 Copy URL"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Active Provider Selector */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#93c5fd", marginBottom: "8px" }}>
+                      2. Default Active Provider (默认收款通道)
+                    </label>
+                    <div style={{ display: "flex", gap: "16px" }}>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
+                        <input
+                          type="radio"
+                          name="provider"
+                          value="stripe"
+                          checked={formProvider === "stripe"}
+                          onChange={(e) => setFormProvider(e.target.value)}
+                        />
+                        <span>Stripe (Recommended - Visa, MC, Apple/Google Pay)</span>
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
+                        <input
+                          type="radio"
+                          name="provider"
+                          value="creem"
+                          checked={formProvider === "creem"}
+                          onChange={(e) => setFormProvider(e.target.value)}
+                        />
+                        <span>Creem (Merchant of Record)</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Stripe Secret Key */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                      3. Stripe Secret Key (sk_test_... or sk_live_...)
+                    </label>
+                    <input
+                      type="password"
+                      value={formStripeKey}
+                      onChange={(e) => setFormStripeKey(e.target.value)}
+                      placeholder={paymentConfig.stripeKeyMasked || "Paste your sk_test_... or sk_live_... key"}
+                      style={{
+                        width: "100%",
+                        padding: "10px 12px",
+                        background: "#090d16",
+                        border: "1px solid #1e293b",
+                        borderRadius: "6px",
+                        color: "#ffffff",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "13px",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      From Stripe Dashboard &gt; Developers &gt; API Keys &gt; Secret key.
+                    </div>
+                  </div>
+
+                  {/* Stripe Webhook Secret */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                      4. Stripe Webhook Signing Secret (whsec_...)
+                    </label>
+                    <input
+                      type="password"
+                      value={formStripeWebhook}
+                      onChange={(e) => setFormStripeWebhook(e.target.value)}
+                      placeholder={paymentConfig.stripeWebhookMasked || "Paste your whsec_... signing secret"}
+                      style={{
+                        width: "100%",
+                        padding: "10px 12px",
+                        background: "#090d16",
+                        border: "1px solid #1e293b",
+                        borderRadius: "6px",
+                        color: "#ffffff",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "13px",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      From Stripe Dashboard &gt; Developers &gt; Webhooks &gt; Signing secret (Reveal).
+                    </div>
+                  </div>
+
+                  {/* Creem API Key */}
+                  <div>
+                    <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
+                      5. Creem API Key (Optional / Alternative)
+                    </label>
+                    <input
+                      type="password"
+                      value={formCreemKey}
+                      onChange={(e) => setFormCreemKey(e.target.value)}
+                      placeholder={paymentConfig.creemKeyMasked || "Optional: creem_api_key"}
+                      style={{
+                        width: "100%",
+                        padding: "10px 12px",
+                        background: "#090d16",
+                        border: "1px solid #1e293b",
+                        borderRadius: "6px",
+                        color: "#ffffff",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "13px",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
+                    <button
+                      type="submit"
+                      disabled={saveLoading}
+                      className="nav-btn nav-btn-primary"
+                      style={{ padding: "12px 28px", fontSize: "14px" }}
+                    >
+                      {saveLoading ? "Saving..." : "💾 Save Gateway Configuration"}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
             {activeTab === "surveys" && (
               <div style={{ display: "grid", gap: "12px" }}>
                 {surveys.length === 0 ? (

@@ -84,6 +84,28 @@ export async function GET() {
       } catch {}
     }
 
+    // 6. Read Gateway Settings from DB or env
+    let gatewaySettings: { key: string; value: string }[] = [];
+    try {
+      gatewaySettings = await db.select().from(schema.systemSetting);
+    } catch {}
+    const settingsMap = new Map(gatewaySettings.map((s) => [s.key, s.value]));
+    const stripeKey = settingsMap.get('STRIPE_SECRET_KEY') || process.env.STRIPE_SECRET_KEY || '';
+    const stripeWebhookSecret = settingsMap.get('STRIPE_WEBHOOK_SECRET') || process.env.STRIPE_WEBHOOK_SECRET || '';
+    const creemKey = settingsMap.get('CREEM_API_KEY') || process.env.CREEM_API_KEY || '';
+    const activeProvider = settingsMap.get('ACTIVE_PAYMENT_PROVIDER') || (stripeKey ? 'stripe' : creemKey ? 'creem' : 'stripe');
+
+    const paymentConfig = {
+      activeProvider,
+      isStripeConfigured: !!stripeKey,
+      stripeKeyMasked: stripeKey ? `${stripeKey.slice(0, 7)}••••••••${stripeKey.slice(-4)}` : '',
+      isStripeWebhookConfigured: !!stripeWebhookSecret,
+      stripeWebhookMasked: stripeWebhookSecret ? `${stripeWebhookSecret.slice(0, 8)}••••••••${stripeWebhookSecret.slice(-4)}` : '',
+      isCreemConfigured: !!creemKey,
+      creemKeyMasked: creemKey ? `${creemKey.slice(0, 6)}••••••••${creemKey.slice(-4)}` : '',
+      webhookUrl: 'https://www.hacker-tube.net/api/payment/notify',
+    };
+
     return NextResponse.json({
       authorized: true,
       currentUser: {
@@ -111,6 +133,7 @@ export async function GET() {
       orders,
       subscriptions,
       surveys,
+      paymentConfig,
     });
   } catch (err: unknown) {
     console.error('Admin stats error:', err);
@@ -139,7 +162,43 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { targetUserId, action, value } = body;
+    const { action } = body;
+
+    // Handle Saving Payment Gateway Settings
+    if (action === 'save_gateway_settings') {
+      const { stripeSecretKey, stripeWebhookSecret, creemApiKey, creemWebhookSecret, activeProvider } = body;
+
+      const upsertSetting = async (key: string, val?: string) => {
+        if (val === undefined) return;
+        const trimmed = val.trim();
+        const [existing] = await db
+          .select()
+          .from(schema.systemSetting)
+          .where(eq(schema.systemSetting.key, key))
+          .limit(1);
+
+        if (existing) {
+          await db
+            .update(schema.systemSetting)
+            .set({ value: trimmed, updatedAt: new Date() })
+            .where(eq(schema.systemSetting.key, key));
+        } else {
+          await db
+            .insert(schema.systemSetting)
+            .values({ key, value: trimmed, updatedAt: new Date() });
+        }
+      };
+
+      if (stripeSecretKey !== undefined) await upsertSetting('STRIPE_SECRET_KEY', stripeSecretKey);
+      if (stripeWebhookSecret !== undefined) await upsertSetting('STRIPE_WEBHOOK_SECRET', stripeWebhookSecret);
+      if (creemApiKey !== undefined) await upsertSetting('CREEM_API_KEY', creemApiKey);
+      if (creemWebhookSecret !== undefined) await upsertSetting('CREEM_WEBHOOK_SECRET', creemWebhookSecret);
+      if (activeProvider !== undefined) await upsertSetting('ACTIVE_PAYMENT_PROVIDER', activeProvider);
+
+      return NextResponse.json({ success: true, message: 'Payment gateway configuration saved successfully!' });
+    }
+
+    const { targetUserId, value } = body;
 
     if (!targetUserId || !action) {
       return NextResponse.json({ error: 'targetUserId and action are required' }, { status: 400 });

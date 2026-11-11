@@ -109,6 +109,11 @@ if (dbUrl.startsWith('file:')) {
         "created_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL,
         "updated_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS "system_setting" (
+        "key" text PRIMARY KEY NOT NULL,
+        "value" text NOT NULL,
+        "updated_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL
+      );
     `).catch(() => {});
   } catch {}
 }
