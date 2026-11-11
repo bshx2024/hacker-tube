@@ -157,7 +157,7 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
           </div>
 
           <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-            Paste any YouTube talk to extract LaTeX proofs &amp; Obsidian notes
+            Paste any YouTube talk to extract LaTeX proofs &amp; Obsidian notes (5 free credits included)
           </div>
         </div>
 
@@ -170,7 +170,7 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
                 setUrl(e.target.value);
                 setErrorMessage("");
               }}
-              placeholder="Paste any YouTube URL (e.g. https://www.youtube.com/watch?v=...)"
+              placeholder="⚡ Paste any YouTube lecture URL to generate Obsidian AI Notes (5 free credits)"
               style={{
                 width: "100%",
                 background: "rgba(9, 13, 22, 0.9)",
