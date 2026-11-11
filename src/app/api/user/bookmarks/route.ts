@@ -17,8 +17,9 @@ export async function GET(req: NextRequest) {
       .where(eq(schema.bookmark.userId, session.user.id));
 
     return NextResponse.json({ bookmarks: items.map((i) => i.videoId) });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Internal Server Error';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }
 
@@ -85,8 +86,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, videoId });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Internal Server Error';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }
 
@@ -108,7 +110,8 @@ export async function DELETE(req: NextRequest) {
       .where(and(eq(schema.bookmark.userId, session.user.id), eq(schema.bookmark.videoId, videoId)));
 
     return NextResponse.json({ success: true, videoId });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : 'Internal Server Error';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }

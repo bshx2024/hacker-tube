@@ -67,8 +67,9 @@ export const UserNavClient: React.FC = () => {
       } else {
         alert(data.error || "Unable to start checkout session.");
       }
-    } catch (err: any) {
-      alert("Checkout error: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Network error";
+      alert("Checkout error: " + msg);
     } finally {
       setUpgrading(false);
     }

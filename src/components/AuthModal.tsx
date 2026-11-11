@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { signIn } from "@/core/auth/client";
+import { signIn, signUp } from "@/core/auth/client";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -26,8 +26,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         provider: "github",
         callbackURL: window.location.origin,
       });
-    } catch (err: any) {
-      setErrorMsg(err.message || "GitHub sign-in failed. Please try again.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "GitHub sign-in failed. Please try again.";
+      setErrorMsg(msg);
       setLoading(false);
     }
   };
@@ -40,8 +41,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         provider: "google",
         callbackURL: window.location.origin,
       });
-    } catch (err: any) {
-      setErrorMsg(err.message || "Google sign-in failed. Please try again.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Google sign-in failed. Please try again.";
+      setErrorMsg(msg);
       setLoading(false);
     }
   };
@@ -55,13 +57,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
       setErrorMsg("");
 
       if (isSignUp) {
-        await (signIn as any).email({
+        await signUp.email({
           email,
           password: password || "GeekPass2026!",
+          name: email.split("@")[0],
           callbackURL: window.location.origin,
         });
       } else {
-        await (signIn as any).email({
+        await signIn.email({
           email,
           password: password || "GeekPass2026!",
           callbackURL: window.location.origin,
@@ -70,8 +73,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
       onClose();
       if (onSuccess) onSuccess();
-    } catch (err: any) {
-      setErrorMsg(err.message || "Sign in failed. Check your email credentials.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Sign in failed. Check your email credentials.";
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }

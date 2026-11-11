@@ -36,7 +36,5 @@ export const PLANS: Record<string, PlanConfig> = {
 export function getStripeClient(): Stripe | null {
   const secretKey = process.env.STRIPE_SECRET_KEY;
   if (!secretKey) return null;
-  return new Stripe(secretKey, {
-    apiVersion: '2026-02-04' as any,
-  });
+  return new Stripe(secretKey);
 }

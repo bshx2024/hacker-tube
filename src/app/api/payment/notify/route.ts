@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db, schema } from '@/core/db';
 import { getStripeClient } from '@/core/payment';
-import { eq, and } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
 export async function POST(req: NextRequest) {
@@ -10,20 +10,21 @@ export async function POST(req: NextRequest) {
     const signature = req.headers.get('stripe-signature');
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
-    let event: any = null;
+    let event: Record<string, unknown> | null = null;
     const stripe = getStripeClient();
 
     if (stripe && signature && webhookSecret) {
       try {
-        event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
-      } catch (err: any) {
-        console.error('Webhook signature verification failed:', err.message);
+        event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret) as unknown as Record<string, unknown>;
+      } catch (err: unknown) {
+        const errorMsg = err instanceof Error ? err.message : 'Invalid signature';
+        console.error('Webhook signature verification failed:', errorMsg);
         return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
       }
     } else {
       // Allow internal or manual JSON webhook if secret is not set (e.g. dev/testing)
       try {
-        event = JSON.parse(rawBody);
+        event = JSON.parse(rawBody) as Record<string, unknown>;
       } catch {
         return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
       }
@@ -35,10 +36,12 @@ export async function POST(req: NextRequest) {
 
     // Handle completed checkout session
     if (event.type === 'checkout.session.completed' || event.event === 'order.paid') {
-      const sessionObj = event.data?.object || event;
-      const orderNo = sessionObj.metadata?.orderNo || sessionObj.orderNo;
-      const userId = sessionObj.metadata?.userId || sessionObj.userId;
-      const transactionId = sessionObj.id || sessionObj.transactionId || nanoid();
+      const eventData = event.data as Record<string, unknown> | undefined;
+      const sessionObj = (eventData?.object || event) as Record<string, unknown>;
+      const metadata = sessionObj.metadata as Record<string, string> | undefined;
+      const orderNo = (metadata?.orderNo || sessionObj.orderNo) as string | undefined;
+      const userId = (metadata?.userId || sessionObj.userId) as string | undefined;
+      const transactionId = ((sessionObj.id || sessionObj.transactionId) as string) || nanoid();
 
       if (orderNo) {
         const [existingOrder] = await db
@@ -91,7 +94,7 @@ export async function POST(req: NextRequest) {
               .update(schema.subscription)
               .set({
                 status: 'active',
-                subscriptionId: sessionObj.subscription || transactionId,
+                subscriptionId: (sessionObj.subscription as string) || transactionId,
                 currentPeriodEnd: periodEnd,
                 updatedAt: new Date(),
               })
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
               plan: 'pro',
               status: 'active',
               paymentProvider: 'stripe',
-              subscriptionId: sessionObj.subscription || transactionId,
+              subscriptionId: (sessionObj.subscription as string) || transactionId,
               currentPeriodStart: new Date(),
               currentPeriodEnd: periodEnd,
             });
@@ -113,8 +116,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Payment webhook error:', err);
-    return NextResponse.json({ error: err.message || 'Webhook processing failed' }, { status: 500 });
+    const errorMsg = err instanceof Error ? err.message : 'Webhook processing failed';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }

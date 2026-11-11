@@ -48,8 +48,9 @@ export async function GET(req: NextRequest) {
       subscription: sub || null,
       bookmarks: bookmarks.map((b) => b.videoId),
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Failed to get user profile:', err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+    const errorMsg = err instanceof Error ? err.message : 'Internal Server Error';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }

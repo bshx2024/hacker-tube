@@ -92,8 +92,9 @@ export async function POST(req: NextRequest) {
       checkoutUrl: `${appUrl}/?payment=sandbox_demo&order_no=${orderNo}&amount=${plan.amount / 100}`,
       notice: 'Sandbox simulation mode: Live payment keys not set.',
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Checkout error:', err);
-    return NextResponse.json({ error: err.message || 'Failed to initiate checkout' }, { status: 500 });
+    const errorMsg = err instanceof Error ? err.message : 'Failed to initiate checkout';
+    return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }
