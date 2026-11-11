@@ -99,3 +99,20 @@
 - **Internal Link & Mobile Graph**:
   - 24/24 URLs return HTTP 200, BFS crawl depth $\le 1$, 0 dead ends.
 - **Verdict**: Strong upward trend confirmed. Core keywords climbing into Top 3-5 with CTR expanding significantly.
+
+### [Run #006 - 2026-11-11 00:50 UTC] Scheduled Iteration #5 (Rescheduled Daemon task-1594)
+- **Trigger**: Automatic 6-hour cron daemon (`task-1594`, iteration 1 post-system restart).
+- **GSC New Pipeline Publication (2026-11-08 Batch Verified)**:
+  - Daily Traffic Volume: **2,963 impressions**, **115 clicks**, site-wide CTR **3.88%**, average position **4.7**.
+  - `hackertube` Cumulative: Expanded to **8,242 impressions** (+1,518) and **68 clicks**, average position advanced to **6.1**.
+  - `hacker tube` Cumulative: Expanded to **7,101 impressions** (+768) and **175 clicks**, average position advanced to **4.5**, daily position at **4.0** (CTR 2.99%).
+  - Top 3 Karpathy Moats Peak Performance:
+    - `hackertube andrej karpathy`: **Pos 2.0**, CTR **51.72%** (29 imp, 15 clicks).
+    - `andrej karpathy hackertube`: **Pos 2.8**, CTR **38.89%** (18 imp, 7 clicks).
+    - `hacker tub`: **Pos 2.7**, CTR **50.00%** (6 imp, 3 clicks).
+    - `hackers tube`: **Pos 3.0**, CTR **21.05%** (19 imp, 4 clicks).
+- **Headless Backend Integration SEO Impact Verification**:
+  - Successfully integrated `shipany-two` headless backend core (better-auth, drizzle, payments, user-nav).
+  - Confirmed: 35/35 pages continue to compile as 100% pre-rendered static HTML (`○` & `●`). Zero TTFB regression.
+- **TDK Cooling Lock**: MAINTAINED (Day 3 of 14-day freeze). Title & snippet frozen to allow Google to solidify Top 3 gains.
+- **Verdict**: Outstanding stability and growth. Core search volume continuing rapid climb while maintaining >3.8% site-wide CTR.
