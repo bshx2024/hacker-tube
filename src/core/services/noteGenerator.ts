@@ -1,4 +1,5 @@
 import { KeyTimestamp, MathDerivation, HnDebate, LectureFaq, StudyNote } from "@/data/studyNotes";
+import { db, schema } from "@/core/db";
 
 export interface GeneratedNoteResult {
   studyNote: StudyNote;
@@ -185,34 +186,125 @@ export async function generateStudyNote(params: {
     topic = "Engineering Culture";
   }
 
-  // Check if an external LLM is configured (Gemini / OpenAI / DeepSeek)
-  const geminiKey = process.env.GEMINI_API_KEY;
-  const openaiKey = process.env.OPENAI_API_KEY;
-  const deepseekKey = process.env.DEEPSEEK_API_KEY;
+  // Read real-time AI model settings from database systemSetting (with process.env fallback)
+  let activeProvider = "heuristic";
+  let geminiKey = process.env.GEMINI_API_KEY || "";
+  let geminiModel = "gemini-1.5-flash";
+  let deepseekKey = process.env.DEEPSEEK_API_KEY || "";
+  let deepseekModel = "deepseek-chat";
+  let openaiKey = process.env.OPENAI_API_KEY || "";
+  let openaiModel = "gpt-4o-mini";
+  let customBaseUrl = "";
+  let customKey = "";
+  let customModel = "";
 
-  if (geminiKey) {
+  try {
+    const settings = await db.select().from(schema.systemSetting);
+    const map = new Map(settings.map((s) => [s.key, s.value]));
+    if (map.get("ACTIVE_AI_PROVIDER")) activeProvider = map.get("ACTIVE_AI_PROVIDER")!;
+    if (map.get("GEMINI_API_KEY")) geminiKey = map.get("GEMINI_API_KEY")!;
+    if (map.get("GEMINI_MODEL")) geminiModel = map.get("GEMINI_MODEL")!;
+    if (map.get("DEEPSEEK_API_KEY")) deepseekKey = map.get("DEEPSEEK_API_KEY")!;
+    if (map.get("DEEPSEEK_MODEL")) deepseekModel = map.get("DEEPSEEK_MODEL")!;
+    if (map.get("OPENAI_API_KEY")) openaiKey = map.get("OPENAI_API_KEY")!;
+    if (map.get("OPENAI_MODEL")) openaiModel = map.get("OPENAI_MODEL")!;
+    if (map.get("CUSTOM_AI_BASE_URL")) customBaseUrl = map.get("CUSTOM_AI_BASE_URL")!;
+    if (map.get("CUSTOM_AI_API_KEY")) customKey = map.get("CUSTOM_AI_API_KEY")!;
+    if (map.get("CUSTOM_AI_MODEL")) customModel = map.get("CUSTOM_AI_MODEL")!;
+  } catch {}
+
+  // Route based on active provider preference
+  if (activeProvider === "gemini" && geminiKey) {
     try {
-      const llmResult = await callGeminiLLM({ geminiKey, title, channelTitle, transcript, topic, youtubeId });
-      if (llmResult) return llmResult;
+      const res = await callGeminiLLM({ geminiKey, geminiModel, title, channelTitle, transcript, topic, youtubeId });
+      if (res) return res;
     } catch (e) {
-      console.warn("Gemini LLM call failed, falling back to structured synthesis:", e);
+      console.warn("Gemini LLM call failed:", e);
     }
-  } else if (deepseekKey || openaiKey) {
+  } else if (activeProvider === "deepseek" && deepseekKey) {
     try {
-      const llmResult = await callOpenAILikeLLM({
-        apiKey: (deepseekKey || openaiKey)!,
-        baseURL: deepseekKey ? "https://api.deepseek.com/v1" : "https://api.openai.com/v1",
-        model: deepseekKey ? "deepseek-chat" : "gpt-4o-mini",
+      const res = await callOpenAILikeLLM({
+        apiKey: deepseekKey,
+        baseURL: "https://api.deepseek.com/v1",
+        model: deepseekModel,
         title,
         channelTitle,
         transcript,
         topic,
         youtubeId,
       });
-      if (llmResult) return llmResult;
+      if (res) return res;
     } catch (e) {
-      console.warn("OpenAI/DeepSeek LLM call failed, falling back to structured synthesis:", e);
+      console.warn("DeepSeek LLM call failed:", e);
     }
+  } else if (activeProvider === "openai" && openaiKey) {
+    try {
+      const res = await callOpenAILikeLLM({
+        apiKey: openaiKey,
+        baseURL: "https://api.openai.com/v1",
+        model: openaiModel,
+        title,
+        channelTitle,
+        transcript,
+        topic,
+        youtubeId,
+      });
+      if (res) return res;
+    } catch (e) {
+      console.warn("OpenAI LLM call failed:", e);
+    }
+  } else if (activeProvider === "custom" && customBaseUrl && customKey) {
+    try {
+      const res = await callOpenAILikeLLM({
+        apiKey: customKey,
+        baseURL: customBaseUrl,
+        model: customModel || "deepseek-v3",
+        title,
+        channelTitle,
+        transcript,
+        topic,
+        youtubeId,
+      });
+      if (res) return res;
+    } catch (e) {
+      console.warn("Custom LLM call failed:", e);
+    }
+  }
+
+  // General fallback to any available key
+  if (geminiKey) {
+    try {
+      const res = await callGeminiLLM({ geminiKey, geminiModel, title, channelTitle, transcript, topic, youtubeId });
+      if (res) return res;
+    } catch {}
+  } else if (deepseekKey) {
+    try {
+      const res = await callOpenAILikeLLM({
+        apiKey: deepseekKey,
+        baseURL: "https://api.deepseek.com/v1",
+        model: deepseekModel,
+        title,
+        channelTitle,
+        transcript,
+        topic,
+        youtubeId,
+      });
+      if (res) return res;
+    } catch {}
+  } else if (openaiKey) {
+    try {
+      const res = await callOpenAILikeLLM({
+        apiKey: openaiKey,
+        baseURL: "https://api.openai.com/v1",
+        model: openaiModel,
+        title,
+        channelTitle,
+        transcript,
+        topic,
+        youtubeId,
+      });
+      if (res) return res;
+    } catch {}
   }
 
   // High-Signal Heuristic Structured Synthesis (guarantees 100% reliability, zero downtime)
@@ -468,13 +560,14 @@ function buildHeuristicStudyNote(params: {
  */
 async function callGeminiLLM(params: {
   geminiKey: string;
+  geminiModel?: string;
   title: string;
   channelTitle: string;
   transcript: string;
   topic: string;
   youtubeId: string;
 }): Promise<GeneratedNoteResult | null> {
-  const { geminiKey, title, channelTitle, transcript, topic, youtubeId } = params;
+  const { geminiKey, geminiModel = "gemini-1.5-flash", title, channelTitle, transcript, topic, youtubeId } = params;
   const prompt = `You are a world-class senior computer scientist and technical educator creating an exhaustive, anti-slop, 1600+ word deep technical study note for the lecture "${title}" by ${channelTitle}.
 Transcript excerpt:
 ${transcript.slice(0, 25000)}
@@ -489,7 +582,7 @@ Output a valid JSON object with the following fields:
 
 Ensure the highest information density with zero fluff. Strict JSON output only.`;
 
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -612,3 +705,4 @@ Return only JSON.`;
     thumbnailUrl: `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`,
   };
 }
+

@@ -51,7 +51,7 @@ export default function AdminDashboardPage() {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"users" | "orders" | "subscriptions" | "surveys" | "settings">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "orders" | "subscriptions" | "surveys" | "settings" | "ai">("users");
 
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -100,6 +100,48 @@ export default function AdminDashboardPage() {
   const [saveLoading, setSaveLoading] = useState(false);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
 
+  // AI & LLM Model States
+  const [aiConfig, setAiConfig] = useState({
+    activeProvider: "gemini",
+    isGeminiConfigured: false,
+    geminiKeyMasked: "",
+    geminiModel: "gemini-1.5-flash",
+    isDeepSeekConfigured: false,
+    deepseekKeyMasked: "",
+    deepseekModel: "deepseek-chat",
+    isOpenAIConfigured: false,
+    openaiKeyMasked: "",
+    openaiModel: "gpt-4o-mini",
+    isCustomConfigured: false,
+    customAiBaseUrl: "",
+    customAiKeyMasked: "",
+    customAiModel: "deepseek-v3",
+  });
+
+  const [formActiveAiProvider, setFormActiveAiProvider] = useState("gemini");
+  const [formGeminiKey, setFormGeminiKey] = useState("");
+  const [formGeminiModel, setFormGeminiModel] = useState("gemini-1.5-flash");
+  const [formDeepseekKey, setFormDeepseekKey] = useState("");
+  const [formDeepseekModel, setFormDeepseekModel] = useState("deepseek-chat");
+  const [formOpenaiKey, setFormOpenaiKey] = useState("");
+  const [formOpenaiModel, setFormOpenaiModel] = useState("gpt-4o-mini");
+  const [formCustomBaseUrl, setFormCustomBaseUrl] = useState("");
+  const [formCustomKey, setFormCustomKey] = useState("");
+  const [formCustomModel, setFormCustomModel] = useState("deepseek-v3");
+
+  const [aiTestResult, setAiTestResult] = useState<{
+    success: boolean;
+    message?: string;
+    latencyMs?: number;
+    error?: string;
+    reply?: string;
+    model?: string;
+    provider?: string;
+  } | null>(null);
+  const [aiTestLoading, setAiTestLoading] = useState(false);
+  const [aiSaveLoading, setAiSaveLoading] = useState(false);
+  const [aiSaveSuccess, setAiSaveSuccess] = useState<string | null>(null);
+
   const refreshData = async () => {
     try {
       setLoading(true);
@@ -128,10 +170,112 @@ export default function AdminDashboardPage() {
         setFormPayPalMode(data.paymentConfig.paypalMode === "sandbox" ? "sandbox" : "live");
         setFormWaffoMode(data.paymentConfig.waffoMode === "sandbox" ? "sandbox" : "live");
       }
+      if (data.aiConfig) {
+        setAiConfig(data.aiConfig);
+        setFormActiveAiProvider(data.aiConfig.activeProvider || "gemini");
+        setFormGeminiModel(data.aiConfig.geminiModel || "gemini-1.5-flash");
+        setFormDeepseekModel(data.aiConfig.deepseekModel || "deepseek-chat");
+        setFormOpenaiModel(data.aiConfig.openaiModel || "gpt-4o-mini");
+        setFormCustomBaseUrl(data.aiConfig.customAiBaseUrl || "");
+        setFormCustomModel(data.aiConfig.customAiModel || "deepseek-v3");
+      }
     } catch {
       setErrorMsg("Network error loading admin console.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSaveAiSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setAiSaveLoading(true);
+      setAiSaveSuccess(null);
+      const res = await fetch("/api/admin/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "save_ai_settings",
+          activeAiProvider: formActiveAiProvider,
+          geminiApiKey: formGeminiKey ? formGeminiKey.trim() : undefined,
+          geminiModel: formGeminiModel,
+          deepseekApiKey: formDeepseekKey ? formDeepseekKey.trim() : undefined,
+          deepseekModel: formDeepseekModel,
+          openaiApiKey: formOpenaiKey ? formOpenaiKey.trim() : undefined,
+          openaiModel: formOpenaiModel,
+          customAiBaseUrl: formCustomBaseUrl ? formCustomBaseUrl.trim() : undefined,
+          customAiApiKey: formCustomKey ? formCustomKey.trim() : undefined,
+          customAiModel: formCustomModel,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to save AI configuration");
+      setAiSaveSuccess(data.message || "AI Model settings successfully saved in database!");
+      refreshData();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error saving AI settings";
+      alert(msg);
+    } finally {
+      setAiSaveLoading(false);
+    }
+  };
+
+  const handleTestAiConnection = async (provider: string) => {
+    try {
+      setAiTestLoading(true);
+      setAiTestResult(null);
+
+      let apiKey = "";
+      let model = "";
+      let baseUrl = "";
+
+      if (provider === "gemini") {
+        apiKey = formGeminiKey;
+        model = formGeminiModel;
+      } else if (provider === "deepseek") {
+        apiKey = formDeepseekKey;
+        model = formDeepseekModel;
+      } else if (provider === "openai") {
+        apiKey = formOpenaiKey;
+        model = formOpenaiModel;
+      } else if (provider === "custom") {
+        apiKey = formCustomKey;
+        model = formCustomModel;
+        baseUrl = formCustomBaseUrl;
+      }
+
+      const res = await fetch("/api/admin/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "test_ai_connection",
+          provider,
+          apiKey: apiKey || undefined,
+          model,
+          baseUrl,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setAiTestResult({
+          success: true,
+          message: data.reply,
+          latencyMs: data.latencyMs,
+          model: data.model,
+          provider: data.provider,
+        });
+      } else {
+        setAiTestResult({
+          success: false,
+          error: data.error || "Connection test failed",
+        });
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Network error testing connection";
+      setAiTestResult({ success: false, error: msg });
+    } finally {
+      setAiTestLoading(false);
     }
   };
 
@@ -175,6 +319,16 @@ export default function AdminDashboardPage() {
           setPaymentConfig(data.paymentConfig);
           setFormProvider(data.paymentConfig.activeProvider || "stripe");
           setFormPayPalMode(data.paymentConfig.paypalMode === "sandbox" ? "sandbox" : "live");
+          setFormWaffoMode(data.paymentConfig.waffoMode === "sandbox" ? "sandbox" : "live");
+        }
+        if (data.aiConfig) {
+          setAiConfig(data.aiConfig);
+          setFormActiveAiProvider(data.aiConfig.activeProvider || "gemini");
+          setFormGeminiModel(data.aiConfig.geminiModel || "gemini-1.5-flash");
+          setFormDeepseekModel(data.aiConfig.deepseekModel || "deepseek-chat");
+          setFormOpenaiModel(data.aiConfig.openaiModel || "gpt-4o-mini");
+          setFormCustomBaseUrl(data.aiConfig.customAiBaseUrl || "");
+          setFormCustomModel(data.aiConfig.customAiModel || "deepseek-v3");
         }
         setLoading(false);
       })
@@ -446,7 +600,7 @@ export default function AdminDashboardPage() {
 
             {/* Navigation Tabs */}
             <div style={{ display: "flex", gap: "8px", borderBottom: "1px solid var(--border-subtle)", marginBottom: "24px", overflowX: "auto" }}>
-              {(["users", "orders", "subscriptions", "surveys", "settings"] as const).map((tab) => (
+              {(["users", "orders", "subscriptions", "surveys", "settings", "ai"] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -458,7 +612,7 @@ export default function AdminDashboardPage() {
                     color: activeTab === tab ? "var(--accent-emerald)" : "var(--text-secondary)",
                     fontWeight: activeTab === tab ? 700 : 500,
                     cursor: "pointer",
-                    textTransform: tab === "settings" ? "none" : "capitalize",
+                    textTransform: tab === "settings" || tab === "ai" ? "none" : "capitalize",
                     fontSize: "14px",
                     whiteSpace: "nowrap",
                   }}
@@ -471,7 +625,9 @@ export default function AdminDashboardPage() {
                     ? `Subscriptions (${subscriptions.length})`
                     : tab === "surveys"
                     ? `Surveys (${surveys.length})`
-                    : "⚙️ Payment Gateway"}
+                    : tab === "settings"
+                    ? "⚙️ Payment Gateway"
+                    : "🤖 AI & Models"}
                 </button>
               ))}
             </div>
@@ -1225,6 +1381,491 @@ export default function AdminDashboardPage() {
                     </div>
                   ))
                 )}
+              </div>
+            )}
+
+            {/* Tab 6: AI & LLM Model Configuration */}
+            {activeTab === "ai" && (
+              <div style={{ maxWidth: "880px", margin: "0 auto" }}>
+                {aiSaveSuccess && (
+                  <div
+                    style={{
+                      padding: "12px 16px",
+                      background: "rgba(16, 185, 129, 0.15)",
+                      border: "1px solid rgba(16, 185, 129, 0.4)",
+                      borderRadius: "8px",
+                      color: "#34d399",
+                      fontSize: "14px",
+                      marginBottom: "20px",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                    }}
+                  >
+                    <span>🎉</span>
+                    <span>{aiSaveSuccess}</span>
+                  </div>
+                )}
+
+                {/* Connection Test Result Banner */}
+                {aiTestResult && (
+                  <div
+                    style={{
+                      padding: "14px 18px",
+                      background: aiTestResult.success ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)",
+                      border: `1px solid ${aiTestResult.success ? "rgba(16, 185, 129, 0.4)" : "rgba(239, 68, 68, 0.4)"}`,
+                      borderRadius: "10px",
+                      marginBottom: "20px",
+                      fontSize: "13.5px",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <div style={{ fontWeight: 700, color: aiTestResult.success ? "#34d399" : "#f87171", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>{aiTestResult.success ? "⚡ Connection Successful!" : "❌ Connection Failed"}</span>
+                        {aiTestResult.provider && (
+                          <span style={{ fontSize: "11px", padding: "2px 6px", background: "rgba(255,255,255,0.08)", borderRadius: "4px", color: "var(--text-secondary)", textTransform: "uppercase" }}>
+                            {aiTestResult.provider}
+                          </span>
+                        )}
+                        {aiTestResult.model && (
+                          <span style={{ fontSize: "11px", padding: "2px 6px", background: "rgba(56, 189, 248, 0.12)", borderRadius: "4px", color: "#38bdf8" }}>
+                            {aiTestResult.model}
+                          </span>
+                        )}
+                      </div>
+                      {aiTestResult.latencyMs && (
+                        <div style={{ fontSize: "12px", fontFamily: "var(--font-mono)", color: "var(--accent-emerald)" }}>
+                          Latency: <strong>{aiTestResult.latencyMs}ms</strong>
+                        </div>
+                      )}
+                    </div>
+                    {aiTestResult.success ? (
+                      <div style={{ color: "var(--text-secondary)", fontSize: "13px" }}>
+                        LLM Response: <code style={{ color: "#ffffff", background: "rgba(0,0,0,0.3)", padding: "2px 6px", borderRadius: "4px" }}>{aiTestResult.message}</code>
+                      </div>
+                    ) : (
+                      <div style={{ color: "#fca5a5", fontSize: "13px" }}>
+                        Error: {aiTestResult.error}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* AI Status KPI Cards */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px", marginBottom: "24px" }}>
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: `1px solid ${aiConfig.activeProvider === "gemini" ? "var(--accent-emerald)" : "var(--border-subtle)"}`, borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "4px" }}>
+                      Google Gemini {aiConfig.activeProvider === "gemini" && "🌟 ACTIVE"}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span>{aiConfig.isGeminiConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: aiConfig.isGeminiConfigured ? "var(--accent-emerald)" : "var(--text-muted)", fontSize: "14px" }}>
+                        {aiConfig.isGeminiConfigured ? "Ready" : "Not Set"}
+                      </strong>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {aiConfig.geminiKeyMasked || "No API key"}
+                    </div>
+                  </div>
+
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: `1px solid ${aiConfig.activeProvider === "deepseek" ? "var(--accent-emerald)" : "var(--border-subtle)"}`, borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "4px" }}>
+                      DeepSeek {aiConfig.activeProvider === "deepseek" && "⚡ ACTIVE"}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span>{aiConfig.isDeepSeekConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: aiConfig.isDeepSeekConfigured ? "var(--accent-emerald)" : "var(--text-muted)", fontSize: "14px" }}>
+                        {aiConfig.isDeepSeekConfigured ? "Ready" : "Not Set"}
+                      </strong>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {aiConfig.deepseekKeyMasked || "No API key"}
+                    </div>
+                  </div>
+
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: `1px solid ${aiConfig.activeProvider === "openai" ? "var(--accent-emerald)" : "var(--border-subtle)"}`, borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "4px" }}>
+                      OpenAI {aiConfig.activeProvider === "openai" && "🧠 ACTIVE"}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span>{aiConfig.isOpenAIConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: aiConfig.isOpenAIConfigured ? "var(--accent-emerald)" : "var(--text-muted)", fontSize: "14px" }}>
+                        {aiConfig.isOpenAIConfigured ? "Ready" : "Not Set"}
+                      </strong>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {aiConfig.openaiKeyMasked || "No API key"}
+                    </div>
+                  </div>
+
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: `1px solid ${aiConfig.activeProvider === "custom" ? "var(--accent-emerald)" : "var(--border-subtle)"}`, borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", marginBottom: "4px" }}>
+                      Custom / APIVALE {aiConfig.activeProvider === "custom" && "🌐 ACTIVE"}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span>{aiConfig.isCustomConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: aiConfig.isCustomConfigured ? "var(--accent-emerald)" : "var(--text-muted)", fontSize: "14px" }}>
+                        {aiConfig.isCustomConfigured ? "Ready" : "Not Set"}
+                      </strong>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {aiConfig.customAiKeyMasked || "No custom key"}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form to configure AI providers */}
+                <form
+                  onSubmit={handleSaveAiSettings}
+                  style={{
+                    background: "rgba(15, 23, 42, 0.6)",
+                    border: "1px solid var(--border-subtle)",
+                    borderRadius: "12px",
+                    padding: "24px",
+                    display: "grid",
+                    gap: "24px",
+                  }}
+                >
+                  <div>
+                    <h3 style={{ fontSize: "17px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "6px" }}>
+                      Large Language Model Configuration 🤖
+                    </h3>
+                    <p style={{ fontSize: "13px", color: "var(--text-muted)", lineHeight: 1.5 }}>
+                      Select which AI provider powers the on-demand YouTube lecture note generation and LaTeX mathematical derivations engine (<code style={{ color: "var(--accent-emerald)" }}>/api/notes/generate</code>).
+                      Configurations are persisted directly into the Turso SQL database and take effect instantly without restarting or redeploying.
+                    </p>
+                  </div>
+
+                  {/* Active Provider Selector */}
+                  <div style={{ background: "#090d16", padding: "16px", borderRadius: "8px", border: "1px solid #1e293b" }}>
+                    <label style={{ display: "block", fontSize: "13px", fontWeight: 700, color: "var(--text-secondary)", marginBottom: "10px" }}>
+                      1. Select Primary Active Provider
+                    </label>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px" }}>
+                      {[
+                        { id: "gemini", label: "Google Gemini", sub: "Recommended · 1M Context · Ultra Fast", icon: "🌟" },
+                        { id: "deepseek", label: "DeepSeek", sub: "DeepSeek-V3 / R1 · Low Cost Powerhouse", icon: "⚡" },
+                        { id: "openai", label: "OpenAI", sub: "GPT-4o / GPT-4o-mini Benchmark", icon: "🧠" },
+                        { id: "custom", label: "Custom Endpoint", sub: "APIVALE Cloud / OpenRouter / OneAPI", icon: "🌐" },
+                      ].map((p) => {
+                        const isSelected = formActiveAiProvider === p.id;
+                        return (
+                          <div
+                            key={p.id}
+                            onClick={() => setFormActiveAiProvider(p.id)}
+                            style={{
+                              padding: "12px 14px",
+                              borderRadius: "8px",
+                              border: `2px solid ${isSelected ? "var(--accent-emerald)" : "#1e293b"}`,
+                              background: isSelected ? "rgba(16, 185, 129, 0.08)" : "rgba(15, 23, 42, 0.5)",
+                              cursor: "pointer",
+                              transition: "all 0.15s ease",
+                            }}
+                          >
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
+                              <span style={{ fontSize: "16px" }}>{p.icon}</span>
+                              <strong style={{ color: isSelected ? "var(--accent-emerald)" : "var(--text-primary)", fontSize: "13.5px" }}>
+                                {p.label}
+                              </strong>
+                            </div>
+                            <div style={{ fontSize: "11px", color: "var(--text-muted)", lineHeight: 1.3 }}>
+                              {p.sub}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Section A: Google Gemini */}
+                  <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "18px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                      <label style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>🌟 Google Gemini</span>
+                        {aiConfig.isGeminiConfigured && <span style={{ fontSize: "11px", color: "var(--accent-emerald)", fontWeight: 500 }}>(Configured: {aiConfig.geminiKeyMasked})</span>}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleTestAiConnection("gemini")}
+                        disabled={aiTestLoading}
+                        className="nav-btn"
+                        style={{ fontSize: "12px", padding: "4px 12px", background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.3)" }}
+                      >
+                        {aiTestLoading ? "Testing..." : "⚡ Test Gemini Connection"}
+                      </button>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: "12px" }}>
+                      <div>
+                        <input
+                          type="password"
+                          value={formGeminiKey}
+                          onChange={(e) => setFormGeminiKey(e.target.value)}
+                          placeholder={aiConfig.isGeminiConfigured ? "•••••••••••••••• (Leave blank to keep existing key)" : "Paste your Gemini API Key (AIzaSy...)"}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "13px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <select
+                          value={formGeminiModel}
+                          onChange={(e) => setFormGeminiModel(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontSize: "13px",
+                            boxSizing: "border-box",
+                          }}
+                        >
+                          <option value="gemini-1.5-flash">gemini-1.5-flash (Fast &amp; Free)</option>
+                          <option value="gemini-1.5-pro">gemini-1.5-pro (Deep Derivations)</option>
+                          <option value="gemini-2.0-flash-exp">gemini-2.0-flash-exp (Experimental)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      Get your free API key at <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8" }}>Google AI Studio</a>.
+                    </div>
+                  </div>
+
+                  {/* Section B: DeepSeek */}
+                  <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "18px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                      <label style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>⚡ DeepSeek</span>
+                        {aiConfig.isDeepSeekConfigured && <span style={{ fontSize: "11px", color: "var(--accent-emerald)", fontWeight: 500 }}>(Configured: {aiConfig.deepseekKeyMasked})</span>}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleTestAiConnection("deepseek")}
+                        disabled={aiTestLoading}
+                        className="nav-btn"
+                        style={{ fontSize: "12px", padding: "4px 12px", background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.3)" }}
+                      >
+                        {aiTestLoading ? "Testing..." : "⚡ Test DeepSeek Connection"}
+                      </button>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: "12px" }}>
+                      <div>
+                        <input
+                          type="password"
+                          value={formDeepseekKey}
+                          onChange={(e) => setFormDeepseekKey(e.target.value)}
+                          placeholder={aiConfig.isDeepSeekConfigured ? "•••••••••••••••• (Leave blank to keep existing key)" : "Paste DeepSeek API Key (sk-...)"}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "13px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <select
+                          value={formDeepseekModel}
+                          onChange={(e) => setFormDeepseekModel(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontSize: "13px",
+                            boxSizing: "border-box",
+                          }}
+                        >
+                          <option value="deepseek-chat">deepseek-chat (DeepSeek-V3)</option>
+                          <option value="deepseek-reasoner">deepseek-reasoner (DeepSeek-R1)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      From <a href="https://platform.deepseek.com/api_keys" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8" }}>DeepSeek Open Platform</a>.
+                    </div>
+                  </div>
+
+                  {/* Section C: OpenAI */}
+                  <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "18px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                      <label style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>🧠 OpenAI</span>
+                        {aiConfig.isOpenAIConfigured && <span style={{ fontSize: "11px", color: "var(--accent-emerald)", fontWeight: 500 }}>(Configured: {aiConfig.openaiKeyMasked})</span>}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleTestAiConnection("openai")}
+                        disabled={aiTestLoading}
+                        className="nav-btn"
+                        style={{ fontSize: "12px", padding: "4px 12px", background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.3)" }}
+                      >
+                        {aiTestLoading ? "Testing..." : "⚡ Test OpenAI Connection"}
+                      </button>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 200px", gap: "12px" }}>
+                      <div>
+                        <input
+                          type="password"
+                          value={formOpenaiKey}
+                          onChange={(e) => setFormOpenaiKey(e.target.value)}
+                          placeholder={aiConfig.isOpenAIConfigured ? "•••••••••••••••• (Leave blank to keep existing key)" : "Paste OpenAI API Key (sk-...)"}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "13px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <select
+                          value={formOpenaiModel}
+                          onChange={(e) => setFormOpenaiModel(e.target.value)}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontSize: "13px",
+                            boxSizing: "border-box",
+                          }}
+                        >
+                          <option value="gpt-4o-mini">gpt-4o-mini (Cost-effective)</option>
+                          <option value="gpt-4o">gpt-4o (High precision)</option>
+                          <option value="o1-mini">o1-mini (Reasoning)</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      From <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8" }}>OpenAI Platform</a>.
+                    </div>
+                  </div>
+
+                  {/* Section D: Custom OpenAI-Compatible Endpoint (APIVALE Cloud / OpenRouter) */}
+                  <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "18px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                      <label style={{ fontSize: "14px", fontWeight: 700, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <span>🌐 Custom OpenAI-Compatible API (APIVALE Cloud / OpenRouter / Ollama)</span>
+                        {aiConfig.isCustomConfigured && <span style={{ fontSize: "11px", color: "var(--accent-emerald)", fontWeight: 500 }}>(Configured: {aiConfig.customAiKeyMasked})</span>}
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => handleTestAiConnection("custom")}
+                        disabled={aiTestLoading}
+                        className="nav-btn"
+                        style={{ fontSize: "12px", padding: "4px 12px", background: "rgba(56, 189, 248, 0.15)", color: "#38bdf8", border: "1px solid rgba(56, 189, 248, 0.3)" }}
+                      >
+                        {aiTestLoading ? "Testing..." : "⚡ Test Custom Endpoint"}
+                      </button>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: "12px" }}>
+                      <div>
+                        <label style={{ display: "block", fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>Base URL</label>
+                        <input
+                          type="text"
+                          value={formCustomBaseUrl}
+                          onChange={(e) => setFormCustomBaseUrl(e.target.value)}
+                          placeholder="https://api.openai.com/v1"
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "12.5px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>API Key</label>
+                        <input
+                          type="password"
+                          value={formCustomKey}
+                          onChange={(e) => setFormCustomKey(e.target.value)}
+                          placeholder={aiConfig.isCustomConfigured ? "••••••••••••••••" : "Paste API Key"}
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "12.5px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ display: "block", fontSize: "11px", color: "var(--text-muted)", marginBottom: "4px" }}>Model Name</label>
+                        <input
+                          type="text"
+                          value={formCustomModel}
+                          onChange={(e) => setFormCustomModel(e.target.value)}
+                          placeholder="deepseek-v3"
+                          style={{
+                            width: "100%",
+                            padding: "10px 12px",
+                            background: "#090d16",
+                            border: "1px solid #1e293b",
+                            borderRadius: "6px",
+                            color: "#ffffff",
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "12.5px",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      Compatible with any standard OpenAI <code style={{ color: "#38bdf8" }}>/v1/chat/completions</code> service, including APIVALE Cloud, OpenRouter, and OneAPI aggregators.
+                    </div>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div style={{ marginTop: "12px", display: "flex", justifyContent: "flex-end" }}>
+                    <button
+                      type="submit"
+                      disabled={aiSaveLoading}
+                      className="nav-btn nav-btn-primary"
+                      style={{ padding: "12px 28px", fontSize: "14px" }}
+                    >
+                      {aiSaveLoading ? "Saving to Database..." : "💾 Save AI Configuration"}
+                    </button>
+                  </div>
+                </form>
               </div>
             )}
           </>

@@ -127,6 +127,38 @@ export async function GET() {
       webhookUrl: 'https://www.hacker-tube.net/api/payment/notify',
     };
 
+    // 7. Read AI / LLM Model Settings from DB or env
+    const geminiKey = settingsMap.get('GEMINI_API_KEY') || process.env.GEMINI_API_KEY || '';
+    const geminiModel = settingsMap.get('GEMINI_MODEL') || 'gemini-1.5-flash';
+    const deepseekKey = settingsMap.get('DEEPSEEK_API_KEY') || process.env.DEEPSEEK_API_KEY || '';
+    const deepseekModel = settingsMap.get('DEEPSEEK_MODEL') || 'deepseek-chat';
+    const openaiKey = settingsMap.get('OPENAI_API_KEY') || process.env.OPENAI_API_KEY || '';
+    const openaiModel = settingsMap.get('OPENAI_MODEL') || 'gpt-4o-mini';
+    const customAiBaseUrl = settingsMap.get('CUSTOM_AI_BASE_URL') || '';
+    const customAiKey = settingsMap.get('CUSTOM_AI_API_KEY') || '';
+    const customAiModel = settingsMap.get('CUSTOM_AI_MODEL') || 'deepseek-v3';
+
+    const activeAiProvider =
+      settingsMap.get('ACTIVE_AI_PROVIDER') ||
+      (geminiKey ? 'gemini' : deepseekKey ? 'deepseek' : openaiKey ? 'openai' : customAiKey ? 'custom' : 'heuristic');
+
+    const aiConfig = {
+      activeProvider: activeAiProvider,
+      isGeminiConfigured: !!geminiKey,
+      geminiKeyMasked: geminiKey ? `${geminiKey.slice(0, 6)}••••••••${geminiKey.slice(-4)}` : '',
+      geminiModel,
+      isDeepSeekConfigured: !!deepseekKey,
+      deepseekKeyMasked: deepseekKey ? `${deepseekKey.slice(0, 6)}••••••••${deepseekKey.slice(-4)}` : '',
+      deepseekModel,
+      isOpenAIConfigured: !!openaiKey,
+      openaiKeyMasked: openaiKey ? `${openaiKey.slice(0, 6)}••••••••${openaiKey.slice(-4)}` : '',
+      openaiModel,
+      isCustomConfigured: !!(customAiBaseUrl && customAiKey),
+      customAiBaseUrl,
+      customAiKeyMasked: customAiKey ? `${customAiKey.slice(0, 6)}••••••••${customAiKey.slice(-4)}` : '',
+      customAiModel,
+    };
+
     return NextResponse.json({
       authorized: true,
       currentUser: {
@@ -155,6 +187,7 @@ export async function GET() {
       subscriptions,
       surveys,
       paymentConfig,
+      aiConfig,
     });
   } catch (err: unknown) {
     console.error('Admin stats error:', err);
@@ -237,6 +270,167 @@ export async function POST(req: NextRequest) {
       if (activeProvider !== undefined) await upsertSetting('ACTIVE_PAYMENT_PROVIDER', activeProvider);
 
       return NextResponse.json({ success: true, message: 'Payment gateway configuration saved successfully!' });
+    }
+
+    // Handle Saving AI / LLM Model Settings
+    if (action === 'save_ai_settings') {
+      const {
+        activeAiProvider,
+        geminiApiKey,
+        geminiModel,
+        deepseekApiKey,
+        deepseekModel,
+        openaiApiKey,
+        openaiModel,
+        customAiBaseUrl,
+        customAiApiKey,
+        customAiModel,
+      } = body;
+
+      const upsertSetting = async (key: string, val?: string) => {
+        if (val === undefined) return;
+        const trimmed = val.trim();
+        const [existing] = await db
+          .select()
+          .from(schema.systemSetting)
+          .where(eq(schema.systemSetting.key, key))
+          .limit(1);
+
+        if (existing) {
+          await db
+            .update(schema.systemSetting)
+            .set({ value: trimmed, updatedAt: new Date() })
+            .where(eq(schema.systemSetting.key, key));
+        } else {
+          await db
+            .insert(schema.systemSetting)
+            .values({ key, value: trimmed, updatedAt: new Date() });
+        }
+      };
+
+      if (activeAiProvider !== undefined) await upsertSetting('ACTIVE_AI_PROVIDER', activeAiProvider);
+      if (geminiApiKey !== undefined) await upsertSetting('GEMINI_API_KEY', geminiApiKey);
+      if (geminiModel !== undefined) await upsertSetting('GEMINI_MODEL', geminiModel);
+      if (deepseekApiKey !== undefined) await upsertSetting('DEEPSEEK_API_KEY', deepseekApiKey);
+      if (deepseekModel !== undefined) await upsertSetting('DEEPSEEK_MODEL', deepseekModel);
+      if (openaiApiKey !== undefined) await upsertSetting('OPENAI_API_KEY', openaiApiKey);
+      if (openaiModel !== undefined) await upsertSetting('OPENAI_MODEL', openaiModel);
+      if (customAiBaseUrl !== undefined) await upsertSetting('CUSTOM_AI_BASE_URL', customAiBaseUrl);
+      if (customAiApiKey !== undefined) await upsertSetting('CUSTOM_AI_API_KEY', customAiApiKey);
+      if (customAiModel !== undefined) await upsertSetting('CUSTOM_AI_MODEL', customAiModel);
+
+      return NextResponse.json({ success: true, message: 'AI Model configuration saved successfully in database!' });
+    }
+
+    // Handle Testing AI Connection in real-time
+    if (action === 'test_ai_connection') {
+      const { provider, apiKey, model, baseUrl } = body;
+      const startTime = Date.now();
+
+      try {
+        if (provider === 'gemini') {
+          // Resolve key from input or DB or env
+          const [dbKey] = await db
+            .select()
+            .from(schema.systemSetting)
+            .where(eq(schema.systemSetting.key, 'GEMINI_API_KEY'))
+            .limit(1);
+          const effectiveKey = apiKey?.trim() || dbKey?.value || process.env.GEMINI_API_KEY;
+
+          if (!effectiveKey) {
+            return NextResponse.json({ success: false, error: 'Gemini API Key is missing. Please enter a valid key.' });
+          }
+
+          const modelName = model?.trim() || 'gemini-1.5-flash';
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${effectiveKey}`;
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: 'Respond with: "OK: HackerTube Google Gemini connection verified!"' }] }],
+            }),
+          });
+
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            return NextResponse.json({
+              success: false,
+              error: `Gemini API HTTP ${res.status}: ${errData.error?.message || res.statusText}`,
+            });
+          }
+
+          const data = await res.json();
+          const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Verified';
+          return NextResponse.json({
+            success: true,
+            latencyMs: Date.now() - startTime,
+            reply: reply.trim(),
+            provider: 'Google Gemini',
+            model: modelName,
+          });
+        }
+
+        // OpenAI or DeepSeek or Custom
+        let effectiveBaseUrl = 'https://api.openai.com/v1';
+        let keySettingName = 'OPENAI_API_KEY';
+        let defaultModel = 'gpt-4o-mini';
+
+        if (provider === 'deepseek') {
+          effectiveBaseUrl = 'https://api.deepseek.com/v1';
+          keySettingName = 'DEEPSEEK_API_KEY';
+          defaultModel = 'deepseek-chat';
+        } else if (provider === 'custom') {
+          effectiveBaseUrl = baseUrl?.trim() || 'https://api.openai.com/v1';
+          keySettingName = 'CUSTOM_AI_API_KEY';
+          defaultModel = model?.trim() || 'gpt-4o-mini';
+        }
+
+        const [dbKey] = await db
+          .select()
+          .from(schema.systemSetting)
+          .where(eq(schema.systemSetting.key, keySettingName))
+          .limit(1);
+        const effectiveKey = apiKey?.trim() || dbKey?.value || (process.env as any)[keySettingName];
+
+        if (!effectiveKey) {
+          return NextResponse.json({ success: false, error: `${provider.toUpperCase()} API Key is missing.` });
+        }
+
+        const effectiveModel = model?.trim() || defaultModel;
+        const res = await fetch(`${effectiveBaseUrl}/chat/completions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${effectiveKey}`,
+          },
+          body: JSON.stringify({
+            model: effectiveModel,
+            messages: [{ role: 'user', content: `Respond with: "OK: HackerTube ${provider} connection verified!"` }],
+            max_tokens: 40,
+          }),
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          return NextResponse.json({
+            success: false,
+            error: `${provider.toUpperCase()} API HTTP ${res.status}: ${errData.error?.message || res.statusText}`,
+          });
+        }
+
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || 'Verified';
+        return NextResponse.json({
+          success: true,
+          latencyMs: Date.now() - startTime,
+          reply: reply.trim(),
+          provider,
+          model: effectiveModel,
+        });
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Network error testing AI endpoint';
+        return NextResponse.json({ success: false, error: msg });
+      }
     }
 
     const { targetUserId, value } = body;

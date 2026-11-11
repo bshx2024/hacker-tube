@@ -202,3 +202,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "generation_failed", message: errorMsg }, { status: 500 });
   }
 }
+
