@@ -173,7 +173,7 @@ export default function AdminDashboardPage() {
     };
   }, [session, sessionLoading]);
 
-  const handleUpdateUser = async (targetUserId: string, action: "set_plan" | "set_role", value: string) => {
+  const handleUpdateUser = async (targetUserId: string, action: "set_plan" | "set_role" | "delete_user", value: string) => {
     try {
       setActionLoading(`${targetUserId}-${action}`);
       const res = await fetch("/api/admin/stats", {
@@ -521,6 +521,27 @@ export default function AdminDashboardPage() {
                             >
                               {u.role === "admin" ? "Remove Admin" : "Make Admin"}
                             </button>
+                            {u.id !== session?.user?.id && (
+                              <button
+                                disabled={actionLoading === `${u.id}-delete_user`}
+                                onClick={() => {
+                                  if (confirm(`Are you sure you want to delete user "${u.email}"?`)) {
+                                    handleUpdateUser(u.id, "delete_user", "");
+                                  }
+                                }}
+                                className="nav-btn"
+                                style={{
+                                  padding: "4px 10px",
+                                  fontSize: "11px",
+                                  marginLeft: "6px",
+                                  color: "#f87171",
+                                  borderColor: "rgba(239, 68, 68, 0.3)",
+                                  background: "rgba(239, 68, 68, 0.1)",
+                                }}
+                              >
+                                Delete
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))

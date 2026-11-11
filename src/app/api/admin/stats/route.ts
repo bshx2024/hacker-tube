@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { headers } from 'next/headers';
 import { auth } from '@/core/auth';
 import { db, schema } from '@/core/db';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, like } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
 
@@ -45,6 +45,11 @@ export async function GET() {
         .set({ role: 'admin', plan: 'pro', updatedAt: new Date() })
         .where(eq(schema.user.id, currentUser.id));
     }
+
+    // Clean up temporary ping test accounts
+    try {
+      await db.delete(schema.user).where(like(schema.user.email, '%@hackertube-test.internal%'));
+    } catch {}
 
     // 1. Fetch Users
     const users = await db
@@ -221,6 +226,15 @@ export async function POST(req: NextRequest) {
           updatedAt: new Date(),
         })
         .where(eq(schema.user.id, targetUserId));
+    } else if (action === 'delete_user') {
+      if (targetUserId === session.user.id) {
+        return NextResponse.json({ error: 'Cannot delete your own admin account' }, { status: 400 });
+      }
+
+      await db.delete(schema.session).where(eq(schema.session.userId, targetUserId));
+      await db.delete(schema.account).where(eq(schema.account.userId, targetUserId));
+      await db.delete(schema.bookmark).where(eq(schema.bookmark.userId, targetUserId));
+      await db.delete(schema.user).where(eq(schema.user.id, targetUserId));
     }
 
     return NextResponse.json({ success: true, targetUserId, action, value });
