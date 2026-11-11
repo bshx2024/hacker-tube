@@ -46,6 +46,7 @@ export async function fetchYouTubeMeta(youtubeId: string): Promise<{
     const oembedUrl = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${youtubeId}&format=json`;
     const res = await fetch(oembedUrl, {
       headers: { "User-Agent": "HackerTubeBot/1.0" },
+      signal: AbortSignal.timeout(6000),
       next: { revalidate: 86400 },
     });
 
@@ -79,6 +80,7 @@ export async function fetchYouTubeTranscript(youtubeId: string): Promise<{
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept-Language": "en-US,en;q=0.9",
       },
+      signal: AbortSignal.timeout(6000),
     });
 
     if (!res.ok) {
@@ -95,7 +97,9 @@ export async function fetchYouTubeTranscript(youtubeId: string): Promise<{
         captionTracks[0];
 
       if (englishTrack && englishTrack.baseUrl) {
-        const transcriptRes = await fetch(englishTrack.baseUrl);
+        const transcriptRes = await fetch(englishTrack.baseUrl, {
+          signal: AbortSignal.timeout(6000),
+        });
         if (transcriptRes.ok) {
           const xml = await transcriptRes.text();
           const regex = /<text start="([\d.]+)" dur="([\d.]+)">(.*?)<\/text>/g;
@@ -586,6 +590,7 @@ Ensure the highest information density with zero fluff. Strict JSON output only.
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    signal: AbortSignal.timeout(35000),
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: { responseMimeType: "application/json" },
@@ -597,7 +602,22 @@ Ensure the highest information density with zero fluff. Strict JSON output only.
   const rawJson = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (!rawJson) return null;
 
-  const parsed = JSON.parse(rawJson);
+  let parsed: any;
+  try {
+    const cleaned = rawJson.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const jsonMatch = rawJson.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        parsed = JSON.parse(jsonMatch[0]);
+      } catch {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   const obsidianFrontmatter = buildObsidianFrontmatter(title, channelTitle, youtubeId, topic);
 
   const studyNote: StudyNote = {
@@ -663,6 +683,7 @@ Return only JSON.`;
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
     },
+    signal: AbortSignal.timeout(35000),
     body: JSON.stringify({
       model,
       messages: [{ role: "user", content: prompt }],
@@ -675,7 +696,22 @@ Return only JSON.`;
   const rawContent = data.choices?.[0]?.message?.content;
   if (!rawContent) return null;
 
-  const parsed = JSON.parse(rawContent);
+  let parsed: any;
+  try {
+    const cleaned = rawContent.replace(/^```(?:json)?\s*/i, "").replace(/```\s*$/i, "").trim();
+    parsed = JSON.parse(cleaned);
+  } catch {
+    const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      try {
+        parsed = JSON.parse(jsonMatch[0]);
+      } catch {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
   const obsidianFrontmatter = buildObsidianFrontmatter(title, channelTitle, youtubeId, topic);
 
   const studyNote: StudyNote = {

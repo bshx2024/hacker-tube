@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { nanoid } from "nanoid";
 import { eq } from "drizzle-orm";
 import { auth } from "@/core/auth";
@@ -90,8 +89,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Step 2: Authentication Check for New Derivations
-    const reqHeaders = await headers();
-    const session = await auth.api.getSession({ headers: reqHeaders });
+    const session = await auth.api.getSession({ headers: req.headers });
 
     if (!session?.user) {
       return NextResponse.json(
