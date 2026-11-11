@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "analyze:logs": "node scripts/analyze_crawlers.mjs",
-    "sync:hn": "node scripts/sync_hn_videos.mjs"
+    "sync:hn": "node scripts/sync_hn_videos.mjs",
+    "db:studio": "drizzle-kit studio",
+    "make:admin": "tsx scripts/make_admin.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
