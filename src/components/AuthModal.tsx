@@ -56,25 +56,50 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
       setLoading(true);
       setErrorMsg("");
 
+      const cleanEmail = email.trim().toLowerCase();
+
       if (isSignUp) {
-        await signUp.email({
-          email,
-          password: password || "GeekPass2026!",
-          name: email.split("@")[0],
+        if (!password || password.length < 8) {
+          setErrorMsg("Password must be at least 8 characters long.");
+          setLoading(false);
+          return;
+        }
+
+        const res = await signUp.email({
+          email: cleanEmail,
+          password,
+          name: cleanEmail.split("@")[0],
           callbackURL: window.location.origin,
         });
+
+        if (res?.error) {
+          setErrorMsg(res.error.message || "Sign up failed. Please try a stronger password.");
+          setLoading(false);
+          return;
+        }
       } else {
-        await signIn.email({
-          email,
+        const res = await signIn.email({
+          email: cleanEmail,
           password: password || "GeekPass2026!",
           callbackURL: window.location.origin,
         });
+
+        if (res?.error) {
+          setErrorMsg(
+            res.error.message ||
+              "Invalid credentials. If this is your first time, please switch to 'Sign Up' tab to create your account!"
+          );
+          setLoading(false);
+          return;
+        }
       }
 
       onClose();
       if (onSuccess) onSuccess();
+      // Reload to ensure all sessions and permissions sync immediately
+      window.location.reload();
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Sign in failed. Check your email credentials.";
+      const msg = err instanceof Error ? err.message : "Authentication failed. Please try again.";
       setErrorMsg(msg);
     } finally {
       setLoading(false);
@@ -190,6 +215,61 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
           <div style={{ flex: 1, height: "1px", background: "#1e293b" }} />
         </div>
 
+        {/* Tab switch between Sign In and Sign Up */}
+        <div
+          style={{
+            display: "flex",
+            background: "#090d16",
+            borderRadius: "8px",
+            padding: "4px",
+            marginBottom: "16px",
+            border: "1px solid #1e293b",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUp(false);
+              setErrorMsg("");
+            }}
+            style={{
+              flex: 1,
+              padding: "8px 0",
+              fontSize: "13px",
+              fontWeight: 600,
+              borderRadius: "6px",
+              border: "none",
+              cursor: "pointer",
+              background: !isSignUp ? "rgba(16, 185, 129, 0.2)" : "transparent",
+              color: !isSignUp ? "#34d399" : "#94a3b8",
+              transition: "all 0.2s",
+            }}
+          >
+            Sign In (登录)
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setIsSignUp(true);
+              setErrorMsg("");
+            }}
+            style={{
+              flex: 1,
+              padding: "8px 0",
+              fontSize: "13px",
+              fontWeight: 600,
+              borderRadius: "6px",
+              border: "none",
+              cursor: "pointer",
+              background: isSignUp ? "rgba(16, 185, 129, 0.2)" : "transparent",
+              color: isSignUp ? "#34d399" : "#94a3b8",
+              transition: "all 0.2s",
+            }}
+          >
+            Sign Up (注册新账号)
+          </button>
+        </div>
+
         <form onSubmit={handleEmailAuth} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div>
             <label style={{ display: "block", fontSize: "12px", color: "#94a3b8", marginBottom: "6px" }}>
@@ -217,13 +297,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
 
           <div>
             <label style={{ display: "block", fontSize: "12px", color: "#94a3b8", marginBottom: "6px" }}>
-              Password
+              {isSignUp ? "Password (at least 8 characters)" : "Password"}
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
+              placeholder={isSignUp ? "Create a password (min 8 chars)" : "••••••••"}
+              required
               style={{
                 width: "100%",
                 padding: "10px 12px",

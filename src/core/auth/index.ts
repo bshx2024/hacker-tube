@@ -5,6 +5,14 @@ import { db, schema } from '../db';
 export const auth = betterAuth({
   appName: 'HackerTube',
   baseURL: process.env.AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://www.hacker-tube.net',
+  trustedOrigins: [
+    'https://www.hacker-tube.net',
+    'https://hacker-tube.net',
+    'http://localhost:3000',
+    ...(process.env.NEXT_PUBLIC_APP_URL ? [process.env.NEXT_PUBLIC_APP_URL] : []),
+    ...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+    ...(process.env.VERCEL_PROJECT_PRODUCTION_URL ? [`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`] : []),
+  ],
   secret: process.env.AUTH_SECRET || 'hackertube-auth-secret-change-in-production-2026',
   database: drizzleAdapter(db, {
     provider: 'sqlite',
