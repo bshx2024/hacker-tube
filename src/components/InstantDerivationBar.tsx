@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession } from "@/core/auth/client";
 import { AuthModal } from "./AuthModal";
 import { VideoItem } from "@/data/videos";
@@ -21,6 +21,28 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
   const [currentStep, setCurrentStep] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [userCredits, setUserCredits] = useState<number | null>(null);
+  const [userPlan, setUserPlan] = useState<string>("free");
+  const [creditsToast, setCreditsToast] = useState<string | null>(null);
+
+  // Sync real-time user credits & plan on mount or login
+  useEffect(() => {
+    if (!session?.user?.id) {
+      setUserCredits(null);
+      setUserPlan("free");
+      return;
+    }
+
+    fetch("/api/user/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.user) {
+          setUserCredits(typeof data.user.credits === "number" ? data.user.credits : 5);
+          setUserPlan(data.user.plan || "free");
+        }
+      })
+      .catch(() => {});
+  }, [session?.user?.id]);
 
   // Extract YouTube ID on the fly
   const extractId = (val: string): string | null => {
@@ -93,12 +115,17 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
         throw new Error(data.message || "Failed to generate lecture note.");
       }
 
-      // Success! Open note modal
+      // Success! Update local credits
       setIsGenerating(false);
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
       setUrl("");
+
+      if (typeof data.creditsLeft === "number") {
+        setUserCredits(data.creditsLeft);
+        setCreditsToast(`🎉 Note generated! You have ${data.creditsLeft} credit${data.creditsLeft === 1 ? "" : "s"} left.`);
+      }
 
       if (data.video && data.note) {
         onOpenGeneratedNote(data.video, data.note);
@@ -122,12 +149,37 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
           background: "rgba(15, 23, 42, 0.75)",
           border: "1px solid rgba(56, 189, 248, 0.3)",
           borderRadius: "16px",
-          padding: "16px 20px",
+          padding: "18px 20px",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.35), 0 0 20px rgba(56, 189, 248, 0.1)",
           backdropFilter: "blur(12px)",
           position: "relative",
         }}
       >
+        {/* New User Welcome Banner if credits === 5 */}
+        {session?.user && userCredits === 5 && (
+          <div
+            style={{
+              marginBottom: "14px",
+              padding: "7px 12px",
+              background: "linear-gradient(90deg, rgba(56, 189, 248, 0.12), rgba(16, 185, 129, 0.12))",
+              border: "1px solid rgba(56, 189, 248, 0.25)",
+              borderRadius: "8px",
+              fontSize: "12px",
+              color: "#e2e8f0",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <span>🎉</span>
+              <span>
+                Welcome <strong>{session.user.name || session.user.email}</strong>! You have <strong>5 free derivation credits</strong>. Click a sample below to test!
+              </span>
+            </div>
+          </div>
+        )}
+
         <div
           style={{
             display: "flex",
@@ -141,23 +193,62 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
           <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "13px", fontWeight: 700, color: "var(--accent-sky)" }}>
             <span style={{ fontSize: "16px" }}>⚡</span>
             <span>INSTANT ON-DEMAND LECTURE DERIVATION</span>
-            <span
-              style={{
-                fontSize: "10px",
-                background: "rgba(56, 189, 248, 0.15)",
-                color: "#38bdf8",
-                padding: "2px 8px",
-                borderRadius: "999px",
-                fontWeight: 800,
-                letterSpacing: "0.5px",
-              }}
-            >
-              PRO &amp; CREDITS
-            </span>
+            {userPlan === "pro" ? (
+              <span
+                style={{
+                  fontSize: "10px",
+                  background: "linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(5, 150, 105, 0.25))",
+                  color: "var(--accent-emerald)",
+                  padding: "3px 10px",
+                  borderRadius: "999px",
+                  fontWeight: 800,
+                  letterSpacing: "0.5px",
+                  border: "1px solid rgba(16, 185, 129, 0.4)",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                <span>👑</span> PRO UNLIMITED
+              </span>
+            ) : userCredits !== null ? (
+              <span
+                style={{
+                  fontSize: "10px",
+                  background: userCredits > 0 ? "rgba(56, 189, 248, 0.18)" : "rgba(239, 68, 68, 0.18)",
+                  color: userCredits > 0 ? "#38bdf8" : "#fca5a5",
+                  padding: "3px 10px",
+                  borderRadius: "999px",
+                  fontWeight: 800,
+                  letterSpacing: "0.5px",
+                  border: `1px solid ${userCredits > 0 ? "rgba(56, 189, 248, 0.4)" : "rgba(239, 68, 68, 0.4)"}`,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                }}
+              >
+                <span>⚡</span> {userCredits} CREDIT{userCredits === 1 ? "" : "S"} LEFT
+              </span>
+            ) : (
+              <span
+                style={{
+                  fontSize: "10px",
+                  background: "rgba(56, 189, 248, 0.15)",
+                  color: "#38bdf8",
+                  padding: "3px 10px",
+                  borderRadius: "999px",
+                  fontWeight: 800,
+                  letterSpacing: "0.5px",
+                  border: "1px solid rgba(56, 189, 248, 0.3)",
+                }}
+              >
+                ✨ 5 FREE CREDITS ON LOGIN
+              </span>
+            )}
           </div>
 
           <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-            Paste any YouTube talk to extract LaTeX proofs &amp; Obsidian notes (5 free credits included)
+            Paste any YouTube talk to extract LaTeX proofs &amp; Obsidian notes
           </div>
         </div>
 
@@ -213,6 +304,67 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
           </button>
         </form>
 
+        {/* 1-Click Sample Lecture Chips for Zero-Friction Activation */}
+        <div style={{ marginTop: "12px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+          <span style={{ fontSize: "11.5px", color: "var(--text-muted)", fontWeight: 600, display: "flex", alignItems: "center", gap: "4px" }}>
+            <span>💡</span> Try a sample:
+          </span>
+          {[
+            {
+              label: "3Blue1Brown: Neural Nets",
+              url: "https://www.youtube.com/watch?v=aircAruvnKk",
+            },
+            {
+              label: "Karpathy: Intro to LLMs",
+              url: "https://www.youtube.com/watch?v=VMj-3S1tku0",
+            },
+            {
+              label: "Yann LeCun: World Models",
+              url: "https://www.youtube.com/watch?v=bZQun8Y4L2A",
+            },
+            {
+              label: "Bret Victor: Principle",
+              url: "https://www.youtube.com/watch?v=PUv66718DII",
+            },
+          ].map((sample) => (
+            <button
+              key={sample.label}
+              type="button"
+              onClick={() => {
+                setUrl(sample.url);
+                setErrorMessage("");
+              }}
+              style={{
+                background: url === sample.url ? "rgba(56, 189, 248, 0.2)" : "rgba(255, 255, 255, 0.05)",
+                border: `1px solid ${url === sample.url ? "rgba(56, 189, 248, 0.5)" : "rgba(255, 255, 255, 0.12)"}`,
+                borderRadius: "20px",
+                padding: "3px 10px",
+                color: url === sample.url ? "#38bdf8" : "var(--text-secondary)",
+                fontSize: "11px",
+                fontWeight: 500,
+                cursor: "pointer",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+                transition: "all 0.15s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "rgba(56, 189, 248, 0.4)";
+                e.currentTarget.style.color = "#ffffff";
+              }}
+              onMouseLeave={(e) => {
+                if (url !== sample.url) {
+                  e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.12)";
+                  e.currentTarget.style.color = "var(--text-secondary)";
+                }
+              }}
+            >
+              <span>⚡</span>
+              <span>{sample.label}</span>
+            </button>
+          ))}
+        </div>
+
         {/* Live Detected Preview Pill */}
         {detectedYtId && (
           <div
@@ -239,6 +391,33 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
               <span style={{ color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>ID: {detectedYtId}</span>
             </div>
             <span style={{ color: "var(--accent-emerald)", fontSize: "11px", fontWeight: 700 }}>Ready to Derivate</span>
+          </div>
+        )}
+
+        {/* Success toast after generation */}
+        {creditsToast && (
+          <div
+            style={{
+              marginTop: "10px",
+              padding: "8px 12px",
+              background: "rgba(16, 185, 129, 0.15)",
+              border: "1px solid rgba(16, 185, 129, 0.35)",
+              borderRadius: "8px",
+              color: "#34d399",
+              fontSize: "12.5px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <span>{creditsToast}</span>
+            <button
+              type="button"
+              onClick={() => setCreditsToast(null)}
+              style={{ background: "none", border: "none", color: "#34d399", cursor: "pointer", fontSize: "14px" }}
+            >
+              ✕
+            </button>
           </div>
         )}
 
@@ -298,103 +477,86 @@ export const InstantDerivationBar: React.FC<InstantDerivationBarProps> = ({
                 alignItems: "center",
                 justifyContent: "center",
                 fontSize: "24px",
-                margin: "0 auto 20px auto",
+                margin: "0 auto 16px auto",
               }}
             >
               ⚡
             </div>
 
-            <h3 style={{ fontSize: "20px", fontWeight: 800, margin: "0 0 8px 0", color: "var(--text-primary)" }}>
-              Deriving Technical Lecture Notes
+            <h3 style={{ fontSize: "20px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px" }}>
+              Synthesizing Deep Technical Derivations
             </h3>
-            <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "0 0 28px 0" }}>
-              Our AI engine is deconstructing invariants, timing slices, and mathematical proofs.
+            <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "28px" }}>
+              Extracting mathematical proofs, LaTeX formulations, and Hacker News consensus.
             </p>
 
-            {/* Steps Visualizer */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px", textAlign: "left" }}>
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: currentStep >= 1 ? "rgba(56, 189, 248, 0.1)" : "rgba(255, 255, 255, 0.03)",
-                  border: currentStep >= 1 ? "1px solid rgba(56, 189, 248, 0.3)" : "1px solid transparent",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  fontSize: "13px",
-                  color: currentStep >= 1 ? "var(--text-primary)" : "var(--text-muted)",
-                }}
-              >
-                <span>{currentStep > 1 ? "✓" : "⟳"}</span>
-                <span>1. Fetching talk metadata &amp; audio timeline...</span>
-              </div>
-
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: currentStep >= 2 ? "rgba(56, 189, 248, 0.1)" : "rgba(255, 255, 255, 0.03)",
-                  border: currentStep >= 2 ? "1px solid rgba(56, 189, 248, 0.3)" : "1px solid transparent",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  fontSize: "13px",
-                  color: currentStep >= 2 ? "var(--text-primary)" : "var(--text-muted)",
-                }}
-              >
-                <span>{currentStep > 2 ? "✓" : currentStep === 2 ? "⟳" : "○"}</span>
-                <span>2. Deconstructing core mental models &amp; milestones...</span>
-              </div>
-
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: currentStep >= 3 ? "rgba(56, 189, 248, 0.1)" : "rgba(255, 255, 255, 0.03)",
-                  border: currentStep >= 3 ? "1px solid rgba(56, 189, 248, 0.3)" : "1px solid transparent",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  fontSize: "13px",
-                  color: currentStep >= 3 ? "var(--text-primary)" : "var(--text-muted)",
-                }}
-              >
-                <span>{currentStep > 3 ? "✓" : currentStep === 3 ? "⟳" : "○"}</span>
-                <span>3. Formulating rigorous LaTeX mathematical proofs...</span>
-              </div>
-
-              <div
-                style={{
-                  padding: "10px 14px",
-                  borderRadius: "8px",
-                  background: currentStep >= 4 ? "rgba(56, 189, 248, 0.1)" : "rgba(255, 255, 255, 0.03)",
-                  border: currentStep >= 4 ? "1px solid rgba(56, 189, 248, 0.3)" : "1px solid transparent",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  fontSize: "13px",
-                  color: currentStep >= 4 ? "var(--text-primary)" : "var(--text-muted)",
-                }}
-              >
-                <span>{currentStep === 4 ? "⟳" : "○"}</span>
-                <span>4. Compiling Obsidian Markdown knowledge note...</span>
-              </div>
+            <div style={{ display: "grid", gap: "12px", textAlign: "left" }}>
+              {[
+                { step: 1, label: "Fetching audio transcript & milestone chapters" },
+                { step: 2, label: "Decomposing first-principles & architectural mental models" },
+                { step: 3, label: "Rigorous LaTeX mathematical derivations & algorithm walk-through" },
+                { step: 4, label: "Formatting Obsidian / Notion Markdown frontmatter" },
+              ].map((s) => {
+                const isDone = currentStep > s.step;
+                const isCurrent = currentStep === s.step;
+                return (
+                  <div
+                    key={s.step}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      padding: "10px 14px",
+                      borderRadius: "8px",
+                      background: isCurrent
+                        ? "rgba(56, 189, 248, 0.1)"
+                        : isDone
+                        ? "rgba(16, 185, 129, 0.08)"
+                        : "rgba(255, 255, 255, 0.02)",
+                      border: `1px solid ${
+                        isCurrent
+                          ? "rgba(56, 189, 248, 0.3)"
+                          : isDone
+                          ? "rgba(16, 185, 129, 0.2)"
+                          : "rgba(255, 255, 255, 0.05)"
+                      }`,
+                    }}
+                  >
+                    <span style={{ fontSize: "14px" }}>{isDone ? "✅" : isCurrent ? "⏳" : "⚪"}</span>
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        color: isDone ? "var(--accent-emerald)" : isCurrent ? "var(--accent-sky)" : "var(--text-muted)",
+                        fontWeight: isCurrent || isDone ? 600 : 400,
+                      }}
+                    >
+                      Step {s.step}: {s.label}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
       )}
 
-      {/* Auth Modal Trigger */}
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         onSuccess={() => {
           setShowAuthModal(false);
-          handleGenerate();
+          // Refetch user profile on login
+          fetch("/api/user/profile")
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+              if (data?.user) {
+                setUserCredits(typeof data.user.credits === "number" ? data.user.credits : 5);
+                setUserPlan(data.user.plan || "free");
+              }
+            })
+            .catch(() => {});
         }}
       />
     </>
   );
 };
-
