@@ -73,6 +73,9 @@ export default function AdminDashboardPage() {
     stripeKeyMasked: "",
     isStripeWebhookConfigured: false,
     stripeWebhookMasked: "",
+    isPayPalConfigured: false,
+    paypalClientIdMasked: "",
+    paypalMode: "live",
     isCreemConfigured: false,
     creemKeyMasked: "",
     webhookUrl: "https://www.hacker-tube.net/api/payment/notify",
@@ -80,6 +83,9 @@ export default function AdminDashboardPage() {
 
   const [formStripeKey, setFormStripeKey] = useState("");
   const [formStripeWebhook, setFormStripeWebhook] = useState("");
+  const [formPayPalClientId, setFormPayPalClientId] = useState("");
+  const [formPayPalSecret, setFormPayPalSecret] = useState("");
+  const [formPayPalMode, setFormPayPalMode] = useState<"sandbox" | "live">("live");
   const [formCreemKey, setFormCreemKey] = useState("");
   const [formProvider, setFormProvider] = useState("stripe");
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
@@ -111,6 +117,7 @@ export default function AdminDashboardPage() {
       if (data.paymentConfig) {
         setPaymentConfig(data.paymentConfig);
         setFormProvider(data.paymentConfig.activeProvider || "stripe");
+        setFormPayPalMode(data.paymentConfig.paypalMode === "sandbox" ? "sandbox" : "live");
       }
     } catch {
       setErrorMsg("Network error loading admin console.");
@@ -158,6 +165,7 @@ export default function AdminDashboardPage() {
         if (data.paymentConfig) {
           setPaymentConfig(data.paymentConfig);
           setFormProvider(data.paymentConfig.activeProvider || "stripe");
+          setFormPayPalMode(data.paymentConfig.paypalMode === "sandbox" ? "sandbox" : "live");
         }
         setLoading(false);
       })
@@ -205,6 +213,9 @@ export default function AdminDashboardPage() {
           action: "save_gateway_settings",
           stripeSecretKey: formStripeKey || undefined,
           stripeWebhookSecret: formStripeWebhook || undefined,
+          paypalClientId: formPayPalClientId || undefined,
+          paypalClientSecret: formPayPalSecret || undefined,
+          paypalMode: formPayPalMode,
           creemApiKey: formCreemKey || undefined,
           activeProvider: formProvider,
         }),
@@ -213,6 +224,8 @@ export default function AdminDashboardPage() {
         setSaveSuccessMsg("Payment gateway settings saved successfully! Live payments are now active.");
         setFormStripeKey("");
         setFormStripeWebhook("");
+        setFormPayPalClientId("");
+        setFormPayPalSecret("");
         setFormCreemKey("");
         await refreshData();
       } else {
@@ -699,6 +712,21 @@ export default function AdminDashboardPage() {
                       </div>
                     )}
                   </div>
+
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid var(--border-subtle)", borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>PayPal API Status ({paymentConfig.paypalMode})</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "16px" }}>{paymentConfig.isPayPalConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: paymentConfig.isPayPalConfigured ? "var(--accent-emerald)" : "var(--text-muted)" }}>
+                        {paymentConfig.isPayPalConfigured ? "Active & Ready" : "Not Configured"}
+                      </strong>
+                    </div>
+                    {paymentConfig.paypalClientIdMasked && (
+                      <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", marginTop: "6px" }}>
+                        Client: {paymentConfig.paypalClientIdMasked}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Form card */}
@@ -767,7 +795,7 @@ export default function AdminDashboardPage() {
                     <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#93c5fd", marginBottom: "8px" }}>
                       2. Default Active Payment Provider
                     </label>
-                    <div style={{ display: "flex", gap: "16px" }}>
+                    <div style={{ display: "flex", gap: "16px", flexWrap: "wrap" }}>
                       <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
                         <input
                           type="radio"
@@ -776,7 +804,17 @@ export default function AdminDashboardPage() {
                           checked={formProvider === "stripe"}
                           onChange={(e) => setFormProvider(e.target.value)}
                         />
-                        <span>Stripe (Recommended - Visa, MC, Apple/Google Pay)</span>
+                        <span>Stripe (Cards &amp; Apple/Google Pay)</span>
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
+                        <input
+                          type="radio"
+                          name="provider"
+                          value="paypal"
+                          checked={formProvider === "paypal"}
+                          onChange={(e) => setFormProvider(e.target.value)}
+                        />
+                        <span style={{ color: "#38bdf8", fontWeight: 600 }}>🅿️ PayPal (Global PayPal &amp; Cards)</span>
                       </label>
                       <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
                         <input
@@ -845,10 +883,97 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
+                  {/* PayPal Credentials Section */}
+                  <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "16px", marginTop: "6px" }}>
+                    <h4 style={{ fontSize: "15px", fontWeight: 700, margin: "0 0 12px 0", color: "#38bdf8" }}>
+                      🅿️ PayPal Credentials (developer.paypal.com)
+                    </h4>
+
+                    {/* PayPal Mode (Sandbox vs Live) */}
+                    <div style={{ marginBottom: "14px" }}>
+                      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                        PayPal Environment
+                      </label>
+                      <div style={{ display: "flex", gap: "20px" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", cursor: "pointer" }}>
+                          <input
+                            type="radio"
+                            name="paypal_mode"
+                            value="live"
+                            checked={formPayPalMode === "live"}
+                            onChange={(e) => setFormPayPalMode(e.target.value as "live")}
+                          />
+                          <span>Live (Production)</span>
+                        </label>
+                        <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", cursor: "pointer" }}>
+                          <input
+                            type="radio"
+                            name="paypal_mode"
+                            value="sandbox"
+                            checked={formPayPalMode === "sandbox"}
+                            onChange={(e) => setFormPayPalMode(e.target.value as "sandbox")}
+                          />
+                          <span>Sandbox (Testing)</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* PayPal Client ID */}
+                    <div style={{ marginBottom: "14px" }}>
+                      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                        PayPal Client ID
+                      </label>
+                      <input
+                        type="password"
+                        value={formPayPalClientId}
+                        onChange={(e) => setFormPayPalClientId(e.target.value)}
+                        placeholder={paymentConfig.paypalClientIdMasked || "Paste your PayPal Client ID"}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          background: "#090d16",
+                          border: "1px solid #1e293b",
+                          borderRadius: "6px",
+                          color: "#ffffff",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "13px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                    </div>
+
+                    {/* PayPal Secret Key */}
+                    <div>
+                      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                        PayPal Secret Key
+                      </label>
+                      <input
+                        type="password"
+                        value={formPayPalSecret}
+                        onChange={(e) => setFormPayPalSecret(e.target.value)}
+                        placeholder={paymentConfig.isPayPalConfigured ? "••••••••••••••••" : "Paste your PayPal Secret Key"}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          background: "#090d16",
+                          border: "1px solid #1e293b",
+                          borderRadius: "6px",
+                          color: "#ffffff",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "13px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                      <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                        From <a href="https://developer.paypal.com/dashboard/applications" target="_blank" rel="noopener noreferrer" style={{ color: "#38bdf8" }}>developer.paypal.com &gt; Apps &amp; Credentials</a>.
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Creem API Key */}
-                  <div>
+                  <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "16px", marginTop: "6px" }}>
                     <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
-                      5. Creem API Key (Optional / Alternative)
+                      5. Creem API Key (Optional / Merchant of Record)
                     </label>
                     <input
                       type="password"

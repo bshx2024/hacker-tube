@@ -98,7 +98,12 @@ export async function GET() {
     const stripeKey = settingsMap.get('STRIPE_SECRET_KEY') || process.env.STRIPE_SECRET_KEY || '';
     const stripeWebhookSecret = settingsMap.get('STRIPE_WEBHOOK_SECRET') || process.env.STRIPE_WEBHOOK_SECRET || '';
     const creemKey = settingsMap.get('CREEM_API_KEY') || process.env.CREEM_API_KEY || '';
-    const activeProvider = settingsMap.get('ACTIVE_PAYMENT_PROVIDER') || (stripeKey ? 'stripe' : creemKey ? 'creem' : 'stripe');
+    const paypalClientId = settingsMap.get('PAYPAL_CLIENT_ID') || process.env.PAYPAL_CLIENT_ID || '';
+    const paypalClientSecret = settingsMap.get('PAYPAL_CLIENT_SECRET') || process.env.PAYPAL_CLIENT_SECRET || '';
+    const paypalMode = settingsMap.get('PAYPAL_MODE') || process.env.PAYPAL_MODE || 'live';
+    const activeProvider =
+      settingsMap.get('ACTIVE_PAYMENT_PROVIDER') ||
+      (stripeKey ? 'stripe' : paypalClientId ? 'paypal' : creemKey ? 'creem' : 'stripe');
 
     const paymentConfig = {
       activeProvider,
@@ -106,6 +111,9 @@ export async function GET() {
       stripeKeyMasked: stripeKey ? `${stripeKey.slice(0, 7)}••••••••${stripeKey.slice(-4)}` : '',
       isStripeWebhookConfigured: !!stripeWebhookSecret,
       stripeWebhookMasked: stripeWebhookSecret ? `${stripeWebhookSecret.slice(0, 8)}••••••••${stripeWebhookSecret.slice(-4)}` : '',
+      isPayPalConfigured: !!paypalClientId && !!paypalClientSecret,
+      paypalClientIdMasked: paypalClientId ? `${paypalClientId.slice(0, 6)}••••••••${paypalClientId.slice(-4)}` : '',
+      paypalMode,
       isCreemConfigured: !!creemKey,
       creemKeyMasked: creemKey ? `${creemKey.slice(0, 6)}••••••••${creemKey.slice(-4)}` : '',
       webhookUrl: 'https://www.hacker-tube.net/api/payment/notify',
@@ -171,7 +179,16 @@ export async function POST(req: NextRequest) {
 
     // Handle Saving Payment Gateway Settings
     if (action === 'save_gateway_settings') {
-      const { stripeSecretKey, stripeWebhookSecret, creemApiKey, creemWebhookSecret, activeProvider } = body;
+      const {
+        stripeSecretKey,
+        stripeWebhookSecret,
+        creemApiKey,
+        creemWebhookSecret,
+        paypalClientId,
+        paypalClientSecret,
+        paypalMode,
+        activeProvider,
+      } = body;
 
       const upsertSetting = async (key: string, val?: string) => {
         if (val === undefined) return;
@@ -198,6 +215,9 @@ export async function POST(req: NextRequest) {
       if (stripeWebhookSecret !== undefined) await upsertSetting('STRIPE_WEBHOOK_SECRET', stripeWebhookSecret);
       if (creemApiKey !== undefined) await upsertSetting('CREEM_API_KEY', creemApiKey);
       if (creemWebhookSecret !== undefined) await upsertSetting('CREEM_WEBHOOK_SECRET', creemWebhookSecret);
+      if (paypalClientId !== undefined) await upsertSetting('PAYPAL_CLIENT_ID', paypalClientId);
+      if (paypalClientSecret !== undefined) await upsertSetting('PAYPAL_CLIENT_SECRET', paypalClientSecret);
+      if (paypalMode !== undefined) await upsertSetting('PAYPAL_MODE', paypalMode);
       if (activeProvider !== undefined) await upsertSetting('ACTIVE_PAYMENT_PROVIDER', activeProvider);
 
       return NextResponse.json({ success: true, message: 'Payment gateway configuration saved successfully!' });

@@ -45,15 +45,138 @@ export async function getPaymentGatewayConfig() {
   const stripeWebhookSecret = dbSettings.get('STRIPE_WEBHOOK_SECRET') || process.env.STRIPE_WEBHOOK_SECRET || '';
   const creemApiKey = dbSettings.get('CREEM_API_KEY') || process.env.CREEM_API_KEY || '';
   const creemWebhookSecret = dbSettings.get('CREEM_WEBHOOK_SECRET') || process.env.CREEM_WEBHOOK_SECRET || '';
-  const activeProvider = dbSettings.get('ACTIVE_PAYMENT_PROVIDER') || (stripeSecretKey ? 'stripe' : creemApiKey ? 'creem' : 'stripe');
+  const paypalClientId = dbSettings.get('PAYPAL_CLIENT_ID') || process.env.PAYPAL_CLIENT_ID || '';
+  const paypalClientSecret = dbSettings.get('PAYPAL_CLIENT_SECRET') || process.env.PAYPAL_CLIENT_SECRET || '';
+  const paypalMode = dbSettings.get('PAYPAL_MODE') || process.env.PAYPAL_MODE || 'live';
+
+  const activeProvider =
+    dbSettings.get('ACTIVE_PAYMENT_PROVIDER') ||
+    (stripeSecretKey ? 'stripe' : paypalClientId ? 'paypal' : creemApiKey ? 'creem' : 'stripe');
 
   return {
     stripeSecretKey,
     stripeWebhookSecret,
     creemApiKey,
     creemWebhookSecret,
+    paypalClientId,
+    paypalClientSecret,
+    paypalMode,
     activeProvider,
   };
+}
+
+export async function createPayPalCheckoutOrder(params: {
+  plan: PlanConfig;
+  orderNo: string;
+  appUrl: string;
+  clientId: string;
+  clientSecret: string;
+  mode: string;
+}): Promise<string | null> {
+  const isLive = params.mode === 'live';
+  const baseUrl = isLive ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+
+  const authHeader = Buffer.from(`${params.clientId}:${params.clientSecret}`).toString('base64');
+  const tokenRes = await fetch(`${baseUrl}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${authHeader}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+
+  if (!tokenRes.ok) {
+    const err = await tokenRes.text();
+    throw new Error(`PayPal Auth Error: ${err}`);
+  }
+
+  const tokenData = await tokenRes.json();
+  const accessToken = tokenData.access_token;
+
+  const orderRes = await fetch(`${baseUrl}/v2/checkout/orders`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      intent: 'CAPTURE',
+      purchase_units: [
+        {
+          reference_id: params.orderNo,
+          description: params.plan.name,
+          amount: {
+            currency_code: params.plan.currency || 'USD',
+            value: (params.plan.amount / 100).toFixed(2),
+          },
+        },
+      ],
+      application_context: {
+        brand_name: 'HackerTube',
+        landing_page: 'NO_PREFERENCE',
+        user_action: 'PAY_NOW',
+        return_url: `${params.appUrl}/api/payment/paypal/capture?orderNo=${params.orderNo}`,
+        cancel_url: `${params.appUrl}/?payment=cancelled`,
+      },
+    }),
+  });
+
+  if (!orderRes.ok) {
+    const err = await orderRes.text();
+    throw new Error(`PayPal Create Order Error: ${err}`);
+  }
+
+  const orderData = await orderRes.json();
+  const links = orderData.links as { rel: string; href: string }[] | undefined;
+  const approveLink = links?.find((l) => l.rel === 'approve')?.href;
+
+  return approveLink || null;
+}
+
+export async function capturePayPalPayment(params: {
+  paypalOrderId: string;
+  clientId: string;
+  clientSecret: string;
+  mode: string;
+}): Promise<{ success: boolean; transactionId?: string; error?: string }> {
+  const isLive = params.mode === 'live';
+  const baseUrl = isLive ? 'https://api-m.paypal.com' : 'https://api-m.sandbox.paypal.com';
+
+  const authHeader = Buffer.from(`${params.clientId}:${params.clientSecret}`).toString('base64');
+  const tokenRes = await fetch(`${baseUrl}/v1/oauth2/token`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${authHeader}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'grant_type=client_credentials',
+  });
+
+  if (!tokenRes.ok) {
+    return { success: false, error: 'Failed to authenticate with PayPal' };
+  }
+
+  const tokenData = await tokenRes.json();
+  const accessToken = tokenData.access_token;
+
+  const captureRes = await fetch(`${baseUrl}/v2/checkout/orders/${params.paypalOrderId}/capture`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  const captureData = await captureRes.json();
+  if (captureData.status === 'COMPLETED') {
+    const purchaseUnit = captureData.purchase_units?.[0];
+    const capture = purchaseUnit?.payments?.captures?.[0];
+    const transactionId = capture?.id || captureData.id;
+    return { success: true, transactionId };
+  }
+
+  return { success: false, error: captureData.message || 'Payment not completed' };
 }
 
 export async function getStripeClientAsync(): Promise<Stripe | null> {

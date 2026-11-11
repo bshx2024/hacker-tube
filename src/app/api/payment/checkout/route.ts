@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/core/auth';
 import { db, schema } from '@/core/db';
-import { PLANS, getPaymentGatewayConfig, getStripeClientAsync } from '@/core/payment';
+import { PLANS, createPayPalCheckoutOrder, getPaymentGatewayConfig, getStripeClientAsync } from '@/core/payment';
 import { nanoid } from 'nanoid';
 
 export async function POST(req: NextRequest) {
@@ -73,6 +73,26 @@ export async function POST(req: NextRequest) {
         orderNo,
         checkoutUrl: checkoutSession.url,
       });
+    }
+
+    // PayPal Checkout Integration
+    if (provider === 'paypal' && gatewayConfig.paypalClientId && gatewayConfig.paypalClientSecret) {
+      const approvalUrl = await createPayPalCheckoutOrder({
+        plan,
+        orderNo,
+        appUrl,
+        clientId: gatewayConfig.paypalClientId,
+        clientSecret: gatewayConfig.paypalClientSecret,
+        mode: gatewayConfig.paypalMode || 'live',
+      });
+
+      if (approvalUrl) {
+        return NextResponse.json({
+          success: true,
+          orderNo,
+          checkoutUrl: approvalUrl,
+        });
+      }
     }
 
     // Creem Checkout (MoR) fallback or sandbox checkout URL

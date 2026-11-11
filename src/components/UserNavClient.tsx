@@ -59,7 +59,7 @@ export const UserNavClient: React.FC = () => {
       const res = await fetch("/api/payment/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: "pro_monthly", provider: "stripe" }),
+        body: JSON.stringify({ planId: "pro_monthly" }),
       });
       const data = await res.json();
       if (data.checkoutUrl) {
