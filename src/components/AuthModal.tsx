@@ -158,7 +158,30 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               borderRadius: "6px",
             }}
           >
-            {errorMsg}
+            <div>{errorMsg}</div>
+            {!isSignUp && (
+              <div style={{ marginTop: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsSignUp(true);
+                    setErrorMsg("");
+                  }}
+                  style={{
+                    background: "rgba(16, 185, 129, 0.2)",
+                    border: "1px solid #10b981",
+                    color: "#34d399",
+                    padding: "4px 10px",
+                    borderRadius: "4px",
+                    fontSize: "11px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  👉 点击这里切换为「注册新账号」直接进入
+                </button>
+              </div>
+            )}
           </div>
         )}
 
