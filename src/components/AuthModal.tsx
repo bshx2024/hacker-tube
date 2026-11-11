@@ -27,7 +27,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         callbackURL: window.location.origin,
       });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "GitHub sign-in failed. Please try again.";
+      let msg = err instanceof Error ? err.message : "GitHub sign-in failed. Please try again.";
+      if (msg.includes("Provider not found") || msg.includes("PROVIDER_NOT_FOUND")) {
+        msg = "GitHub OAuth is pending configuration in Vercel. Please use the Email tab below to sign up/sign in instantly (5 free credits included)!";
+      }
       setErrorMsg(msg);
       setLoading(false);
     }
@@ -42,7 +45,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         callbackURL: window.location.origin,
       });
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Google sign-in failed. Please try again.";
+      let msg = err instanceof Error ? err.message : "Google sign-in failed. Please try again.";
+      if (msg.includes("Provider not found") || msg.includes("PROVIDER_NOT_FOUND")) {
+        msg = "Google OAuth is pending configuration in Vercel. Please use the Email tab below to sign up/sign in instantly!";
+      }
       setErrorMsg(msg);
       setLoading(false);
     }
