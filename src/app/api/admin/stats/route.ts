@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 import { auth } from '@/core/auth';
 import { db, schema } from '@/core/db';
 import { desc, eq } from 'drizzle-orm';
 import fs from 'fs';
 import path from 'path';
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const session = await auth.api.getSession({ headers: req.headers });
+    const incomingHeaders = await headers();
+    const session = await auth.api.getSession({ headers: incomingHeaders });
 
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized: Please sign in' }, { status: 401 });
@@ -120,7 +122,8 @@ export async function GET(req: NextRequest) {
 // POST endpoint to update a user's role or plan from the admin dashboard
 export async function POST(req: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: req.headers });
+    const incomingHeaders = await headers();
+    const session = await auth.api.getSession({ headers: incomingHeaders });
     if (!session || !session.user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -168,3 +171,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: errorMsg }, { status: 500 });
   }
 }
+

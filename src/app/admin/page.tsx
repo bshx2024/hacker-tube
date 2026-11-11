@@ -126,6 +126,7 @@ export default function AdminDashboardPage() {
       })
       .then((data) => {
         if (!data || !isMounted) return;
+        setErrorMsg(null);
         setStats(data.stats);
         setUsers(data.users || []);
         setOrders(data.orders || []);
@@ -231,7 +232,9 @@ export default function AdminDashboardPage() {
             <div style={{ fontSize: "40px", marginBottom: "16px" }}>🔐</div>
             <h2 style={{ fontSize: "22px", fontWeight: 800, marginBottom: "8px" }}>Administrator Access Required</h2>
             <p style={{ color: "var(--text-secondary)", fontSize: "14px", lineHeight: 1.6, marginBottom: "24px" }}>
-              {errorMsg}
+              {session?.user
+                ? `Signed in as "${session.user.email}", but this account has not been granted administrator privileges yet.`
+                : errorMsg}
             </p>
 
             {!session?.user ? (
@@ -246,26 +249,38 @@ export default function AdminDashboardPage() {
               <div
                 style={{
                   background: "rgba(0, 0, 0, 0.4)",
-                  padding: "16px",
+                  padding: "20px",
                   borderRadius: "8px",
                   fontSize: "13px",
                   fontFamily: "var(--font-mono)",
                   textAlign: "left",
                   color: "#93c5fd",
-                  lineHeight: 1.5,
+                  lineHeight: 1.6,
+                  border: "1px solid rgba(56, 189, 248, 0.2)",
                 }}
               >
-                <strong>How to promote this account to Admin:</strong>
-                <br />
-                Run this command in your project terminal:
-                <br />
-                <code style={{ color: "#34d399", display: "block", marginTop: "8px" }}>
+                <div style={{ color: "#38bdf8", fontWeight: 700, marginBottom: "8px" }}>
+                  💡 Two quick ways to grant Admin rights:
+                </div>
+                <div><strong>Option 1 (Production / Vercel):</strong></div>
+                <div>Add to Vercel Environment Variables:</div>
+                <code style={{ color: "#34d399", display: "block", margin: "4px 0 12px 0", padding: "6px 10px", background: "rgba(0,0,0,0.3)", borderRadius: "4px" }}>
+                  ADMIN_EMAILS={session.user.email}
+                </code>
+                <div><strong>Option 2 (Local / Terminal):</strong></div>
+                <div>Run in project terminal:</div>
+                <code style={{ color: "#38bdf8", display: "block", margin: "4px 0 12px 0", padding: "6px 10px", background: "rgba(0,0,0,0.3)", borderRadius: "4px" }}>
                   npx tsx scripts/make_admin.ts {session.user.email}
                 </code>
-                <br />
-                Or add your email to <code>.env</code>:
-                <br />
-                <code style={{ color: "#38bdf8" }}>ADMIN_EMAILS={session.user.email}</code>
+                <div style={{ marginTop: "12px", textAlign: "center" }}>
+                  <button
+                    onClick={() => refreshData()}
+                    className="nav-btn"
+                    style={{ fontSize: "12px", padding: "6px 16px" }}
+                  >
+                    🔄 Refresh Permissions
+                  </button>
+                </div>
               </div>
             )}
           </div>
