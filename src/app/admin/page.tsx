@@ -442,7 +442,7 @@ export default function AdminDashboardPage() {
                     ? `Subscriptions (${subscriptions.length})`
                     : tab === "surveys"
                     ? `Surveys (${surveys.length})`
-                    : "⚙️ Payment Gateway (网关设置)"}
+                    : "⚙️ Payment Gateway"}
                 </button>
               ))}
             </div>
@@ -705,7 +705,7 @@ export default function AdminDashboardPage() {
                   {/* Webhook Endpoint copy box */}
                   <div>
                     <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#93c5fd", marginBottom: "6px" }}>
-                      1. Webhook Endpoint URL (Stripe 回调通知地址)
+                      1. Webhook Endpoint URL (Stripe Callback Endpoint)
                     </label>
                     <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "0 0 8px 0" }}>
                       Paste this URL into Stripe Dashboard &gt; Developers &gt; Webhooks &gt; Add Endpoint, and listen to <code>checkout.session.completed</code>.
@@ -744,7 +744,7 @@ export default function AdminDashboardPage() {
                   {/* Active Provider Selector */}
                   <div>
                     <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#93c5fd", marginBottom: "8px" }}>
-                      2. Default Active Provider (默认收款通道)
+                      2. Default Active Payment Provider
                     </label>
                     <div style={{ display: "flex", gap: "16px" }}>
                       <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>

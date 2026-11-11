@@ -178,7 +178,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
                     fontWeight: 600,
                   }}
                 >
-                  👉 点击这里切换为「注册新账号」直接进入
+                  👉 Switch to &ldquo;Sign Up&rdquo; to create this account
                 </button>
               </div>
             )}
@@ -268,7 +268,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               transition: "all 0.2s",
             }}
           >
-            Sign In (登录)
+            Sign In
           </button>
           <button
             type="button"
@@ -289,7 +289,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
               transition: "all 0.2s",
             }}
           >
-            Sign Up (注册新账号)
+            Sign Up
           </button>
         </div>
 
