@@ -48,10 +48,14 @@ export async function getPaymentGatewayConfig() {
   const paypalClientId = dbSettings.get('PAYPAL_CLIENT_ID') || process.env.PAYPAL_CLIENT_ID || '';
   const paypalClientSecret = dbSettings.get('PAYPAL_CLIENT_SECRET') || process.env.PAYPAL_CLIENT_SECRET || '';
   const paypalMode = dbSettings.get('PAYPAL_MODE') || process.env.PAYPAL_MODE || 'live';
+  const waffoApiKey = dbSettings.get('WAFFO_API_KEY') || process.env.WAFFO_API_KEY || '';
+  const waffoSecretKey = dbSettings.get('WAFFO_SECRET_KEY') || process.env.WAFFO_SECRET_KEY || '';
+  const waffoStoreId = dbSettings.get('WAFFO_STORE_ID') || process.env.WAFFO_STORE_ID || '';
+  const waffoMode = dbSettings.get('WAFFO_MODE') || process.env.WAFFO_MODE || 'live';
 
   const activeProvider =
     dbSettings.get('ACTIVE_PAYMENT_PROVIDER') ||
-    (stripeSecretKey ? 'stripe' : paypalClientId ? 'paypal' : creemApiKey ? 'creem' : 'stripe');
+    (stripeSecretKey ? 'stripe' : paypalClientId ? 'paypal' : waffoApiKey ? 'waffo' : creemApiKey ? 'creem' : 'stripe');
 
   return {
     stripeSecretKey,
@@ -61,6 +65,10 @@ export async function getPaymentGatewayConfig() {
     paypalClientId,
     paypalClientSecret,
     paypalMode,
+    waffoApiKey,
+    waffoSecretKey,
+    waffoStoreId,
+    waffoMode,
     activeProvider,
   };
 }
@@ -183,6 +191,112 @@ export async function getStripeClientAsync(): Promise<Stripe | null> {
   const config = await getPaymentGatewayConfig();
   if (!config.stripeSecretKey) return null;
   return new Stripe(config.stripeSecretKey);
+}
+
+export async function createWaffoCheckoutOrder(params: {
+  plan: PlanConfig;
+  orderNo: string;
+  userEmail: string;
+  userId: string;
+  appUrl: string;
+  apiKey: string;
+  secretKey?: string;
+  storeId?: string;
+  mode?: string;
+}): Promise<string | null> {
+  const isLive = params.mode !== 'sandbox';
+  const baseUrl = isLive ? 'https://api.waffo.com' : 'https://api-sandbox.waffo.com';
+
+  const bodyData = {
+    paymentRequestId: params.orderNo,
+    merchantOrderId: params.orderNo,
+    orderAmount: (params.plan.amount / 100).toFixed(2),
+    orderCurrency: params.plan.currency || 'USD',
+    orderDescription: params.plan.name,
+    notifyUrl: `${params.appUrl}/api/payment/notify`,
+    successRedirectUrl: `${params.appUrl}/?payment=success&order_no=${params.orderNo}&provider=waffo`,
+    failedRedirectUrl: `${params.appUrl}/?payment=cancelled`,
+    userInfo: {
+      userId: params.userId,
+      userEmail: params.userEmail,
+      userTerminal: 'WEB',
+    },
+    paymentInfo: {
+      productName: params.plan.type === 'subscription' ? 'SUBSCRIPTION' : 'ONE_TIME_PAYMENT',
+    },
+    goodsInfo: {
+      goodsName: params.plan.name,
+      goodsUrl: `${params.appUrl}/pricing`,
+    },
+  };
+
+  const rawBody = JSON.stringify(bodyData);
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'X-API-KEY': params.apiKey,
+    'X-API-VERSION': '1.0.0',
+  };
+
+  if (params.storeId) {
+    headers['X-Merchant-Id'] = params.storeId;
+  }
+
+  // Handle optional RSA or HMAC signature if secretKey provided
+  if (params.secretKey) {
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    headers['X-Timestamp'] = timestamp;
+
+    try {
+      const crypto = await import('crypto');
+      if (params.secretKey.includes('PRIVATE KEY')) {
+        const bodyHash = crypto.createHash('sha256').update(rawBody).digest('base64');
+        const canonical = `POST /api/v1/order/create ${timestamp} ${bodyHash}`;
+        const sign = crypto.createSign('RSA-SHA256');
+        sign.update(canonical);
+        headers['X-Signature'] = sign.sign(params.secretKey, 'base64');
+      } else {
+        headers['X-Signature'] = crypto.createHmac('sha256', params.secretKey).update(rawBody).digest('hex');
+      }
+    } catch (e) {
+      console.warn('Waffo signature creation warning:', e);
+    }
+  }
+
+  try {
+    const res = await fetch(`${baseUrl}/api/v1/order/create`, {
+      method: 'POST',
+      headers,
+      body: rawBody,
+    });
+
+    if (res.ok) {
+      const resData = await res.json();
+      if (resData.data?.orderAction) {
+        try {
+          const action =
+            typeof resData.data.orderAction === 'string'
+              ? JSON.parse(resData.data.orderAction)
+              : resData.data.orderAction;
+          if (action.webUrl) return action.webUrl;
+          if (action.deeplinkUrl) return action.deeplinkUrl;
+        } catch {
+          if (typeof resData.data.orderAction === 'string' && resData.data.orderAction.startsWith('http')) {
+            return resData.data.orderAction;
+          }
+        }
+      }
+      if (resData.data?.webUrl) return resData.data.webUrl;
+      if (resData.data?.checkoutUrl) return resData.data.checkoutUrl;
+    } else {
+      const errText = await res.text();
+      console.warn('Waffo API order create returned status:', res.status, errText);
+    }
+  } catch (err) {
+    console.warn('Waffo API request failed:', err);
+  }
+
+  // Hosted checkout fallback
+  return `https://checkout.waffo.com/pay/${params.plan.id}?merchantOrderId=${params.orderNo}&amount=${(params.plan.amount / 100).toFixed(2)}&currency=${params.plan.currency}&email=${encodeURIComponent(params.userEmail)}`;
 }
 
 export function getStripeClient(): Stripe | null {

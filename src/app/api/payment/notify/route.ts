@@ -35,7 +35,92 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No event received' }, { status: 400 });
     }
 
-    // Handle completed checkout session
+    // 1. Handle Waffo payment notification webhook
+    const isWaffoEvent =
+      event.eventType === 'PAYMENT_NOTIFICATION' ||
+      event.eventType === 'ORDER_STATUS_NOTIFICATION' ||
+      Boolean((event.result as Record<string, unknown>)?.orderStatus) ||
+      Boolean(event.orderStatus && event.merchantOrderId);
+
+    if (isWaffoEvent) {
+      const resultObj = ((event.result as Record<string, unknown>) || event) as Record<string, unknown>;
+      const orderNo = (resultObj.merchantOrderId || resultObj.paymentRequestId) as string | undefined;
+      const status = (resultObj.orderStatus || event.orderStatus) as string | undefined;
+      const transactionId = ((resultObj.acquiringOrderId || resultObj.transactionId || nanoid()) as string);
+
+      if (orderNo && (status === 'PAY_SUCCESS' || status === 'SUCCESS' || status === 'PAID')) {
+        const [existingOrder] = await db
+          .select()
+          .from(schema.order)
+          .where(eq(schema.order.orderNo, orderNo))
+          .limit(1);
+
+        if (existingOrder && existingOrder.status === 'paid') {
+          return NextResponse.json({ code: 'SUCCESS', message: 'Already processed', received: true });
+        }
+
+        if (existingOrder) {
+          await db
+            .update(schema.order)
+            .set({
+              status: 'paid',
+              transactionId,
+              paymentProvider: 'waffo',
+              paidAt: new Date(),
+              updatedAt: new Date(),
+            })
+            .where(eq(schema.order.orderNo, orderNo));
+        }
+
+        const targetUserId = existingOrder?.userId;
+        if (targetUserId) {
+          await db
+            .update(schema.user)
+            .set({
+              plan: 'pro',
+              credits: 99999,
+              updatedAt: new Date(),
+            })
+            .where(eq(schema.user.id, targetUserId));
+
+          const [existingSub] = await db
+            .select()
+            .from(schema.subscription)
+            .where(eq(schema.subscription.userId, targetUserId))
+            .limit(1);
+
+          const periodEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+          if (existingSub) {
+            await db
+              .update(schema.subscription)
+              .set({
+                status: 'active',
+                paymentProvider: 'waffo',
+                subscriptionId: transactionId,
+                currentPeriodEnd: periodEnd,
+                updatedAt: new Date(),
+              })
+              .where(eq(schema.subscription.id, existingSub.id));
+          } else {
+            await db.insert(schema.subscription).values({
+              id: nanoid(),
+              userId: targetUserId,
+              plan: 'pro',
+              status: 'active',
+              paymentProvider: 'waffo',
+              subscriptionId: transactionId,
+              currentPeriodStart: new Date(),
+              currentPeriodEnd: periodEnd,
+            });
+          }
+        }
+
+        return NextResponse.json({ code: 'SUCCESS', message: 'OK', received: true });
+      }
+    }
+
+    // 2. Handle Stripe / Generic completed checkout session
     if (event.type === 'checkout.session.completed' || event.event === 'order.paid') {
       const eventData = event.data as Record<string, unknown> | undefined;
       const sessionObj = (eventData?.object || event) as Record<string, unknown>;

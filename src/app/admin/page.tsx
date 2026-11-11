@@ -76,6 +76,10 @@ export default function AdminDashboardPage() {
     isPayPalConfigured: false,
     paypalClientIdMasked: "",
     paypalMode: "live",
+    isWaffoConfigured: false,
+    waffoApiKeyMasked: "",
+    waffoStoreIdMasked: "",
+    waffoMode: "live",
     isCreemConfigured: false,
     creemKeyMasked: "",
     webhookUrl: "https://www.hacker-tube.net/api/payment/notify",
@@ -86,6 +90,10 @@ export default function AdminDashboardPage() {
   const [formPayPalClientId, setFormPayPalClientId] = useState("");
   const [formPayPalSecret, setFormPayPalSecret] = useState("");
   const [formPayPalMode, setFormPayPalMode] = useState<"sandbox" | "live">("live");
+  const [formWaffoApiKey, setFormWaffoApiKey] = useState("");
+  const [formWaffoSecretKey, setFormWaffoSecretKey] = useState("");
+  const [formWaffoStoreId, setFormWaffoStoreId] = useState("");
+  const [formWaffoMode, setFormWaffoMode] = useState<"sandbox" | "live">("live");
   const [formCreemKey, setFormCreemKey] = useState("");
   const [formProvider, setFormProvider] = useState("stripe");
   const [saveSuccessMsg, setSaveSuccessMsg] = useState<string | null>(null);
@@ -118,6 +126,7 @@ export default function AdminDashboardPage() {
         setPaymentConfig(data.paymentConfig);
         setFormProvider(data.paymentConfig.activeProvider || "stripe");
         setFormPayPalMode(data.paymentConfig.paypalMode === "sandbox" ? "sandbox" : "live");
+        setFormWaffoMode(data.paymentConfig.waffoMode === "sandbox" ? "sandbox" : "live");
       }
     } catch {
       setErrorMsg("Network error loading admin console.");
@@ -216,6 +225,10 @@ export default function AdminDashboardPage() {
           paypalClientId: formPayPalClientId || undefined,
           paypalClientSecret: formPayPalSecret || undefined,
           paypalMode: formPayPalMode,
+          waffoApiKey: formWaffoApiKey || undefined,
+          waffoSecretKey: formWaffoSecretKey || undefined,
+          waffoStoreId: formWaffoStoreId || undefined,
+          waffoMode: formWaffoMode,
           creemApiKey: formCreemKey || undefined,
           activeProvider: formProvider,
         }),
@@ -226,6 +239,9 @@ export default function AdminDashboardPage() {
         setFormStripeWebhook("");
         setFormPayPalClientId("");
         setFormPayPalSecret("");
+        setFormWaffoApiKey("");
+        setFormWaffoSecretKey("");
+        setFormWaffoStoreId("");
         setFormCreemKey("");
         await refreshData();
       } else {
@@ -727,6 +743,21 @@ export default function AdminDashboardPage() {
                       </div>
                     )}
                   </div>
+
+                  <div style={{ background: "rgba(15, 23, 42, 0.7)", border: "1px solid var(--border-subtle)", borderRadius: "12px", padding: "16px" }}>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>Waffo API Status ({paymentConfig.waffoMode})</div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "16px" }}>{paymentConfig.isWaffoConfigured ? "🟢" : "⚪"}</span>
+                      <strong style={{ color: paymentConfig.isWaffoConfigured ? "var(--accent-emerald)" : "var(--text-muted)" }}>
+                        {paymentConfig.isWaffoConfigured ? "Active & Ready" : "Not Configured"}
+                      </strong>
+                    </div>
+                    {paymentConfig.waffoApiKeyMasked && (
+                      <div style={{ fontSize: "11px", fontFamily: "var(--font-mono)", color: "var(--text-muted)", marginTop: "6px" }}>
+                        Key: {paymentConfig.waffoApiKeyMasked}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Form card */}
@@ -815,6 +846,16 @@ export default function AdminDashboardPage() {
                           onChange={(e) => setFormProvider(e.target.value)}
                         />
                         <span style={{ color: "#38bdf8", fontWeight: 600 }}>🅿️ PayPal (Global PayPal &amp; Cards)</span>
+                      </label>
+                      <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
+                        <input
+                          type="radio"
+                          name="provider"
+                          value="waffo"
+                          checked={formProvider === "waffo"}
+                          onChange={(e) => setFormProvider(e.target.value)}
+                        />
+                        <span style={{ color: "#f59e0b", fontWeight: 600 }}>🧇 Waffo (Global MoR &amp; Local APMs)</span>
                       </label>
                       <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
                         <input
@@ -970,10 +1011,121 @@ export default function AdminDashboardPage() {
                     </div>
                   </div>
 
+                  {/* Waffo Credentials Section */}
+                  <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "16px", marginTop: "6px" }}>
+                    <h4 style={{ fontSize: "15px", fontWeight: 700, margin: "0 0 12px 0", color: "#f59e0b" }}>
+                      🧇 Waffo Credentials (waffo.com)
+                    </h4>
+
+                    {/* Waffo Mode (Sandbox vs Live) */}
+                    <div style={{ marginBottom: "14px" }}>
+                      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                        Waffo Environment
+                      </label>
+                      <div style={{ display: "flex", gap: "20px" }}>
+                        <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", cursor: "pointer" }}>
+                          <input
+                            type="radio"
+                            name="waffo_mode"
+                            value="live"
+                            checked={formWaffoMode === "live"}
+                            onChange={(e) => setFormWaffoMode(e.target.value as "live")}
+                          />
+                          <span>Live (Production - api.waffo.com)</span>
+                        </label>
+                        <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", cursor: "pointer" }}>
+                          <input
+                            type="radio"
+                            name="waffo_mode"
+                            value="sandbox"
+                            checked={formWaffoMode === "sandbox"}
+                            onChange={(e) => setFormWaffoMode(e.target.value as "sandbox")}
+                          />
+                          <span>Sandbox (Testing - api-sandbox.waffo.com)</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Waffo Store / Merchant ID */}
+                    <div style={{ marginBottom: "14px" }}>
+                      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                        Waffo Store ID / Merchant ID (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={formWaffoStoreId}
+                        onChange={(e) => setFormWaffoStoreId(e.target.value)}
+                        placeholder={paymentConfig.waffoStoreIdMasked || "Paste your Waffo Store or Merchant ID"}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          background: "#090d16",
+                          border: "1px solid #1e293b",
+                          borderRadius: "6px",
+                          color: "#ffffff",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "13px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                    </div>
+
+                    {/* Waffo API Key */}
+                    <div style={{ marginBottom: "14px" }}>
+                      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                        Waffo API Key (X-API-KEY)
+                      </label>
+                      <input
+                        type="password"
+                        value={formWaffoApiKey}
+                        onChange={(e) => setFormWaffoApiKey(e.target.value)}
+                        placeholder={paymentConfig.waffoApiKeyMasked || "Paste your Waffo API Key"}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          background: "#090d16",
+                          border: "1px solid #1e293b",
+                          borderRadius: "6px",
+                          color: "#ffffff",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "13px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                    </div>
+
+                    {/* Waffo Secret / Private Key */}
+                    <div>
+                      <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "#f8fafc", marginBottom: "6px" }}>
+                        Waffo Secret Key / Private Key (Optional for Webhook &amp; RSA Signature)
+                      </label>
+                      <input
+                        type="password"
+                        value={formWaffoSecretKey}
+                        onChange={(e) => setFormWaffoSecretKey(e.target.value)}
+                        placeholder={paymentConfig.isWaffoConfigured ? "••••••••••••••••" : "Paste your Waffo Secret Key / RSA Private Key"}
+                        style={{
+                          width: "100%",
+                          padding: "10px 12px",
+                          background: "#090d16",
+                          border: "1px solid #1e293b",
+                          borderRadius: "6px",
+                          color: "#ffffff",
+                          fontFamily: "var(--font-mono)",
+                          fontSize: "13px",
+                          boxSizing: "border-box",
+                        }}
+                      />
+                      <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                        From <a href="https://waffo.com" target="_blank" rel="noopener noreferrer" style={{ color: "#f59e0b" }}>waffo.com &gt; Developer &gt; API Keys</a>.
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Creem API Key */}
                   <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "16px", marginTop: "6px" }}>
                     <label style={{ display: "block", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "6px" }}>
-                      5. Creem API Key (Optional / Merchant of Record)
+                      6. Creem API Key (Optional / Merchant of Record)
                     </label>
                     <input
                       type="password"

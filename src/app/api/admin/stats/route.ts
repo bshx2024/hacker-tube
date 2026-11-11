@@ -101,9 +101,13 @@ export async function GET() {
     const paypalClientId = settingsMap.get('PAYPAL_CLIENT_ID') || process.env.PAYPAL_CLIENT_ID || '';
     const paypalClientSecret = settingsMap.get('PAYPAL_CLIENT_SECRET') || process.env.PAYPAL_CLIENT_SECRET || '';
     const paypalMode = settingsMap.get('PAYPAL_MODE') || process.env.PAYPAL_MODE || 'live';
+    const waffoApiKey = settingsMap.get('WAFFO_API_KEY') || process.env.WAFFO_API_KEY || '';
+    const waffoSecretKey = settingsMap.get('WAFFO_SECRET_KEY') || process.env.WAFFO_SECRET_KEY || '';
+    const waffoStoreId = settingsMap.get('WAFFO_STORE_ID') || process.env.WAFFO_STORE_ID || '';
+    const waffoMode = settingsMap.get('WAFFO_MODE') || process.env.WAFFO_MODE || 'live';
     const activeProvider =
       settingsMap.get('ACTIVE_PAYMENT_PROVIDER') ||
-      (stripeKey ? 'stripe' : paypalClientId ? 'paypal' : creemKey ? 'creem' : 'stripe');
+      (stripeKey ? 'stripe' : paypalClientId ? 'paypal' : waffoApiKey ? 'waffo' : creemKey ? 'creem' : 'stripe');
 
     const paymentConfig = {
       activeProvider,
@@ -114,6 +118,10 @@ export async function GET() {
       isPayPalConfigured: !!paypalClientId && !!paypalClientSecret,
       paypalClientIdMasked: paypalClientId ? `${paypalClientId.slice(0, 6)}••••••••${paypalClientId.slice(-4)}` : '',
       paypalMode,
+      isWaffoConfigured: !!(waffoApiKey || waffoStoreId),
+      waffoApiKeyMasked: waffoApiKey ? `${waffoApiKey.slice(0, 6)}••••••••${waffoApiKey.slice(-4)}` : '',
+      waffoStoreIdMasked: waffoStoreId ? `${waffoStoreId.slice(0, 4)}••••${waffoStoreId.slice(-4)}` : '',
+      waffoMode,
       isCreemConfigured: !!creemKey,
       creemKeyMasked: creemKey ? `${creemKey.slice(0, 6)}••••••••${creemKey.slice(-4)}` : '',
       webhookUrl: 'https://www.hacker-tube.net/api/payment/notify',
@@ -187,6 +195,10 @@ export async function POST(req: NextRequest) {
         paypalClientId,
         paypalClientSecret,
         paypalMode,
+        waffoApiKey,
+        waffoSecretKey,
+        waffoStoreId,
+        waffoMode,
         activeProvider,
       } = body;
 
@@ -218,6 +230,10 @@ export async function POST(req: NextRequest) {
       if (paypalClientId !== undefined) await upsertSetting('PAYPAL_CLIENT_ID', paypalClientId);
       if (paypalClientSecret !== undefined) await upsertSetting('PAYPAL_CLIENT_SECRET', paypalClientSecret);
       if (paypalMode !== undefined) await upsertSetting('PAYPAL_MODE', paypalMode);
+      if (waffoApiKey !== undefined) await upsertSetting('WAFFO_API_KEY', waffoApiKey);
+      if (waffoSecretKey !== undefined) await upsertSetting('WAFFO_SECRET_KEY', waffoSecretKey);
+      if (waffoStoreId !== undefined) await upsertSetting('WAFFO_STORE_ID', waffoStoreId);
+      if (waffoMode !== undefined) await upsertSetting('WAFFO_MODE', waffoMode);
       if (activeProvider !== undefined) await upsertSetting('ACTIVE_PAYMENT_PROVIDER', activeProvider);
 
       return NextResponse.json({ success: true, message: 'Payment gateway configuration saved successfully!' });

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/core/auth';
 import { db, schema } from '@/core/db';
-import { PLANS, createPayPalCheckoutOrder, getPaymentGatewayConfig, getStripeClientAsync } from '@/core/payment';
+import { PLANS, createPayPalCheckoutOrder, createWaffoCheckoutOrder, getPaymentGatewayConfig, getStripeClientAsync } from '@/core/payment';
 import { nanoid } from 'nanoid';
 
 export async function POST(req: NextRequest) {
@@ -91,6 +91,29 @@ export async function POST(req: NextRequest) {
           success: true,
           orderNo,
           checkoutUrl: approvalUrl,
+        });
+      }
+    }
+
+    // Waffo Checkout Integration
+    if (provider === 'waffo' && (gatewayConfig.waffoApiKey || gatewayConfig.waffoStoreId)) {
+      const checkoutUrl = await createWaffoCheckoutOrder({
+        plan,
+        orderNo,
+        userEmail: session.user.email,
+        userId: session.user.id,
+        appUrl,
+        apiKey: gatewayConfig.waffoApiKey,
+        secretKey: gatewayConfig.waffoSecretKey,
+        storeId: gatewayConfig.waffoStoreId,
+        mode: gatewayConfig.waffoMode || 'live',
+      });
+
+      if (checkoutUrl) {
+        return NextResponse.json({
+          success: true,
+          orderNo,
+          checkoutUrl,
         });
       }
     }

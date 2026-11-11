@@ -97,3 +97,4 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${appUrl}/?payment=error&reason=server_error`);
   }
 }
+
