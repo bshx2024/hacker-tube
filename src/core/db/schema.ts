@@ -197,3 +197,41 @@ export const systemSetting = sqliteTable('system_setting', {
     .$onUpdate(() => new Date())
     .notNull(),
 });
+
+export const generatedNote = sqliteTable(
+  'generated_note',
+  {
+    id: text('id').primaryKey(),
+    youtubeId: text('youtube_id').unique().notNull(),
+    youtubeUrl: text('youtube_url').notNull(),
+    title: text('title').notNull(),
+    channelTitle: text('channel_title').default('Technical Speaker').notNull(),
+    thumbnailUrl: text('thumbnail_url'),
+    topic: text('topic').default('AI & Machine Learning').notNull(),
+    duration: text('duration').default('30:00'),
+    executiveSummary: text('executive_summary').notNull(),
+    coreMentalModelsJson: text('core_mental_models_json').notNull(), // JSON string array
+    keyTimestampsJson: text('key_timestamps_json').notNull(), // JSON string array of KeyTimestamp
+    mathDerivationsJson: text('math_derivations_json').notNull(), // JSON string array of MathDerivation
+    hnDebatesJson: text('hn_debates_json').notNull(), // JSON string array of HnDebate
+    faqsJson: text('faqs_json'), // JSON string array of LectureFaq
+    obsidianMarkdown: text('obsidian_markdown'),
+    status: text('status').default('published').notNull(), // 'published' | 'private'
+    wordCount: integer('word_count').default(0).notNull(),
+    creatorUserId: text('creator_user_id'),
+    creatorEmail: text('creator_email'),
+    viewCount: integer('view_count').default(1).notNull(),
+    createdAt: integer('created_at', { mode: 'timestamp_ms' })
+      .default(sqliteNowMs)
+      .notNull(),
+    updatedAt: integer('updated_at', { mode: 'timestamp_ms' })
+      .default(sqliteNowMs)
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index('idx_generated_note_yt').on(table.youtubeId),
+    index('idx_generated_note_status').on(table.status),
+    index('idx_generated_note_creator').on(table.creatorUserId),
+  ]
+);

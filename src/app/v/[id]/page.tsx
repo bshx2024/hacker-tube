@@ -2,11 +2,15 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { CURATED_VIDEOS } from "@/data/videos";
-import { getStudyNoteForVideo } from "@/data/studyNotes";
+import { eq, or } from "drizzle-orm";
+import { db, schema } from "@/core/db";
+import { CURATED_VIDEOS, VideoItem } from "@/data/videos";
+import { getStudyNoteForVideo, StudyNote } from "@/data/studyNotes";
 import { getSlugByTopicName } from "@/data/topics";
 import { VideoDetailActions } from "@/components/VideoDetailActions";
 import { Footer } from "@/components/Footer";
+
+export const dynamicParams = true;
 
 interface VideoPageProps {
   params: Promise<{ id: string }>;
@@ -36,28 +40,96 @@ export function generateStaticParams() {
   return [...baseParams, ...aliasParams];
 }
 
+async function resolveVideoAndNote(id: string): Promise<{
+  video: VideoItem;
+  studyNote: StudyNote;
+  isCustom: boolean;
+  status: string;
+} | null> {
+  const targetId = ALIAS_MAP[id.toLowerCase()] || id;
+  const curated = CURATED_VIDEOS.find((v) => v.id.toLowerCase() === targetId.toLowerCase());
+
+  if (curated) {
+    const studyNote = getStudyNoteForVideo(
+      curated.id,
+      curated.title,
+      curated.channelTitle,
+      curated.topic,
+      curated.aiKeyTakeaways,
+      curated.hnExcerpt,
+      curated.hnAuthor,
+      curated.youtubeId
+    );
+    return { video: curated, studyNote, isCustom: false, status: "published" };
+  }
+
+  // Check generatedNote in database
+  try {
+    const cleanYt = targetId.startsWith("yt-") ? targetId.slice(3) : targetId;
+    const dbList = await db
+      .select()
+      .from(schema.generatedNote)
+      .where(or(eq(schema.generatedNote.youtubeId, cleanYt), eq(schema.generatedNote.id, targetId)))
+      .limit(1);
+
+    if (dbList.length > 0) {
+      const gen = dbList[0];
+      const video: VideoItem = {
+        id: `yt-${gen.youtubeId}`,
+        youtubeId: gen.youtubeId,
+        title: gen.title,
+        channelTitle: gen.channelTitle,
+        duration: gen.duration || "30:00",
+        durationSeconds: 1800,
+        publishedYear: new Date().getFullYear(),
+        topic: (gen.topic as any) || "AI & Machine Learning",
+        hnMentions: 1,
+        hnExcerpt: gen.executiveSummary.slice(0, 160) + "...",
+        hnAuthor: "hackertube_community",
+        hnYear: new Date().getFullYear(),
+        hnDiscussionUrl: gen.youtubeUrl,
+        aiKeyTakeaways: JSON.parse(gen.coreMentalModelsJson || "[]").slice(0, 3),
+      };
+
+      const studyNote: StudyNote = {
+        videoId: `yt-${gen.youtubeId}`,
+        h1Title: gen.title,
+        seoTitle: `${gen.title.slice(0, 38)}... | Notes`,
+        seoDescription: `${gen.executiveSummary.slice(0, 140)}...`,
+        h2ExecutiveSummary: `Executive Summary & Core Mental Models: ${gen.title}`,
+        h2Timestamps: `Key Timestamps & Milestone Breakdown`,
+        h2Derivations: `Mathematical Formulations & Algorithmic Proofs`,
+        h2Debates: `Hacker News Community Consensus & Technical Debates`,
+        h2Faq: `Technical FAQ & Architectural Answers`,
+        executiveSummary: gen.executiveSummary,
+        coreMentalModels: JSON.parse(gen.coreMentalModelsJson || "[]"),
+        keyTimestamps: JSON.parse(gen.keyTimestampsJson || "[]"),
+        mathDerivations: JSON.parse(gen.mathDerivationsJson || "[]"),
+        hnDebates: JSON.parse(gen.hnDebatesJson || "[]"),
+        faqs: JSON.parse(gen.faqsJson || "[]"),
+        obsidianFrontmatter: gen.obsidianMarkdown || "",
+      };
+
+      return { video, studyNote, isCustom: true, status: gen.status };
+    }
+  } catch {
+    // Database query fallback
+  }
+
+  return null;
+}
+
 export async function generateMetadata(props: VideoPageProps): Promise<Metadata> {
   const { id } = await props.params;
-  const targetId = ALIAS_MAP[id.toLowerCase()] || id;
-  const video = CURATED_VIDEOS.find((v) => v.id.toLowerCase() === targetId.toLowerCase());
+  const resolved = await resolveVideoAndNote(id);
 
-  if (!video) {
+  if (!resolved) {
     return {
       title: "Video Not Found",
     };
   }
 
-  const studyNote = getStudyNoteForVideo(
-    video.id,
-    video.title,
-    video.channelTitle,
-    video.topic,
-    video.aiKeyTakeaways,
-    video.hnExcerpt,
-    video.hnAuthor,
-    video.youtubeId
-  );
-
+  const { video, studyNote, status } = resolved;
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
   const pageTitle =
     studyNote.seoTitle ||
@@ -71,6 +143,7 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
       absolute: pageTitle,
     },
     description: pageDesc,
+    robots: status === "private" ? { index: false, follow: false } : { index: true, follow: true },
     alternates: {
       canonical: `https://www.hacker-tube.net/v/${id}`,
     },
@@ -100,25 +173,15 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
 
 export default async function VideoPage(props: VideoPageProps) {
   const { id } = await props.params;
-  const targetId = ALIAS_MAP[id.toLowerCase()] || id;
-  const video = CURATED_VIDEOS.find((v) => v.id.toLowerCase() === targetId.toLowerCase());
+  const resolved = await resolveVideoAndNote(id);
 
-  if (!video) {
+  if (!resolved) {
     notFound();
   }
 
+  const { video, studyNote } = resolved;
   const topicSlug = getSlugByTopicName(video.topic);
   const displayTopic = video.topic.replace("&", "and");
-  const studyNote = getStudyNoteForVideo(
-    video.id,
-    video.title,
-    video.channelTitle,
-    video.topic,
-    video.aiKeyTakeaways,
-    video.hnExcerpt,
-    video.hnAuthor,
-    video.youtubeId
-  );
 
   const sameTopic = CURATED_VIDEOS.filter(
     (v) => v.topic === video.topic && v.id !== video.id

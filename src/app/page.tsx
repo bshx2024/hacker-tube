@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { CURATED_VIDEOS, VideoItem, TopicCategory } from "@/data/videos";
+import { StudyNote } from "@/data/studyNotes";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Controls, DurationFilter, SortOption } from "@/components/Controls";
@@ -77,6 +78,7 @@ export default function HomePage() {
   const [isSurveyOpen, setIsSurveyOpen] = useState(false);
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [shareVideo, setShareVideo] = useState<VideoItem | null>(null);
+  const [customStudyNote, setCustomStudyNote] = useState<StudyNote | null>(null);
 
   // Synchronize browser address bar query params without triggering page reload
   const updateUrlQuery = useCallback((videoId?: string, tab?: "player" | "study") => {
@@ -140,6 +142,7 @@ export default function HomePage() {
 
   const handlePlayVideo = useCallback((v: VideoItem) => {
     trackVideoPlay(v);
+    setCustomStudyNote(null);
     setActiveVideo(v);
     setModalInitialTab("player");
     updateUrlQuery(v.id, "player");
@@ -147,6 +150,14 @@ export default function HomePage() {
 
   const handleOpenStudy = useCallback((v: VideoItem) => {
     trackStudyOpen(v);
+    setCustomStudyNote(null);
+    setActiveVideo(v);
+    setModalInitialTab("study");
+    updateUrlQuery(v.id, "study");
+  }, [updateUrlQuery]);
+
+  const handleOpenGeneratedNote = useCallback((v: VideoItem, note: StudyNote) => {
+    setCustomStudyNote(note);
     setActiveVideo(v);
     setModalInitialTab("study");
     updateUrlQuery(v.id, "study");
@@ -311,6 +322,11 @@ export default function HomePage() {
           isSaved={(id) => savedIds.includes(id)}
           onToggleSave={handleToggleSave}
           onShare={handleOpenShare}
+          onOpenGeneratedNote={handleOpenGeneratedNote}
+          onOpenPricing={() => {
+            const el = document.getElementById("pricing");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
         />
 
         <SlopContrastSection />
@@ -405,6 +421,7 @@ export default function HomePage() {
         onToggleSave={handleToggleSave}
         initialTab={modalInitialTab}
         onShare={handleOpenShare}
+        customStudyNote={customStudyNote}
         onOpenSurvey={() => {
           trackSurveyOpen("video_modal");
           setIsSurveyOpen(true);

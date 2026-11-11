@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { VideoItem } from "@/data/videos";
+import { StudyNote } from "@/data/studyNotes";
 import { trackOutboundClick } from "@/lib/tracker";
 import { audioHookManager } from "@/lib/audioHook";
+import { InstantDerivationBar } from "./InstantDerivationBar";
 
 interface HeroProps {
   onExplore: () => void;
@@ -14,6 +16,8 @@ interface HeroProps {
   isSaved: (id: string) => boolean;
   onToggleSave: (id: string, e?: React.MouseEvent) => void;
   onShare?: (v: VideoItem) => void;
+  onOpenGeneratedNote?: (video: VideoItem, note: StudyNote) => void;
+  onOpenPricing?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -25,6 +29,8 @@ export const Hero: React.FC<HeroProps> = ({
   isSaved,
   onToggleSave,
   onShare,
+  onOpenGeneratedNote,
+  onOpenPricing,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -84,6 +90,13 @@ export const Hero: React.FC<HeroProps> = ({
         <p className="hero-subtitle">
           <strong>HackerTube</strong> is the anti-algorithm video web app inspired by Andrej Karpathy. Every lecture was organically recommended across 20 years of Hacker News—with zero clickbait, 50% runtime previews, and exportable AI study notes.
         </p>
+
+        {onOpenGeneratedNote && (
+          <InstantDerivationBar
+            onOpenGeneratedNote={onOpenGeneratedNote}
+            onOpenPricing={onOpenPricing}
+          />
+        )}
 
         <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap", marginBottom: "20px" }}>
           <button

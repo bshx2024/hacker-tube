@@ -113,6 +113,30 @@ try {
         "value" text NOT NULL,
         "updated_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL
       );
+      CREATE TABLE IF NOT EXISTS "generated_note" (
+        "id" text PRIMARY KEY NOT NULL,
+        "youtube_id" text NOT NULL UNIQUE,
+        "youtube_url" text NOT NULL,
+        "title" text NOT NULL,
+        "channel_title" text DEFAULT 'Technical Speaker' NOT NULL,
+        "thumbnail_url" text,
+        "topic" text DEFAULT 'AI & Machine Learning' NOT NULL,
+        "duration" text DEFAULT '30:00',
+        "executive_summary" text NOT NULL,
+        "core_mental_models_json" text NOT NULL,
+        "key_timestamps_json" text NOT NULL,
+        "math_derivations_json" text NOT NULL,
+        "hn_debates_json" text NOT NULL,
+        "faqs_json" text,
+        "obsidian_markdown" text,
+        "status" text DEFAULT 'published' NOT NULL,
+        "word_count" integer DEFAULT 0 NOT NULL,
+        "creator_user_id" text,
+        "creator_email" text,
+        "view_count" integer DEFAULT 1 NOT NULL,
+        "created_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL,
+        "updated_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL
+      );
     `).catch(() => {});
   } catch {}
 

@@ -20,6 +20,7 @@ interface VideoModalProps {
   onShare?: (v: VideoItem) => void;
   onOpenSurvey?: () => void;
   onTabChange?: (tab: "player" | "study") => void;
+  customStudyNote?: StudyNote | null;
 }
 
 export const VideoModal: React.FC<VideoModalProps> = ({
@@ -31,6 +32,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
   onShare,
   onOpenSurvey,
   onTabChange,
+  customStudyNote,
 }) => {
   const [activeTab, setActiveTab] = useState<"player" | "study">(initialTab);
   const [seekSeconds, setSeekSeconds] = useState<number>(0);
@@ -86,16 +88,18 @@ export const VideoModal: React.FC<VideoModalProps> = ({
 
   if (!video) return null;
 
-  const studyNote: StudyNote = getStudyNoteForVideo(
-    video.id,
-    video.title,
-    video.channelTitle,
-    video.topic,
-    video.aiKeyTakeaways,
-    video.hnExcerpt,
-    video.hnAuthor,
-    video.youtubeId
-  );
+  const studyNote: StudyNote =
+    customStudyNote ||
+    getStudyNoteForVideo(
+      video.id,
+      video.title,
+      video.channelTitle,
+      video.topic,
+      video.aiKeyTakeaways,
+      video.hnExcerpt,
+      video.hnAuthor,
+      video.youtubeId
+    );
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
