@@ -8,6 +8,7 @@ import { Controls, DurationFilter, SortOption } from "@/components/Controls";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoModal } from "@/components/VideoModal";
 import { FAQSection } from "@/components/FAQSection";
+import { PricingSection } from "@/components/PricingSection";
 import { Footer } from "@/components/Footer";
 import { KeyboardShortcutsModal } from "@/components/KeyboardShortcutsModal";
 import { SuggestVideoModal } from "@/components/SuggestVideoModal";
@@ -383,6 +384,8 @@ export default function HomePage() {
             </div>
           )}
         </div>
+
+        <PricingSection id="pricing" />
 
         <FAQSection />
       </main>

@@ -51,6 +51,23 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span>Suggest Talk</span>
           </button>
 
+          <a
+            href="/pricing"
+            className="nav-btn"
+            title="View Transparent Plans & Pricing"
+            id="btn-pricing"
+            style={{
+              background: "rgba(56, 189, 248, 0.08)",
+              borderColor: "rgba(56, 189, 248, 0.3)",
+              color: "#38bdf8",
+              fontWeight: 600,
+              textDecoration: "none",
+            }}
+          >
+            <span>💎</span>
+            <span>Pricing</span>
+          </a>
+
           {onOpenSurvey && (
             <button
               className="nav-btn"

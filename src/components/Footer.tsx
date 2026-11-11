@@ -23,6 +23,18 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSurvey }) => {
             <p style={{ fontSize: "12px", color: "var(--text-muted)" }}>
               All video streams are played through official YouTube embeds in compliance with YouTube API Developer Policies.
             </p>
+            <div style={{ marginTop: "14px", padding: "10px 14px", background: "rgba(16, 185, 129, 0.08)", border: "1px solid rgba(16, 185, 129, 0.25)", borderRadius: "8px" }}>
+              <div style={{ fontSize: "11px", fontWeight: 700, color: "var(--accent-emerald)", textTransform: "uppercase", marginBottom: "4px" }}>
+                Customer Support &amp; Inquiries
+              </div>
+              <a href="mailto:support@hacker-tube.net" style={{ color: "#ffffff", fontSize: "13px", fontWeight: 600, textDecoration: "none", display: "flex", alignItems: "center", gap: "6px" }}>
+                <span>✉️</span>
+                <span>support@hacker-tube.net</span>
+              </a>
+              <div style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "4px" }}>
+                Response within 24 hours • Mon - Sun
+              </div>
+            </div>
           </div>
 
           <div className="footer-col">
@@ -92,8 +104,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSurvey }) => {
           </div>
 
           <div className="footer-col">
-            <h4>Legal &amp; Standards</h4>
+            <h4>Plans &amp; Legal</h4>
             <ul className="footer-links">
+              <li><Link href="/pricing" style={{ color: "var(--accent-emerald)", fontWeight: 700 }}>⚡ Plans &amp; Pricing</Link></li>
+              <li><a href="mailto:support@hacker-tube.net">Contact Support</a></li>
               <li><Link href="/terms">Terms of Service</Link></li>
               <li><Link href="/privacy">Privacy Policy</Link></li>
               <li><a href="#faq">Frequently Asked Questions</a></li>
@@ -106,7 +120,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSurvey }) => {
 
         <div className="footer-bottom">
           <div>
-            Built with craft &amp; respect for human attention. Zero tracking. Zero ads. • <Link href="/terms" style={{ color: "inherit", textDecoration: "underline" }}>Terms</Link> • <Link href="/privacy" style={{ color: "inherit", textDecoration: "underline" }}>Privacy</Link>
+            Built with craft &amp; respect for human attention. Zero tracking. Zero ads. • <Link href="/pricing" style={{ color: "inherit", textDecoration: "underline" }}>Pricing</Link> • <Link href="/terms" style={{ color: "inherit", textDecoration: "underline" }}>Terms</Link> • <Link href="/privacy" style={{ color: "inherit", textDecoration: "underline" }}>Privacy</Link> • Contact: <a href="mailto:support@hacker-tube.net" style={{ color: "inherit", textDecoration: "underline" }}>support@hacker-tube.net</a>
           </div>
           <div>
             Inspired by Andrej Karpathy • Built for curious minds
