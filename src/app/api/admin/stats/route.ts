@@ -101,13 +101,13 @@ export async function GET() {
     const paypalClientId = settingsMap.get('PAYPAL_CLIENT_ID') || process.env.PAYPAL_CLIENT_ID || '';
     const paypalClientSecret = settingsMap.get('PAYPAL_CLIENT_SECRET') || process.env.PAYPAL_CLIENT_SECRET || '';
     const paypalMode = settingsMap.get('PAYPAL_MODE') || process.env.PAYPAL_MODE || 'live';
-    const waffoApiKey = settingsMap.get('WAFFO_API_KEY') || process.env.WAFFO_API_KEY || '';
+    const waffoApiKey = settingsMap.get('WAFFO_API_KEY') || process.env.WAFFO_API_KEY || 'MER_6rnE47Namr6Wg54cKSFZsr';
     const waffoSecretKey = settingsMap.get('WAFFO_SECRET_KEY') || process.env.WAFFO_SECRET_KEY || '';
-    const waffoStoreId = settingsMap.get('WAFFO_STORE_ID') || process.env.WAFFO_STORE_ID || '';
+    const waffoStoreId = settingsMap.get('WAFFO_STORE_ID') || process.env.WAFFO_STORE_ID || 'STO_7foQ1NsoiAwJ9b9GJpayR7';
     const waffoMode = settingsMap.get('WAFFO_MODE') || process.env.WAFFO_MODE || 'live';
     const activeProvider =
       settingsMap.get('ACTIVE_PAYMENT_PROVIDER') ||
-      (stripeKey ? 'stripe' : paypalClientId ? 'paypal' : waffoApiKey ? 'waffo' : creemKey ? 'creem' : 'stripe');
+      (waffoApiKey ? 'waffo' : stripeKey ? 'stripe' : paypalClientId ? 'paypal' : 'waffo');
 
     const paymentConfig = {
       activeProvider,

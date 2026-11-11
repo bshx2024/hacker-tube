@@ -10,6 +10,7 @@ export interface PlanConfig {
   type: 'subscription' | 'one_time';
   interval?: 'month' | 'year';
   credits?: number;
+  waffoProductId?: string;
 }
 
 export const PLANS: Record<string, PlanConfig> = {
@@ -22,6 +23,7 @@ export const PLANS: Record<string, PlanConfig> = {
     type: 'subscription',
     interval: 'month',
     credits: 99999,
+    waffoProductId: 'PROD_7N7SuPcO0cQJqfhYwSOgxH',
   },
   micro_pack: {
     id: 'micro_pack',
@@ -31,7 +33,41 @@ export const PLANS: Record<string, PlanConfig> = {
     currency: 'USD',
     type: 'one_time',
     credits: 10,
+    waffoProductId: 'PROD_71r71wO1C7mecLBoewx7Cm',
   },
+};
+
+export const DEFAULT_WAFFO_CONFIG = {
+  merchantId: 'MER_6rnE47Namr6Wg54cKSFZsr',
+  storeId: 'STO_7foQ1NsoiAwJ9b9GJpayR7',
+  privateKey: `-----BEGIN RSA PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQClob5O83A9YRwA
+AlRk7ExBu3Scic1slMlvPXtgjKOGQQaR5Rb48fB0gL6Xg2Tq2CMkGv7Ww9VXTMpe
+aUvSuzJZxpEdxd52hIyL5tqPT8CbnxukJho79BSp61Ll2U9v4QS1kAVFgc0r5eWJ
+r0gQ8X8Peo9vhbSRXj3dIuJHUA7t5EysSppaQKp+EFWUTV1z5oJWhR6EoQIgsON0
+njB7rnuKbPX3isNRRRHW8RN1E9nTmoolEin+xb039yeT99jbid6lrbiSr0onjloG
+fJQqLtFYwNrcfoB+M/aG5as4/39JXisX6Xn0JVOAnKT+jPHK+jnAEatF1/3va+2v
+VUDhKHlLAgMBAAECggEAF7mc5Hs7YxdjZt7ujsxIOgwrbnbQvZJsbio8334VuFfd
+JI3PphYlztJYOqTAEmGmWvgg88t2ZjxiKnbjvQpCcpieVcjvjkN7TFjjiq6uVLxM
+Pc2VaWwTf6ltJO5lUg3F2moIT0YCCR0zrW61oHOvMxznqd5ZmI8Kxn/GMNfXY5za
+inbAB9RkuLfU4T+8Ux5RYumtzFpe4vBMtaDJTR2iMGoFEBlALreZtgW+ka3B4j/1
+NiEWpEoMp7Gj5dWiLI6dEyCKzjg0VxOBKgkZqVNQ8+4tM17rtBWJDw23FVuyUhcg
+5+zbp8Jrpwa9yho5Bkl6cbHhkxv5WrS2oES42o/2WQKBgQDY5H/7rw3A9EEgKvE1
+VxZbqPRtTqFNa6fJEt9u0LuMugMf5POTiFDIr8mQd4kDJrmMGNyf/6IXaETnbDmJ
+Kx6RDLyS+37XyhMvL+woy2r3VY/rEtSzBqTzbaKOVOYLQbGW/dsqtXi/HXQCmXlU
+fgIRdwrgTU5RJmHrGKPDGl5rUwKBgQDDfxuxz3F0jy4iR3yzqJ/CggNDPhfxUhSG
+eDrIptG8kTjw8bwk1jonfAHSVeAm6wFEkPrmhzMAnWNeZhGfMMXLyMHcqaMoXAo/
+gghZTj1mwuzW0guseEZYsp91w1AZGlsN1cAOIj4mo7JhtsO1gLb2Hec/VWDTNEqX
+PVUqE4FzKQKBgHyzY6IhE5dM1+TWy7gPShuJGH+AJd2Nd/pzj2L3P925VPKRgDni
+tg+sggc9stjM+wFBihezsk4i9PrZjnr+/6QF3qXjUxpeZIlM1ErgKa/q0cQmH4SO
+3WfYMQ4EYf821hQqAEid7b50AK897jRV/npsJySvTcf6eXHhyMXz8zVhAoGBAJm3
+eUQ/s5sN9h14DmKJpUzgw8X8rgDPJFpzcO1S1jmqCpbRzLk+RS3EwP3tDjorsKyE
+PvRCvGSwXHDeWt7MD8rjiSODs0nJzTkQepYWAguqG2XydMFhNRcLJH0JXRLP+WaQ
+etniLPJe5qUUeyBdG/+7lZfj/yUyya/PxwY1niS5AoGBANSRQ7QwySTggi4aZZCJ
+rYo0QqvkWDbeTnGyPDPpY4+un8Onjzx5jzcYO/x0XatgGHKcURzPNHppOm8NoRP3
+SivUJMqZ586JGUFeDW6RN75hFr8uqXDtjk8+ClvN0FZIXsAv5NkvUq3Y4sMukYVA
+vKBv2o4iR18wNKk/ls2blStx
+-----END RSA PRIVATE KEY-----`,
 };
 
 export async function getPaymentGatewayConfig() {
@@ -48,14 +84,17 @@ export async function getPaymentGatewayConfig() {
   const paypalClientId = dbSettings.get('PAYPAL_CLIENT_ID') || process.env.PAYPAL_CLIENT_ID || '';
   const paypalClientSecret = dbSettings.get('PAYPAL_CLIENT_SECRET') || process.env.PAYPAL_CLIENT_SECRET || '';
   const paypalMode = dbSettings.get('PAYPAL_MODE') || process.env.PAYPAL_MODE || 'live';
-  const waffoApiKey = dbSettings.get('WAFFO_API_KEY') || process.env.WAFFO_API_KEY || '';
-  const waffoSecretKey = dbSettings.get('WAFFO_SECRET_KEY') || process.env.WAFFO_SECRET_KEY || '';
-  const waffoStoreId = dbSettings.get('WAFFO_STORE_ID') || process.env.WAFFO_STORE_ID || '';
+  const waffoApiKey =
+    dbSettings.get('WAFFO_API_KEY') || process.env.WAFFO_API_KEY || DEFAULT_WAFFO_CONFIG.merchantId;
+  const waffoSecretKey =
+    dbSettings.get('WAFFO_SECRET_KEY') || process.env.WAFFO_SECRET_KEY || DEFAULT_WAFFO_CONFIG.privateKey;
+  const waffoStoreId =
+    dbSettings.get('WAFFO_STORE_ID') || process.env.WAFFO_STORE_ID || DEFAULT_WAFFO_CONFIG.storeId;
   const waffoMode = dbSettings.get('WAFFO_MODE') || process.env.WAFFO_MODE || 'live';
 
   const activeProvider =
     dbSettings.get('ACTIVE_PAYMENT_PROVIDER') ||
-    (stripeSecretKey ? 'stripe' : paypalClientId ? 'paypal' : waffoApiKey ? 'waffo' : creemApiKey ? 'creem' : 'stripe');
+    (waffoApiKey ? 'waffo' : stripeSecretKey ? 'stripe' : paypalClientId ? 'paypal' : 'waffo');
 
   return {
     stripeSecretKey,
@@ -204,99 +243,38 @@ export async function createWaffoCheckoutOrder(params: {
   storeId?: string;
   mode?: string;
 }): Promise<string | null> {
-  const isLive = params.mode !== 'sandbox';
-  const baseUrl = isLive ? 'https://api.waffo.com' : 'https://api-sandbox.waffo.com';
+  const merchantId = params.apiKey || DEFAULT_WAFFO_CONFIG.merchantId;
+  const privateKey = params.secretKey || DEFAULT_WAFFO_CONFIG.privateKey;
+  const productId =
+    params.plan.waffoProductId ||
+    (params.plan.id === 'pro_monthly' ? 'PROD_7N7SuPcO0cQJqfhYwSOgxH' : 'PROD_71r71wO1C7mecLBoewx7Cm');
 
-  const bodyData = {
-    paymentRequestId: params.orderNo,
-    merchantOrderId: params.orderNo,
-    orderAmount: (params.plan.amount / 100).toFixed(2),
-    orderCurrency: params.plan.currency || 'USD',
-    orderDescription: params.plan.name,
-    notifyUrl: `${params.appUrl}/api/payment/notify`,
-    successRedirectUrl: `${params.appUrl}/?payment=success&order_no=${params.orderNo}&provider=waffo`,
-    failedRedirectUrl: `${params.appUrl}/?payment=cancelled`,
-    userInfo: {
-      userId: params.userId,
-      userEmail: params.userEmail,
-      userTerminal: 'WEB',
-    },
-    paymentInfo: {
-      productName: params.plan.type === 'subscription' ? 'SUBSCRIPTION' : 'ONE_TIME_PAYMENT',
-    },
-    goodsInfo: {
-      goodsName: params.plan.name,
-      goodsUrl: `${params.appUrl}/pricing`,
-    },
-  };
-
-  const rawBody = JSON.stringify(bodyData);
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    'X-API-KEY': params.apiKey,
-    'X-API-VERSION': '1.0.0',
-  };
-
-  if (params.storeId) {
-    headers['X-Merchant-Id'] = params.storeId;
-  }
-
-  // Handle optional RSA or HMAC signature if secretKey provided
-  if (params.secretKey) {
-    const timestamp = Math.floor(Date.now() / 1000).toString();
-    headers['X-Timestamp'] = timestamp;
-
+  // Try official Waffo Pancake SDK
+  if (merchantId && privateKey) {
     try {
-      const crypto = await import('crypto');
-      if (params.secretKey.includes('PRIVATE KEY')) {
-        const bodyHash = crypto.createHash('sha256').update(rawBody).digest('base64');
-        const canonical = `POST /api/v1/order/create ${timestamp} ${bodyHash}`;
-        const sign = crypto.createSign('RSA-SHA256');
-        sign.update(canonical);
-        headers['X-Signature'] = sign.sign(params.secretKey, 'base64');
-      } else {
-        headers['X-Signature'] = crypto.createHmac('sha256', params.secretKey).update(rawBody).digest('hex');
+      const { WaffoPancake } = await import('@waffo/pancake-ts');
+      const client = new WaffoPancake({
+        merchantId,
+        privateKey,
+      });
+
+      const session = await client.checkout.authenticated.create({
+        productId,
+        currency: (params.plan.currency || 'USD') as 'USD',
+        buyerIdentity: params.userEmail,
+        buyerEmail: params.userEmail,
+      });
+
+      if (session?.checkoutUrl) {
+        return session.checkoutUrl;
       }
-    } catch (e) {
-      console.warn('Waffo signature creation warning:', e);
+    } catch (err: unknown) {
+      console.warn('Waffo Pancake SDK create session notice:', err);
     }
   }
 
-  try {
-    const res = await fetch(`${baseUrl}/api/v1/order/create`, {
-      method: 'POST',
-      headers,
-      body: rawBody,
-    });
-
-    if (res.ok) {
-      const resData = await res.json();
-      if (resData.data?.orderAction) {
-        try {
-          const action =
-            typeof resData.data.orderAction === 'string'
-              ? JSON.parse(resData.data.orderAction)
-              : resData.data.orderAction;
-          if (action.webUrl) return action.webUrl;
-          if (action.deeplinkUrl) return action.deeplinkUrl;
-        } catch {
-          if (typeof resData.data.orderAction === 'string' && resData.data.orderAction.startsWith('http')) {
-            return resData.data.orderAction;
-          }
-        }
-      }
-      if (resData.data?.webUrl) return resData.data.webUrl;
-      if (resData.data?.checkoutUrl) return resData.data.checkoutUrl;
-    } else {
-      const errText = await res.text();
-      console.warn('Waffo API order create returned status:', res.status, errText);
-    }
-  } catch (err) {
-    console.warn('Waffo API request failed:', err);
-  }
-
-  // Hosted checkout fallback
-  return `https://checkout.waffo.com/pay/${params.plan.id}?merchantOrderId=${params.orderNo}&amount=${(params.plan.amount / 100).toFixed(2)}&currency=${params.plan.currency}&email=${encodeURIComponent(params.userEmail)}`;
+  // Hosted checkout fallback URL (pre-filled with user context)
+  return `https://checkout.waffo.com/pay/${productId}?merchantOrderId=${params.orderNo}&email=${encodeURIComponent(params.userEmail)}&userId=${encodeURIComponent(params.userId)}`;
 }
 
 export function getStripeClient(): Stripe | null {

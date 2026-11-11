@@ -39,16 +39,30 @@ export async function POST(req: NextRequest) {
     const isWaffoEvent =
       event.eventType === 'PAYMENT_NOTIFICATION' ||
       event.eventType === 'ORDER_STATUS_NOTIFICATION' ||
+      event.type === 'OrderCompleted' ||
+      event.type === 'SubscriptionActivated' ||
+      event.type === 'SubscriptionPaymentSucceeded' ||
       Boolean((event.result as Record<string, unknown>)?.orderStatus) ||
-      Boolean(event.orderStatus && event.merchantOrderId);
+      Boolean(event.orderStatus && event.merchantOrderId) ||
+      Boolean(event.buyerIdentity || (event.data as Record<string, unknown>)?.order);
 
     if (isWaffoEvent) {
-      const resultObj = ((event.result as Record<string, unknown>) || event) as Record<string, unknown>;
-      const orderNo = (resultObj.merchantOrderId || resultObj.paymentRequestId) as string | undefined;
-      const status = (resultObj.orderStatus || event.orderStatus) as string | undefined;
-      const transactionId = ((resultObj.acquiringOrderId || resultObj.transactionId || nanoid()) as string);
+      const eventData = ((event.data as Record<string, unknown>) || {}) as Record<string, unknown>;
+      const orderObj = ((eventData.order as Record<string, unknown>) || {}) as Record<string, unknown>;
+      const resultObj = ((event.result as Record<string, unknown>) || orderObj || event) as Record<string, unknown>;
+      const orderNo = (resultObj.merchantOrderId || resultObj.paymentRequestId || orderObj.merchantOrderId) as string | undefined;
+      const status = (resultObj.orderStatus || event.orderStatus || event.type || 'PAY_SUCCESS') as string | undefined;
+      const transactionId = ((resultObj.acquiringOrderId || resultObj.transactionId || orderObj.id || nanoid()) as string);
 
-      if (orderNo && (status === 'PAY_SUCCESS' || status === 'SUCCESS' || status === 'PAID')) {
+      if (
+        orderNo &&
+        (status === 'PAY_SUCCESS' ||
+          status === 'SUCCESS' ||
+          status === 'PAID' ||
+          status === 'OrderCompleted' ||
+          status === 'SubscriptionActivated' ||
+          status === 'SubscriptionPaymentSucceeded')
+      ) {
         const [existingOrder] = await db
           .select()
           .from(schema.order)
