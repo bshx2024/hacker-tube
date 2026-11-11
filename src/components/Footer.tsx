@@ -92,8 +92,10 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSurvey }) => {
           </div>
 
           <div className="footer-col">
-            <h4>Standards &amp; Sitemaps</h4>
+            <h4>Legal &amp; Standards</h4>
             <ul className="footer-links">
+              <li><Link href="/terms">Terms of Service</Link></li>
+              <li><Link href="/privacy">Privacy Policy</Link></li>
               <li><a href="#faq">Frequently Asked Questions</a></li>
               <li><a href="/sitemap.xml" target="_blank" rel="noopener noreferrer">Site Map (sitemap.xml)</a></li>
               <li><a href="/robots.txt" target="_blank" rel="noopener noreferrer">AI Crawler Policy</a></li>
@@ -104,7 +106,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenSurvey }) => {
 
         <div className="footer-bottom">
           <div>
-            Built with craft &amp; respect for human attention. Zero tracking. Zero ads.
+            Built with craft &amp; respect for human attention. Zero tracking. Zero ads. • <Link href="/terms" style={{ color: "inherit", textDecoration: "underline" }}>Terms</Link> • <Link href="/privacy" style={{ color: "inherit", textDecoration: "underline" }}>Privacy</Link>
           </div>
           <div>
             Inspired by Andrej Karpathy • Built for curious minds
