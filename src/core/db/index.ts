@@ -23,11 +23,10 @@ const client = createClient({
   authToken: process.env.DATABASE_AUTH_TOKEN,
 });
 
-// Auto-bootstrap tables if running on local/tmp sqlite
-if (dbUrl.startsWith('file:')) {
-  try {
-    client.executeMultiple(`
-      CREATE TABLE IF NOT EXISTS "user" (
+// Auto-bootstrap tables on local SQLite or remote Turso/LibSQL
+try {
+  client.executeMultiple(`
+    CREATE TABLE IF NOT EXISTS "user" (
         "id" text PRIMARY KEY NOT NULL,
         "name" text NOT NULL,
         "email" text NOT NULL UNIQUE,
@@ -116,7 +115,6 @@ if (dbUrl.startsWith('file:')) {
       );
     `).catch(() => {});
   } catch {}
-}
 
 export const db = drizzle(client, { schema });
 export { schema };
