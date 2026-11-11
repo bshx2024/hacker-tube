@@ -2,13 +2,14 @@
 > The Anti-Algorithm, Human-Curated Video Platform for Hackers & Engineers. Inspired by Andrej Karpathy.
 
 ## Mission
-HackerTube is an alternative video discovery platform that eliminates algorithmic recommendations, clickbait thumbnails, and engagement traps. It populates its collection exclusively with tech talks, lectures, computer science deep dives, and documentaries that have been organically recommended by software engineers across 20 years of Hacker News comments (2007–2026).
+HackerTube is an alternative video discovery and AI study companion platform that eliminates algorithmic recommendations, clickbait thumbnails, and engagement traps. It populates its collection exclusively with tech talks, lectures, computer science deep dives, and documentaries that have been organically recommended by software engineers across 20 years of Hacker News comments (2007–2026).
 
-## Core Principles
+## Core Capabilities
 - **No Algorithm / No Slop**: Videos are ranked and curated by real engineer upvotes and discussions, not watch-time optimization loops.
 - **50% Mid-frame Thumbnails**: Replaces sensationalized YouTube thumbnails with neutral, honest frames taken from the middle (50% timestamp) of the video.
-- **Privacy First**: No accounts, no user tracking, zero ads. Watch history and bookmarks are kept 100% locally in the browser's localStorage.
-- **Open Data**: The entire curated catalog is available for direct download via `/api/dataset`.
+- **AI Study Companion & LaTeX Derivations**: Exhaustive, anti-slop technical study notes featuring mathematical proofs, algorithmic implementations, and Hacker News peer reviews for iconic tech lectures.
+- **Obsidian / Notion Second Brain Export**: Every technical note can be exported with YAML frontmatter tags directly to personal markdown vaults.
+- **Open Data & API**: The entire curated catalog is available for direct download via `/api/dataset`.
 
 ## Topics Covered
 - **Artificial Intelligence & Machine Learning**: Neural networks, transformer architectures, reinforcement learning from foundations (Karpathy, Sutskever, LeCun, Hinton).
@@ -20,8 +21,9 @@ HackerTube is an alternative video discovery platform that eliminates algorithmi
 
 ## Dataset & API
 - JSON Dataset Endpoint: `https://www.hacker-tube.net/api/dataset`
+- Dynamic Sitemap: `https://www.hacker-tube.net/sitemap.xml`
+- Robots Policy: `https://www.hacker-tube.net/robots.txt`
 - GitHub Repository: `https://github.com/bshx2024/hacker-tube`
-- Apple TV Client: `https://github.com/Jnaina/hackertube-tvos`
 
 ## Citations and Origin
 - Original Concept by Andrej Karpathy (October 31, 2026): `https://karpathy.bearblog.dev/hacker-tube/`

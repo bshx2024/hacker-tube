@@ -1,29 +1,46 @@
-# Robots.txt for HackerTube
+# Robots.txt for HackerTube (https://www.hacker-tube.net)
+
 User-agent: *
 Allow: /
+Allow: /api/dataset
 Disallow: /api/
+Disallow: /admin
 
-# GEO & LLM Bots - Explicitly Allowed for RAG and Generative Search
+# GEO & LLM Bots - Explicitly Allowed for RAG, Citations and Generative Search
 User-agent: GPTBot
 Allow: /
+Allow: /api/dataset
+Disallow: /admin
 
 User-agent: PerplexityBot
 Allow: /
+Allow: /api/dataset
+Disallow: /admin
 
 User-agent: ClaudeBot
 Allow: /
+Allow: /api/dataset
+Disallow: /admin
 
 User-agent: Google-Extended
 Allow: /
+Allow: /api/dataset
+Disallow: /admin
 
 User-agent: Applebot-Extended
 Allow: /
+Allow: /api/dataset
+Disallow: /admin
 
 User-agent: Bytespider
 Allow: /
+Allow: /api/dataset
+Disallow: /admin
 
 User-agent: CCBot
 Allow: /
+Allow: /api/dataset
+Disallow: /admin
 
 # Sitemaps & Search Standards
 Sitemap: https://www.hacker-tube.net/sitemap.xml
