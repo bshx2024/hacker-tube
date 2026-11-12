@@ -115,6 +115,7 @@ try {
       );
       CREATE TABLE IF NOT EXISTS "generated_note" (
         "id" text PRIMARY KEY NOT NULL,
+        "slug" text UNIQUE,
         "youtube_id" text NOT NULL UNIQUE,
         "youtube_url" text NOT NULL,
         "title" text NOT NULL,
@@ -137,7 +138,10 @@ try {
         "created_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL,
         "updated_at" integer DEFAULT (cast((julianday('now') - 2440587.5)*86400000 as integer)) NOT NULL
       );
-    `).catch(() => {});
+    `).then(() => {
+      // Safe non-blocking column migration for existing tables
+      client.execute('ALTER TABLE "generated_note" ADD COLUMN "slug" text;').catch(() => {});
+    }).catch(() => {});
   } catch {}
 
 export const db = drizzle(client, { schema });

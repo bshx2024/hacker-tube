@@ -31,7 +31,7 @@ async function testFullAuthenticatedFlow() {
   console.log(`   -> User created in DB: id = ${dbUser.id}, credits = ${dbUser.credits}`);
 
   // 2. Submit Note Generation Request
-  const testYtId = "kCc8FmEb1nY"; // Andrej Karpathy: Building micrograd
+  const testYtId = "dQw4w9WgXcQ"; // Non-curated 11-char YouTube ID
   console.log(`\n2. Submitting note generation for YouTube video: ${testYtId}...`);
 
   // Ensure no cached note exists

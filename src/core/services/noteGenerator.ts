@@ -29,6 +29,61 @@ export function extractYouTubeId(input: string): string | null {
 }
 
 /**
+ * Generates a clean, high-intent SEO keyword slug (One Keyword One Page)
+ * e.g., "karpathy-micrograd-neural-networks"
+ */
+export function generateSeoSlug(title: string, speaker?: string): string {
+  const base = speaker && !title.toLowerCase().includes(speaker.toLowerCase().split(" ")[0])
+    ? `${speaker} ${title}`
+    : title;
+
+  const stopWords = new Set(["the", "a", "an", "and", "or", "in", "on", "at", "to", "for", "of", "with", "by", "from"]);
+  const words = base
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 1 && !stopWords.has(w));
+
+  const slug = words.slice(0, 7).join("-");
+  return slug || `lecture-${Date.now().toString(36)}`;
+}
+
+/**
+ * Normalizes title into meaningful token set for cross-video deduplication
+ */
+export function normalizeTitleTokens(title: string): Set<string> {
+  const stopWords = new Set(["the", "a", "an", "and", "or", "in", "on", "at", "to", "for", "of", "with", "by", "from", "video", "youtube", "hd", "full", "lecture", "talk"]);
+  const tokens = title
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !stopWords.has(w));
+  return new Set(tokens);
+}
+
+/**
+ * Checks if two lecture titles represent the exact same talk (>= 75% token overlap)
+ * Implements Gefei SEO rule: prevents duplicate pages from YouTube re-uploads/clips
+ */
+export function areLectureTitlesSimilar(titleA: string, titleB: string): boolean {
+  if (!titleA || !titleB) return false;
+  if (titleA.trim().toLowerCase() === titleB.trim().toLowerCase()) return true;
+
+  const setA = normalizeTitleTokens(titleA);
+  const setB = normalizeTitleTokens(titleB);
+  if (setA.size === 0 || setB.size === 0) return false;
+
+  let intersection = 0;
+  for (const token of setA) {
+    if (setB.has(token)) intersection++;
+  }
+
+  const minSize = Math.min(setA.size, setB.size);
+  const similarity = intersection / minSize;
+  return similarity >= 0.75;
+}
+
+/**
  * Fetches basic YouTube metadata via official oEmbed endpoint (no API key required)
  */
 export async function fetchYouTubeMeta(youtubeId: string): Promise<{

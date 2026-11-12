@@ -8,8 +8,11 @@ import {
   fetchYouTubeMeta,
   fetchYouTubeTranscript,
   generateStudyNote,
+  generateSeoSlug,
+  areLectureTitlesSimilar,
 } from "@/core/services/noteGenerator";
-import { StudyNote } from "@/data/studyNotes";
+import { CURATED_VIDEOS } from "@/data/videos";
+import { getStudyNoteForVideo, StudyNote } from "@/data/studyNotes";
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,6 +37,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Step 0: Check if video already exists in CURATED_VIDEOS catalog (0-cost instant return)
+    const curatedMatch = CURATED_VIDEOS.find((v) => v.youtubeId === youtubeId);
+    if (curatedMatch) {
+      const curatedNote = getStudyNoteForVideo(
+        curatedMatch.id,
+        curatedMatch.title,
+        curatedMatch.channelTitle,
+        curatedMatch.topic,
+        curatedMatch.aiKeyTakeaways,
+        curatedMatch.hnExcerpt,
+        curatedMatch.hnAuthor,
+        curatedMatch.youtubeId
+      );
+      return NextResponse.json({
+        success: true,
+        isCached: true,
+        canonicalSlug: curatedMatch.id,
+        note: curatedNote,
+        video: curatedMatch,
+      });
+    }
+
     // Step 1: Check Global Deduplication Cache in Database
     const existingList = await db
       .select()
@@ -52,7 +77,7 @@ export async function POST(req: NextRequest) {
 
       // Parse JSON columns back into StudyNote
       const studyNote: StudyNote = {
-        videoId: `yt-${existing.youtubeId}`,
+        videoId: existing.slug || `yt-${existing.youtubeId}`,
         h1Title: existing.title,
         seoTitle: `${existing.title.slice(0, 38)}... | Notes`,
         seoDescription: `${existing.executiveSummary.slice(0, 140)}...`,
@@ -73,9 +98,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         isCached: true,
+        canonicalSlug: existing.slug || `yt-${existing.youtubeId}`,
         note: studyNote,
         video: {
-          id: `yt-${existing.youtubeId}`,
+          id: existing.slug || `yt-${existing.youtubeId}`,
           title: existing.title,
           channelTitle: existing.channelTitle,
           youtubeId: existing.youtubeId,
@@ -123,13 +149,75 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Step 4: Fetch Metadata and Transcript
-    const [meta, transcriptData] = await Promise.all([
-      fetchYouTubeMeta(youtubeId),
-      fetchYouTubeTranscript(youtubeId),
-    ]);
+    // Step 4: Fetch Metadata and Check for Cross-Video Near-Duplicates (Gefei SEO Rule)
+    const meta = await fetchYouTubeMeta(youtubeId);
 
-    // Step 5: Generate Deep Structured Study Note (1600+ words guaranteed)
+    // 4a. Check if this lecture is already in CURATED_VIDEOS by title similarity
+    const similarCurated = CURATED_VIDEOS.find((v) => areLectureTitlesSimilar(meta.title, v.title));
+    if (similarCurated) {
+      const note = getStudyNoteForVideo(
+        similarCurated.id,
+        similarCurated.title,
+        similarCurated.channelTitle,
+        similarCurated.topic,
+        similarCurated.aiKeyTakeaways,
+        similarCurated.hnExcerpt,
+        similarCurated.hnAuthor,
+        similarCurated.youtubeId
+      );
+      return NextResponse.json({
+        success: true,
+        isCached: true,
+        canonicalSlug: similarCurated.id,
+        note,
+        video: similarCurated,
+      });
+    }
+
+    // 4b. Check if this lecture is already in DB generatedNote by title similarity
+    const allRecentNotes = await db.select().from(schema.generatedNote).limit(200);
+    const similarDbNote = allRecentNotes.find((n) => areLectureTitlesSimilar(meta.title, n.title));
+    if (similarDbNote) {
+      const studyNote: StudyNote = {
+        videoId: similarDbNote.slug || `yt-${similarDbNote.youtubeId}`,
+        h1Title: similarDbNote.title,
+        seoTitle: `${similarDbNote.title.slice(0, 38)}... | Notes`,
+        seoDescription: `${similarDbNote.executiveSummary.slice(0, 140)}...`,
+        h2ExecutiveSummary: `Executive Summary & Core Mental Models: ${similarDbNote.title}`,
+        h2Timestamps: `Key Timestamps & Milestone Breakdown`,
+        h2Derivations: `Mathematical Formulations & Algorithmic Proofs`,
+        h2Debates: `Hacker News Community Consensus & Technical Debates`,
+        h2Faq: `Technical FAQ & Architectural Answers`,
+        executiveSummary: similarDbNote.executiveSummary,
+        coreMentalModels: JSON.parse(similarDbNote.coreMentalModelsJson || "[]"),
+        keyTimestamps: JSON.parse(similarDbNote.keyTimestampsJson || "[]"),
+        mathDerivations: JSON.parse(similarDbNote.mathDerivationsJson || "[]"),
+        hnDebates: JSON.parse(similarDbNote.hnDebatesJson || "[]"),
+        faqs: JSON.parse(similarDbNote.faqsJson || "[]"),
+        obsidianFrontmatter: similarDbNote.obsidianMarkdown || "",
+      };
+
+      return NextResponse.json({
+        success: true,
+        isCached: true,
+        canonicalSlug: similarDbNote.slug || `yt-${similarDbNote.youtubeId}`,
+        note: studyNote,
+        video: {
+          id: similarDbNote.slug || `yt-${similarDbNote.youtubeId}`,
+          title: similarDbNote.title,
+          channelTitle: similarDbNote.channelTitle,
+          youtubeId: similarDbNote.youtubeId,
+          topic: similarDbNote.topic,
+          duration: similarDbNote.duration || "30:00",
+          hnPoints: 200,
+          hnComments: 80,
+          aiKeyTakeaways: studyNote.coreMentalModels.slice(0, 3),
+        },
+      });
+    }
+
+    // Step 5: Fetch Transcript & Generate Deep Structured Study Note
+    const transcriptData = await fetchYouTubeTranscript(youtubeId);
     const result = await generateStudyNote({
       youtubeId,
       title: meta.title,
@@ -139,13 +227,25 @@ export async function POST(req: NextRequest) {
     });
 
     // Step 6: Anti-Thin Content Guardrail
-    // If word count >= 1200 words, mark as 'published' for public SEO indexing; else 'private'
     const status = result.wordCount >= 1200 ? "published" : "private";
 
-    // Step 7: Save to Database
+    // Step 7: Generate Semantic SEO Slug (One Keyword One Page)
+    let candidateSlug = generateSeoSlug(meta.title, meta.channelTitle);
+    const existingSlug = await db
+      .select({ id: schema.generatedNote.id })
+      .from(schema.generatedNote)
+      .where(eq(schema.generatedNote.slug, candidateSlug))
+      .limit(1);
+
+    if (existingSlug.length > 0) {
+      candidateSlug = `${candidateSlug}-${youtubeId.slice(0, 4)}`;
+    }
+
+    // Step 8: Save to Database with Keyword Slug
     const noteId = `note_${nanoid(16)}`;
     await db.insert(schema.generatedNote).values({
       id: noteId,
+      slug: candidateSlug,
       youtubeId,
       youtubeUrl: `https://www.youtube.com/watch?v=${youtubeId}`,
       title: meta.title,
@@ -167,7 +267,7 @@ export async function POST(req: NextRequest) {
       viewCount: 1,
     });
 
-    // Step 8: Deduct Credit if not Pro
+    // Step 9: Deduct Credit if not Pro
     let remainingCredits = credits;
     if (!isPro) {
       remainingCredits = Math.max(0, credits - 1);
@@ -180,10 +280,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       isCached: false,
+      canonicalSlug: candidateSlug,
       creditsLeft: remainingCredits,
       note: result.studyNote,
       video: {
-        id: `yt-${youtubeId}`,
+        id: candidateSlug,
         title: meta.title,
         channelTitle: meta.channelTitle,
         youtubeId,
@@ -200,4 +301,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "generation_failed", message: errorMsg }, { status: 500 });
   }
 }
-

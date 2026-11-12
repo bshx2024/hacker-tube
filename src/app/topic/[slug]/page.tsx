@@ -5,6 +5,8 @@ import type { Metadata } from "next";
 import { CURATED_VIDEOS } from "@/data/videos";
 import { TOPIC_METADATA, getTopicBySlug } from "@/data/topics";
 import { Footer } from "@/components/Footer";
+import { db, schema } from "@/core/db";
+import { eq, and } from "drizzle-orm";
 
 interface TopicPageProps {
   params: Promise<{ slug: string }>;
@@ -60,6 +62,15 @@ export default async function TopicPage(props: TopicPageProps) {
   const videos = CURATED_VIDEOS.filter((v) => v.topic === topic.name).sort(
     (a, b) => b.hnMentions - a.hnMentions
   );
+
+  let communityNotes: (typeof schema.generatedNote.$inferSelect)[] = [];
+  try {
+    communityNotes = await db
+      .select()
+      .from(schema.generatedNote)
+      .where(and(eq(schema.generatedNote.topic, topic.name), eq(schema.generatedNote.status, "published")))
+      .limit(12);
+  } catch {}
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -407,6 +418,93 @@ export default async function TopicPage(props: TopicPageProps) {
               );
             })}
           </div>
+
+          {/* Community Verified Study Notes Grid (Gefei SEO: Aggregating UGC into Keyword Topics) */}
+          {communityNotes.length > 0 && (
+            <div style={{ marginBottom: "50px" }}>
+              <div className="section-title-wrap" style={{ marginBottom: "16px" }}>
+                <h2 className="section-title" style={{ fontSize: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span>🧠</span> Community Derivations &amp; LaTeX Notes ({communityNotes.length})
+                </h2>
+                <p style={{ fontSize: "13px", color: "var(--text-muted)", margin: "4px 0 0 0" }}>
+                  Verified 1600+ word deep technical study notes, mathematical proofs, and mental models synthesized by engineers.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+                  gap: "20px",
+                }}
+              >
+                {communityNotes.map((note) => {
+                  const targetSlug = note.slug || `yt-${note.youtubeId}`;
+                  const thumb = note.thumbnailUrl || `https://img.youtube.com/vi/${note.youtubeId}/hqdefault.jpg`;
+                  return (
+                    <article
+                      key={note.id}
+                      style={{
+                        background: "rgba(15, 23, 42, 0.7)",
+                        border: "1px solid var(--border-subtle)",
+                        borderRadius: "var(--radius-lg)",
+                        overflow: "hidden",
+                        display: "flex",
+                        flexDirection: "column",
+                        transition: "all 0.2s ease",
+                      }}
+                    >
+                      <div style={{ position: "relative", width: "100%", aspectRatio: "16/9", overflow: "hidden", background: "#050811" }}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={thumb}
+                          alt={note.title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "8px",
+                            right: "8px",
+                            background: "rgba(0, 0, 0, 0.8)",
+                            padding: "2px 8px",
+                            borderRadius: "4px",
+                            fontSize: "11px",
+                            color: "var(--accent-emerald)",
+                            fontFamily: "var(--font-mono)",
+                            fontWeight: 700,
+                          }}
+                        >
+                          {note.wordCount} words
+                        </div>
+                      </div>
+
+                      <div style={{ padding: "16px", display: "flex", flexDirection: "column", flex: 1 }}>
+                        <div style={{ fontSize: "11px", color: "var(--accent-sky)", fontWeight: 600, marginBottom: "4px" }}>
+                          {note.channelTitle}
+                        </div>
+                        <h3 style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "8px", lineHeight: 1.4 }}>
+                          <Link href={`/v/${targetSlug}`} style={{ color: "inherit", textDecoration: "none" }}>
+                            {note.title}
+                          </Link>
+                        </h3>
+                        <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", lineHeight: 1.5, marginBottom: "14px", flex: 1 }}>
+                          {note.executiveSummary.slice(0, 110)}...
+                        </p>
+                        <Link
+                          href={`/v/${targetSlug}`}
+                          className="nav-btn nav-btn-primary"
+                          style={{ padding: "8px 12px", fontSize: "12px", textAlign: "center" }}
+                        >
+                          ⚡ Read LaTeX Notes &amp; Proofs
+                        </Link>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Cross-Topic Internal Linking Footer */}
           <div

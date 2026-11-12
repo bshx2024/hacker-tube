@@ -80,6 +80,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const publishedNotes = await db
       .select({
+        slug: schema.generatedNote.slug,
         youtubeId: schema.generatedNote.youtubeId,
         updatedAt: schema.generatedNote.updatedAt,
       })
@@ -88,8 +89,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .limit(500);
 
     publishedNotes.forEach((item) => {
+      const canonicalPath = item.slug ? item.slug : `yt-${item.youtubeId}`;
       routes.push({
-        url: `${baseUrl}/v/yt-${item.youtubeId}`,
+        url: `${baseUrl}/v/${canonicalPath}`,
         lastModified: item.updatedAt ? new Date(item.updatedAt) : now,
         changeFrequency: "weekly",
         priority: 0.85,

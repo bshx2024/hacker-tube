@@ -202,6 +202,7 @@ export const generatedNote = sqliteTable(
   'generated_note',
   {
     id: text('id').primaryKey(),
+    slug: text('slug').unique(),
     youtubeId: text('youtube_id').unique().notNull(),
     youtubeUrl: text('youtube_url').notNull(),
     title: text('title').notNull(),
@@ -230,6 +231,7 @@ export const generatedNote = sqliteTable(
       .notNull(),
   },
   (table) => [
+    index('idx_generated_note_slug').on(table.slug),
     index('idx_generated_note_yt').on(table.youtubeId),
     index('idx_generated_note_status').on(table.status),
     index('idx_generated_note_creator').on(table.creatorUserId),

@@ -63,19 +63,26 @@ async function resolveVideoAndNote(id: string): Promise<{
     return { video: curated, studyNote, isCustom: false, status: "published" };
   }
 
-  // Check generatedNote in database
+  // Check generatedNote in database by slug, youtubeId, or note id
   try {
     const cleanYt = targetId.startsWith("yt-") ? targetId.slice(3) : targetId;
     const dbList = await db
       .select()
       .from(schema.generatedNote)
-      .where(or(eq(schema.generatedNote.youtubeId, cleanYt), eq(schema.generatedNote.id, targetId)))
+      .where(
+        or(
+          eq(schema.generatedNote.slug, targetId),
+          eq(schema.generatedNote.youtubeId, cleanYt),
+          eq(schema.generatedNote.id, targetId)
+        )
+      )
       .limit(1);
 
     if (dbList.length > 0) {
       const gen = dbList[0];
+      const canonicalId = gen.slug || `yt-${gen.youtubeId}`;
       const video: VideoItem = {
-        id: `yt-${gen.youtubeId}`,
+        id: canonicalId,
         youtubeId: gen.youtubeId,
         title: gen.title,
         channelTitle: gen.channelTitle,
@@ -92,7 +99,7 @@ async function resolveVideoAndNote(id: string): Promise<{
       };
 
       const studyNote: StudyNote = {
-        videoId: `yt-${gen.youtubeId}`,
+        videoId: canonicalId,
         h1Title: gen.title,
         seoTitle: `${gen.title.slice(0, 38)}... | Notes`,
         seoDescription: `${gen.executiveSummary.slice(0, 140)}...`,
@@ -145,12 +152,12 @@ export async function generateMetadata(props: VideoPageProps): Promise<Metadata>
     description: pageDesc,
     robots: status === "private" ? { index: false, follow: false } : { index: true, follow: true },
     alternates: {
-      canonical: `https://www.hacker-tube.net/v/${id}`,
+      canonical: `https://www.hacker-tube.net/v/${video.id}`,
     },
     openGraph: {
       title: pageTitle,
       description: pageDesc,
-      url: `https://www.hacker-tube.net/v/${id}`,
+      url: `https://www.hacker-tube.net/v/${video.id}`,
       siteName: "HackerTube",
       type: "video.other",
       images: [
