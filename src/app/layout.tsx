@@ -200,6 +200,14 @@ export default function RootLayout({
           data-website-id="1bf290ac-ebd2-4346-9b44-af0193597bf3"
         />
 
+        {/* pvuv.ai Web Analytics */}
+        <script
+          defer
+          src="https://www.pvuv.ai/f.js"
+          data-site="R67vgNeg"
+          data-api="https://in.pvuv.ai"
+        />
+
         {gaId && (
           <>
             <Script
