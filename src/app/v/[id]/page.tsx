@@ -8,6 +8,7 @@ import { CURATED_VIDEOS, VideoItem } from "@/data/videos";
 import { getStudyNoteForVideo, StudyNote } from "@/data/studyNotes";
 import { getSlugByTopicName } from "@/data/topics";
 import { VideoDetailActions } from "@/components/VideoDetailActions";
+import { DetailDerivationCTA } from "@/components/DetailDerivationCTA";
 import { Footer } from "@/components/Footer";
 
 export const dynamicParams = true;
@@ -860,7 +861,10 @@ export default async function VideoPage(props: VideoPageProps) {
             </a>
           </div>
 
-          {/* Section 6: Related High-Signal Lectures */}
+          {/* Section 6: Contextual PLG Instant Derivation CTA (Anti-Bounce) */}
+          <DetailDerivationCTA currentVideoTitle={video.title} currentTopic={displayTopic} />
+
+          {/* Section 7: Related High-Signal Lectures */}
           {relatedVideos.length > 0 && (
             <div>
               <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>

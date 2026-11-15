@@ -116,17 +116,46 @@ ${studyNote.hnDebates
     }
   };
 
-  const handleOpenObsidianUri = () => {
+  const handleOpenObsidianUri = async () => {
     try {
       const content = generateMarkdown();
       const sanitizedTitle = video.title.replace(/[\\/:*?"<>|]/g, "_");
       const noteName = `HackerTube-${sanitizedTitle}`;
       const uri = `obsidian://new?name=${encodeURIComponent(noteName)}&content=${encodeURIComponent(content)}`;
-      window.location.href = uri;
+
+      // 1. Copy formatted Markdown to clipboard as primary data safety guarantee
+      try {
+        await navigator.clipboard.writeText(content);
+      } catch {}
+
+      // 2. Trigger .md file download so user has permanent offline copy regardless of app install
+      try {
+        const blob = new Blob([content], { type: "text/markdown;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `HackerTube-${video.id}.md`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch {}
+
+      // 3. Safe invocation of obsidian:// URI via hidden iframe to prevent aborting or blank navigation
+      const iframe = document.createElement("iframe");
+      iframe.style.display = "none";
+      iframe.src = uri;
+      document.body.appendChild(iframe);
+      setTimeout(() => {
+        try {
+          document.body.removeChild(iframe);
+        } catch {}
+      }, 2500);
+
       trackExportNotes(video.id, "obsidian_uri");
-      showToast("✓ Opened in Obsidian! Check your local vault.");
+      showToast("✓ Copied note & downloaded .md! Opening Obsidian vault (or paste into Notion/Logseq).");
     } catch {
-      showToast("⚠️ Could not trigger Obsidian URI.");
+      showToast("⚠️ Could not process Obsidian export.");
     }
   };
 
