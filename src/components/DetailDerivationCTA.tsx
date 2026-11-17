@@ -281,3 +281,4 @@ export const DetailDerivationCTA: React.FC<DetailDerivationCTAProps> = ({
     </>
   );
 };
+

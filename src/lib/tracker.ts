@@ -20,7 +20,7 @@ export interface TrackEventPayload {
   geek_source?: string;
 }
 
-// Global declaration for window.gtag and window.umami
+// Global declaration for window.gtag, window.umami, and window.pvuv
 declare global {
   interface Window {
     gtag?: (command: string, action: string, params?: Record<string, unknown>) => void;
@@ -29,6 +29,9 @@ declare global {
         eventName: string | Record<string, unknown>,
         eventData?: Record<string, unknown>
       ) => void;
+    };
+    pvuv?: ((action: string, eventNameOrProps: string, props?: Record<string, unknown>) => void) & {
+      q?: unknown[];
     };
   }
 }
@@ -113,6 +116,21 @@ export function trackEvent(eventName: string, properties?: Record<string, unknow
       } catch {
         // Silently swallow Umami tracking errors
       }
+    }
+
+    // 5. Multi-dispatch to PVUV Web Analytics (pvuv.ai)
+    try {
+      if (typeof window.pvuv === "function") {
+        window.pvuv("event", eventName, properties);
+      } else {
+        const w = window as any;
+        w.pvuv = w.pvuv || function (...args: unknown[]) {
+          (w.pvuv.q = w.pvuv.q || []).push(args);
+        };
+        w.pvuv("event", eventName, properties);
+      }
+    } catch {
+      // Silently swallow pvuv tracking errors
     }
   } catch (err) {
     console.debug("Track event error", err);

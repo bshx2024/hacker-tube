@@ -57,33 +57,32 @@ ${studyNote.coreMentalModels.map((m) => `- ${m}`).join("\n")}
 
 ## ⏱️ Key Timestamps & Slide Index
 ${studyNote.keyTimestamps
-  .map(
-    (t) =>
-      `### [${t.time}](https://youtu.be/${video.youtubeId}?t=${t.seconds}) ${t.title}\n- **Slide / Whiteboard**: ${t.slideConcept}\n- **Key Takeaway**: ${t.keyTakeaway}`
-  )
-  .join("\n\n")}
+        .map(
+          (t) =>
+            `### [${t.time}](https://youtu.be/${video.youtubeId}?t=${t.seconds}) ${t.title}\n- **Slide / Whiteboard**: ${t.slideConcept}\n- **Key Takeaway**: ${t.keyTakeaway}`
+        )
+        .join("\n\n")}
 
 ---
 
 ## 📐 Mathematical Derivations & Code Insights
 ${studyNote.mathDerivations
-  .map(
-    (m) =>
-      `### ${m.title}\n$$\n${m.formula}\n$$\n${m.explanation}${
-        m.codeSnippet ? `\n\n\`\`\`python\n${m.codeSnippet}\n\`\`\`` : ""
-      }`
-  )
-  .join("\n\n")}
+        .map(
+          (m) =>
+            `### ${m.title}\n$$\n${m.formula}\n$$\n${m.explanation}${m.codeSnippet ? `\n\n\`\`\`python\n${m.codeSnippet}\n\`\`\`` : ""
+            }`
+        )
+        .join("\n\n")}
 
 ---
 
 ## 💬 Hacker News Community Review & Critical Debates
 ${studyNote.hnDebates
-  .map(
-    (d) =>
-      `### ${d.topic}\n- **Consensus**: ${d.consensus}\n- **Counter-Argument & Caveats**: ${d.counterArgument}\n\n> "${d.topCommentQuote}"\n> — @${d.author}`
-  )
-  .join("\n\n")}
+        .map(
+          (d) =>
+            `### ${d.topic}\n- **Consensus**: ${d.consensus}\n- **Counter-Argument & Caveats**: ${d.counterArgument}\n\n> "${d.topCommentQuote}"\n> — @${d.author}`
+        )
+        .join("\n\n")}
 `;
   };
 
@@ -126,7 +125,7 @@ ${studyNote.hnDebates
       // 1. Copy formatted Markdown to clipboard as primary data safety guarantee
       try {
         await navigator.clipboard.writeText(content);
-      } catch {}
+      } catch { }
 
       // 2. Trigger .md file download so user has permanent offline copy regardless of app install
       try {
@@ -139,7 +138,7 @@ ${studyNote.hnDebates
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-      } catch {}
+      } catch { }
 
       // 3. Safe invocation of obsidian:// URI via hidden iframe to prevent aborting or blank navigation
       const iframe = document.createElement("iframe");
@@ -149,7 +148,7 @@ ${studyNote.hnDebates
       setTimeout(() => {
         try {
           document.body.removeChild(iframe);
-        } catch {}
+        } catch { }
       }, 2500);
 
       trackExportNotes(video.id, "obsidian_uri");

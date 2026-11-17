@@ -6,9 +6,11 @@ import { eq, or } from "drizzle-orm";
 import { db, schema } from "@/core/db";
 import { CURATED_VIDEOS, VideoItem } from "@/data/videos";
 import { getStudyNoteForVideo, StudyNote } from "@/data/studyNotes";
-import { getSlugByTopicName } from "@/data/topics";
+import { getSlugByTopicName, TOPIC_METADATA } from "@/data/topics";
 import { VideoDetailActions } from "@/components/VideoDetailActions";
 import { DetailDerivationCTA } from "@/components/DetailDerivationCTA";
+import { VideoDetailDwellTracker } from "@/components/VideoDetailDwellTracker";
+import { VideoPlayerFacade } from "@/components/VideoPlayerFacade";
 import { Footer } from "@/components/Footer";
 
 export const dynamicParams = true;
@@ -191,17 +193,14 @@ export default async function VideoPage(props: VideoPageProps) {
   const topicSlug = getSlugByTopicName(video.topic);
   const displayTopic = video.topic.replace("&", "and");
 
-  const sameTopic = CURATED_VIDEOS.filter(
+  const sameTopicVideos = CURATED_VIDEOS.filter(
     (v) => v.topic === video.topic && v.id !== video.id
-  );
-  const crossTopic = CURATED_VIDEOS.filter(
+  ).slice(0, 4);
+  const crossTopicVideos = CURATED_VIDEOS.filter(
     (v) => v.topic !== video.topic && v.id !== video.id
-  ).sort((a, b) => b.hnMentions - a.hnMentions);
-  const relatedVideos = [...sameTopic, ...crossTopic].slice(0, 3);
-  const relatedHeading =
-    sameTopic.length > 0
-      ? `More High-Signal ${displayTopic} Lectures`
-      : `More High-Signal Foundational Tech Lectures`;
+  )
+    .sort((a, b) => b.hnMentions - a.hnMentions)
+    .slice(0, 4);
 
   const midframeThumb = `https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`;
 
@@ -309,6 +308,9 @@ export default async function VideoPage(props: VideoPageProps) {
       />
 
       <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        {/* Active Dwell & Scroll Depth Telemetry */}
+        <VideoDetailDwellTracker video={video} />
+
         {/* Top Sticky Header */}
         <header
           style={{
@@ -399,27 +401,8 @@ export default async function VideoPage(props: VideoPageProps) {
             <span style={{ color: "var(--text-secondary)" }}>{video.title}</span>
           </nav>
 
-          {/* Embedded Video Player Container */}
-          <div
-            style={{
-              width: "100%",
-              aspectRatio: "16 / 9",
-              background: "#000",
-              borderRadius: "var(--radius-xl)",
-              overflow: "hidden",
-              marginBottom: "24px",
-              boxShadow: "0 20px 50px rgba(0, 0, 0, 0.7)",
-              border: "1px solid var(--border-subtle)",
-            }}
-          >
-            <iframe
-              src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?rel=0&modestbranding=1`}
-              title={video.title}
-              style={{ width: "100%", height: "100%", border: "none" }}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
+          {/* Facade Video Player (Instant LCP & Honest 50% Runtime Preview) */}
+          <VideoPlayerFacade video={video} midframeThumb={midframeThumb} />
 
           {/* Video Metadata Header */}
           <div style={{ marginBottom: "28px" }}>
@@ -864,46 +847,128 @@ export default async function VideoPage(props: VideoPageProps) {
           {/* Section 6: Contextual PLG Instant Derivation CTA (Anti-Bounce) */}
           <DetailDerivationCTA currentVideoTitle={video.title} currentTopic={displayTopic} />
 
-          {/* Section 7: Related High-Signal Lectures */}
-          {relatedVideos.length > 0 && (
-            <div>
-              <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>
-                {relatedHeading}
-              </h2>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-                  gap: "16px",
-                }}
-              >
-                {relatedVideos.map((r) => (
+          {/* Section 7: Anti-Dead-End Link Graph (Gefei SEO Rule 3: Out-Degree >= 12) */}
+          <div style={{ marginTop: "40px" }}>
+            {sameTopicVideos.length > 0 && (
+              <div style={{ marginBottom: "32px" }}>
+                <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>
+                  More High-Signal {displayTopic} Lectures
+                </h2>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                    gap: "16px",
+                  }}
+                >
+                  {sameTopicVideos.map((r) => (
+                    <Link
+                      key={r.id}
+                      href={`/v/${r.id}`}
+                      style={{
+                        background: "var(--bg-card)",
+                        border: "1px solid var(--border-subtle)",
+                        borderRadius: "var(--radius-md)",
+                        padding: "14px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "6px",
+                        textDecoration: "none",
+                        transition: "border-color 0.2s ease, transform 0.2s ease",
+                      }}
+                    >
+                      <span style={{ fontSize: "11px", color: "var(--accent-amber)", fontWeight: 700 }}>
+                        ▲ {r.hnMentions} HN pts • {r.duration}
+                      </span>
+                      <h3 style={{ fontSize: "13.5px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.4 }}>
+                        {r.title}
+                      </h3>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{r.channelTitle}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {crossTopicVideos.length > 0 && (
+              <div style={{ marginBottom: "32px" }}>
+                <h2 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>
+                  Foundational Masterclasses Across Computing
+                </h2>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+                    gap: "16px",
+                  }}
+                >
+                  {crossTopicVideos.map((r) => (
+                    <Link
+                      key={r.id}
+                      href={`/v/${r.id}`}
+                      style={{
+                        background: "var(--bg-card)",
+                        border: "1px solid var(--border-subtle)",
+                        borderRadius: "var(--radius-md)",
+                        padding: "14px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "6px",
+                        textDecoration: "none",
+                        transition: "border-color 0.2s ease, transform 0.2s ease",
+                      }}
+                    >
+                      <span style={{ fontSize: "11px", color: "var(--accent-sky)", fontWeight: 700 }}>
+                        ▲ {r.hnMentions} HN pts • {r.topic}
+                      </span>
+                      <h3 style={{ fontSize: "13.5px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.4 }}>
+                        {r.title}
+                      </h3>
+                      <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{r.channelTitle}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Topic Exploration Hubs (BFS Depth = 1) */}
+            <div
+              style={{
+                padding: "20px",
+                background: "rgba(255, 255, 255, 0.02)",
+                border: "1px solid var(--border-subtle)",
+                borderRadius: "var(--radius-md)",
+              }}
+            >
+              <h3 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px", color: "var(--text-secondary)" }}>
+                Explore Curated Knowledge Hubs (Zero Clickbait)
+              </h3>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}>
+                {TOPIC_METADATA.map((topic) => (
                   <Link
-                    key={r.id}
-                    href={`/v/${r.id}`}
+                    key={topic.slug}
+                    href={`/topic/${topic.slug}`}
                     style={{
-                      background: "var(--bg-card)",
-                      border: "1px solid var(--border-subtle)",
-                      borderRadius: "var(--radius-md)",
-                      padding: "14px",
-                      display: "flex",
-                      flexDirection: "column",
+                      display: "inline-flex",
+                      alignItems: "center",
                       gap: "6px",
+                      padding: "7px 14px",
+                      background: "rgba(255, 255, 255, 0.04)",
+                      border: "1px solid var(--border-subtle)",
+                      borderRadius: "var(--radius-sm)",
+                      fontSize: "12.5px",
+                      color: "var(--text-secondary)",
                       textDecoration: "none",
+                      transition: "border-color 0.2s ease, color 0.2s ease",
                     }}
                   >
-                    <span style={{ fontSize: "11px", color: "var(--accent-amber)", fontWeight: 700 }}>
-                      ▲ {r.hnMentions} HN pts • {r.duration} • {r.topic}
-                    </span>
-                    <h3 style={{ fontSize: "13.5px", fontWeight: 700, color: "var(--text-primary)", lineHeight: 1.4 }}>
-                      {r.title}
-                    </h3>
-                    <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>{r.channelTitle}</span>
+                    <span>{topic.icon}</span>
+                    <span>{topic.title}</span>
                   </Link>
                 ))}
               </div>
             </div>
-          )}
+          </div>
         </main>
 
         <Footer />
