@@ -365,13 +365,13 @@ export default async function VideoPage(props: VideoPageProps) {
               >
                 ← {displayTopic}
               </Link>
-              <Link
-                href={`/?v=${video.id}`}
+              <a
+                href="#study-notes"
                 className="nav-btn nav-btn-primary"
                 style={{ padding: "6px 14px", fontSize: "13px" }}
               >
-                ▶ Watch in App
-              </Link>
+                ⚡ Study Notes &amp; Proofs
+              </a>
             </nav>
           </div>
         </header>
@@ -510,6 +510,7 @@ export default async function VideoPage(props: VideoPageProps) {
 
           {/* Section 1: Executive Summary */}
           <section
+            id="study-notes"
             style={{
               background: "var(--bg-secondary)",
               border: "1px solid var(--border-subtle)",

@@ -252,6 +252,7 @@ export async function createWaffoCheckoutOrder(params: {
   // Try official Waffo Pancake SDK
   if (merchantId && privateKey) {
     try {
+      // @ts-ignore - optional dynamic SDK import
       const { WaffoPancake } = await import('@waffo/pancake-ts');
       const client = new WaffoPancake({
         merchantId,
