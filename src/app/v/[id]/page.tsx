@@ -20,6 +20,7 @@ interface VideoPageProps {
 }
 
 const ALIAS_MAP: Record<string, string> = {
+  "micrograd": "karpathy-micrograd",
   "fast-inverse-square-root": "carmack-quake-graphics",
   "inventing-on-principle": "bret-victor-principle",
   "zero-knowledge-proofs": "dan-boneh-crypto-intro",

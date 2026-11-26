@@ -55,7 +55,7 @@ def load_codebase_context():
     return context
 
 def fetch_gsc_data(days=14):
-    """Fetch search analytics from Google Search Console API."""
+    """Fetch search analytics from Google Search Console API (both aggregated matrix and daily trend)."""
     if not os.path.exists(KEY_PATH):
         raise FileNotFoundError(f"GSC service account key not found at {KEY_PATH}")
 
@@ -67,7 +67,7 @@ def fetch_gsc_data(days=14):
     end_date = (datetime.utcnow() - timedelta(days=1)).strftime('%Y-%m-%d')
     start_date = (datetime.utcnow() - timedelta(days=days)).strftime('%Y-%m-%d')
 
-    # Fetch query + page matrix
+    # 1. Fetch query + page matrix
     res_qp = service.searchanalytics().query(
         siteUrl=SITE_URL,
         body={
@@ -78,7 +78,42 @@ def fetch_gsc_data(days=14):
         }
     ).execute()
 
-    return res_qp.get('rows', []), start_date, end_date
+    # 2. Fetch daily breakdown for the last 7 days (Daily Truth)
+    trend_start = (datetime.utcnow() - timedelta(days=8)).strftime('%Y-%m-%d')
+    res_daily = service.searchanalytics().query(
+        siteUrl=SITE_URL,
+        body={
+            'startDate': trend_start,
+            'endDate': end_date,
+            'dimensions': ['date'],
+            'rowLimit': 30
+        }
+    ).execute()
+
+    daily_rows = res_daily.get('rows', [])
+    daily_rows.sort(key=lambda x: x['keys'][0])
+
+    # 3. Track pilot page /v/karpathy-micrograd
+    res_pilot = service.searchanalytics().query(
+        siteUrl=SITE_URL,
+        body={
+            'startDate': start_date,
+            'endDate': end_date,
+            'dimensionFilterGroups': [{
+                'filters': [{
+                    'dimension': 'page',
+                    'operator': 'contains',
+                    'expression': 'karpathy-micrograd'
+                }]
+            }],
+            'dimensions': ['query'],
+            'rowLimit': 20
+        }
+    ).execute()
+
+    pilot_rows = res_pilot.get('rows', [])
+
+    return res_qp.get('rows', []), daily_rows, pilot_rows, start_date, end_date
 
 def analyze_opportunities(rows, context):
     """Segment GSC query data into Gefei 4-Quadrant Opportunity Matrix."""
@@ -134,12 +169,50 @@ def analyze_opportunities(rows, context):
         'q4': q4_top_performers
     }
 
-def print_autopilot_report(matrix, start_date, end_date, context):
+def print_autopilot_report(daily_rows, pilot_rows, matrix, start_date, end_date, context):
     print("=" * 88)
-    print("HACKERTUBE SEO AUTOPILOT: GSC 4-QUADRANT OPPORTUNITY AUDIT")
-    print(f"Date Range: {start_date} to {end_date} | Source: Google Search Console API")
+    print("HACKERTUBE SEO AUTOPILOT: REAL-TIME SEARCH ANALYTICS (GEFEI BEST PRACTICE)")
+    print(f"Aggregated Window: {start_date} to {end_date} | Source: Google Search Console API")
     print("=" * 88)
 
+    print("\n[SECTION 1: ZERO-LAG DAILY SEARCH RUNRATE (LAST 7 DAYS)] 👉 Daily Truth")
+    print(f"{'Date':<12} | {'Clicks':<8} | {'Imp':<8} | {'CTR':<8} | {'Pos':<6} | {'Day-over-Day Delta':<22}")
+    print("-" * 88)
+    prev_c = None
+    prev_i = None
+    for r in daily_rows:
+        d = r['keys'][0]
+        c = r['clicks']
+        imp = r['impressions']
+        ctr = r['ctr'] * 100
+        pos = r['position']
+        
+        if prev_c is not None and prev_i is not None:
+            c_delta = c - prev_c
+            i_delta = imp - prev_i
+            delta_str = f"{c_delta:+d} clicks, {i_delta:+d} imp"
+        else:
+            delta_str = "Baseline"
+        prev_c = c
+        prev_i = imp
+        
+        print(f"{d:<12} | {c:<8} | {imp:<8} | {ctr:>5.2f}%  | {pos:>4.1f}  | {delta_str:<22}")
+
+    print("\n[SECTION 2: PILOT PAGE REAL-TIME TRACKING 👉 /v/karpathy-micrograd]")
+    if pilot_rows:
+        print(f"{'Query':<36} | {'Imp':<6} | {'Clicks':<6} | {'CTR':<7} | {'Pos':<5}")
+        print("-" * 88)
+        for r in pilot_rows:
+            q = r['keys'][0].strip()
+            c = r['clicks']
+            imp = r['impressions']
+            ctr = r['ctr'] * 100
+            pos = r['position']
+            print(f"{q:<36} | {imp:<6} | {c:<6} | {ctr:>5.2f}% | {pos:>4.1f}")
+    else:
+        print("  Currently 0 direct GSC impressions recorded for this inner path. (Target of Phase 2 pilot).")
+
+    print("\n[SECTION 3: 14-DAY AGGREGATED OPPORTUNITY QUADRANTS]")
     print("\n[QUADRANT 1: HIGH IMPRESSION, LOW CTR] 👉 Highest Traffic Unlock via Title & Snippet")
     print(f"{'Query':<30} | {'Landing Page':<32} | {'Imp':<6} | {'Clicks':<6} | {'CTR':<7} | {'Pos':<5}")
     print("-" * 88)
@@ -191,13 +264,15 @@ def print_autopilot_report(matrix, start_date, end_date, context):
         print(f"   - Proposed Action: Elevate internal in-degree for '{top_q2['page']}' by adding it to Featured Cards or Universal Footer.")
         rec_count += 1
 
+    print(f"{rec_count}. [P1 Pilot In-Depth SEO] Target Path: '/v/karpathy-micrograd'")
+    print("   - Action: Complete Page Coach 98+ audit, fix FAQ schema mismatch, align long-tail search intent.")
     print("=" * 88)
 
 def main():
     context = load_codebase_context()
-    rows, start_date, end_date = fetch_gsc_data(days=14)
+    rows, daily_rows, pilot_rows, start_date, end_date = fetch_gsc_data(days=14)
     matrix = analyze_opportunities(rows, context)
-    print_autopilot_report(matrix, start_date, end_date, context)
+    print_autopilot_report(daily_rows, pilot_rows, matrix, start_date, end_date, context)
 
 if __name__ == '__main__':
     main()

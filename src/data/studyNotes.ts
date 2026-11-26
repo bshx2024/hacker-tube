@@ -49,9 +49,9 @@ export const STUDY_NOTES_MAP: Record<string, StudyNote> = {
 "karpathy-micrograd": {
     videoId: "karpathy-micrograd",
     h1Title: "The Spelled-Out Intro to Neural Networks — Andrej Karpathy",
-    seoTitle: "The Spelled-Out Intro to Neural Networks: micrograd Notes",
+    seoTitle: "Micrograd Backpropagation Explained: Math Derivations & Code Notes",
     seoDescription:
-      "Master Andrej Karpathy'''s spelled-out intro to neural networks: scalar DAG autograd engines, calculus chain rule backpropagation, and pure Python code.",
+      "Master Andrej Karpathy's spelled-out intro to neural networks and micrograd: scalar DAG autograd engine, calculus chain rule backpropagation, and pure Python code.",
     h2ExecutiveSummary: "Executive Summary: Spelled-Out Intro to Neural Networks and micrograd",
     h2Timestamps: "Key Timestamps: Spelled-Out Neural Networks Lecture Breakdown",
     h2Derivations: "Mathematical Derivations: Backpropagation in Neural Networks",
@@ -196,35 +196,35 @@ self.grad += local_derivative * out.grad`
     ],
     faqs: [
       {
-        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
-        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
+        question: "What is micrograd and why did Andrej Karpathy build it?",
+        answer: "micrograd is a minimalist scalar-valued autograd engine and neural network framework written in approximately 100 lines of pure Python by Andrej Karpathy. It explicitly constructs a directed acyclic graph (DAG) of scalar Value objects to demystify backpropagation and demonstrate that modern deep learning libraries like PyTorch are fundamentally calculus chain rule accumulators over computational graphs."
       },
       {
-        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
-        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
+        question: "Why must gradients accumulate with += rather than assignment (=) in backpropagation?",
+        answer: "When an intermediate variable is reused across multiple operations in a neural network (e.g., a * a or multi-layer skip connections), multivariate calculus dictates that its total derivative is the sum of local derivatives flowing along all outgoing graph branches (dz/dx = sum(dz/dy_i * dy_i/dx)). Using = overwrites previous gradients, leading to severe gradient bugs."
       },
       {
-        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
-        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
+        question: "How does reverse topological sorting automate backpropagation in micrograd?",
+        answer: "micrograd executes a depth-first search (DFS) post-order traversal to arrange all DAG nodes in reverse topological sequence. This mathematical guarantee ensures that every child node completely receives and evaluates all upstream gradients from the loss function before firing its local _backward function on its parent nodes."
       },
       {
-        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
-        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
+        question: "Why does micrograd compute the local derivative of tanh as 1 - tanh^2(x)?",
+        answer: "By calculus, d/dx tanh(x) = 1 - tanh^2(x). Because the forward pass already computed and cached the scalar output t = tanh(x), micrograd avoids re-evaluating computationally expensive exponential functions (e^x) during backpropagation, computing (1.0 - t**2) * out.grad in single-digit CPU clock cycles."
       },
       {
-        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
-        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
+        question: "What is the architectural difference between micrograd and production PyTorch?",
+        answer: "micrograd operates at scalar granularity, allocating a dedicated Python object for every single number, making it ideal for pedagogical understanding but highly memory inefficient. PyTorch groups millions of scalar operations into contiguous multidimensional Tensors parallelized across GPU CUDA cores, while utilizing the identical DAG backpropagation logic."
       },
       {
-        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
-        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
-      },
+        question: "What is Andrej Karpathy's golden recipe for debugging neural network training?",
+        answer: "Karpathy advocates always overfitting a single tiny batch (e.g., 4 examples) to absolute zero loss first before tuning learning rates, batch sizes, or adding network layers. If an architecture cannot overfit a tiny batch, there is a fundamental bug in the forward pass, loss formula, or backward gradient computation."
+      }
     ],
     obsidianFrontmatter: `---
 title: "The Spelled-Out Intro to Neural Networks and Backpropagation: Building micrograd"
 speaker: "Andrej Karpathy"
 source: "HackerTube"
-url: "https://www.hacker-tube.net/?v=karpathy-micrograd&ref=obsidian_notes"
+url: "https://www.hacker-tube.net/v/karpathy-micrograd?ref=obsidian_notes"
 youtubeId: "VMj-3S1tku0"
 tags:
   - machine-learning
