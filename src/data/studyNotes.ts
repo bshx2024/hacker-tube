@@ -1318,8 +1318,8 @@ created: 2026-11-09
   "carmack-quake-graphics": {
     videoId: "carmack-quake-graphics",
     h1Title: "Fast Inverse Square Root: Quake III — John Carmack",
-    seoTitle: "Fast Inverse Square Root: Quake III Deep Dive",
-    seoDescription: "Deconstruct Quake III’s Fast Inverse Square Root: IEEE 754 bit shifts, 0x5f3759df magic constant, and Newton-Raphson iterations. Technical study notes.",
+    seoTitle: "Fast Inverse Square Root Explained: Quake III 0x5f3759df Derivation & Code",
+    seoDescription: "Deconstruct Quake III's Fast Inverse Square Root (0x5f3759df): IEEE 754 float bit-level hack, Gary Tarolli & Chris Lomont math derivation, and Newton-Raphson step.",
     h2ExecutiveSummary: "Executive Summary: Fast Inverse Square Root and the 0x5f3759df Hack",
     h2Timestamps: "Key Timestamps: Fast Inverse Square Root Algorithm Breakdown",
     h2Derivations: "Mathematical Derivations: IEEE 754 Log Approximation and Newton Method",
@@ -1423,28 +1423,28 @@ created: 2026-11-09
     ],
     faqs: [
       {
-        question: "In Simple Made Easy, what is the fundamental difference between Simple and Easy?",
-        answer: "In the Simple Made Easy lecture by Rich Hickey, Simple is an objective design property (simplex: having a single role, unbraided), whereas Easy is subjective and relative to developer familiarity (facilis: near at hand).",
+        question: "What is the Fast Inverse Square Root algorithm (0x5f3759df) and how does it work?",
+        answer: "The Fast Inverse Square Root algorithm (famous as Q_rsqrt in Quake III Arena) calculates 1/sqrt(x) up to 4x faster than standard x87 floating-point division and square root instructions. It works in three phases: bitcasting the 32-bit IEEE 754 float to a 32-bit integer, subtracting a right-shifted value from the magic constant 0x5f3759df (which exploits the linear approximation of log2(x) in IEEE 754 format), and refining the estimate using one iteration of the Newton-Raphson method.",
       },
       {
-        question: "What does the Simple Made Easy lecture mean by the verb “to complect”?",
-        answer: "In Simple Made Easy, to complect means to braid, intertwine, or fold multiple distinct concerns together (from Latin complecti). Once concepts are complected, you cannot reason about or test one without dragging the other along.",
+        question: "Why does shifting float bits right by 1 approximate 1/sqrt(x)?",
+        answer: "In IEEE 754 32-bit floating-point format, the bit representation I_x = 2^23 * (E - 127) + M acts as an affine transformation of log2(x). Calculating y = x^(-1/2) in logarithmic space corresponds to log2(y) = -1/2 * log2(x). Dividing the integer bit pattern by 2 via bit shift (i >> 1) and subtracting it from an offset constant produces an integer bit pattern that directly encodes the base-2 logarithm of the reciprocal square root.",
       },
       {
-        question: "Why does Simple Made Easy advocate for immutable values over mutable state?",
-        answer: "Simple Made Easy proves that mutable state braids value and time together. Immutable values represent permanent historical facts that can be freely shared across concurrent threads without locks, cached indefinitely, and trivially reasoned about.",
+        question: "How was the magic constant 0x5f3759df derived by Gary Tarolli and Chris Lomont?",
+        answer: "The theoretical constant is derived from R = 1.5 * 2^23 * (127 - mu), where mu is a correction factor chosen to minimize the piecewise approximation error of log2(1 + m) ≈ m + mu on [0, 1]. Gary Tarolli empirically arrived at 0x5f3759df. Later, mathematician Chris Lomont analyzed the function using minimax error minimization and proved that 0x5f375a86 is marginally more optimal, though 0x5f3759df achieves an astonishingly low maximum relative error of 0.175% after a single Newton step.",
       },
       {
-        question: "How does the Epochal Time Model in Simple Made Easy solve concurrency?",
-        answer: "In Simple Made Easy, identity is an atomic reference pointing to an immutable value snapshot at time t. Updates apply a pure function to produce a new immutable value at t+1 and swap the reference atomically (e.g. CAS), allowing lock-free reads.",
+        question: "Why does the original Quake III Q_rsqrt violate C/C++ strict aliasing, and how is it fixed?",
+        answer: "The original line `i = * ( long * ) &y;` violates C99/C++ strict aliasing rules, which forbid accessing an object of one type (float) through a pointer to an incompatible type (long). Modern optimizing compilers (GCC, Clang) may reorder or delete instructions under -O2/-O3 due to assumed non-aliasing. The safe, standard-compliant solution is using `memcpy(&i, &y, sizeof(float))` or `std::bit_cast<uint32_t>(y)` in C++20, which modern compilers optimize into a single register move without any function call overhead.",
       },
       {
-        question: "Why does Simple Made Easy recommend passing plain data maps instead of OOP classes?",
-        answer: "In Simple Made Easy, plain associative maps represent information directly without braiding data representation with domain logic or class inheritance hierarchies, enabling universal composition.",
+        question: "Why did id Software use only a single iteration of Newton-Raphson in Quake III?",
+        answer: "A single iteration of Newton-Raphson doubles the number of accurate significant digits (quadratic convergence), reducing the relative error from ~3.5% down to under 0.175%. For 3D game engines computing surface normal vectors for Gouraud/Phong lighting and vector reflections, 99.8% precision is visually indistinguishable from exact floating-point division while saving dozens of precious CPU cycles per vertex.",
       },
       {
-        question: "What architectural constructs does Simple Made Easy recommend for decoupled systems?",
-        answer: "Simple Made Easy recommends five foundational constructs: persistent immutable data structures, declarative data (like JSON or EDN), asynchronous queues to decouple space and time, pure functions, and runtime schemas.",
+        question: "Is Fast Inverse Square Root still necessary in modern game engines and CPUs?",
+        answer: "In modern production systems, Q_rsqrt is obsolete because CPUs and GPUs provide dedicated hardware silicon instructions: SSE introduced `RSQRTSS` (computing reciprocal square root in ~3-4 clock cycles with 11-bit precision), AVX-512 added `VRCP14SS`, and modern GPUs have hardware Special Function Units (SFU) executing reciprocal square roots natively at full throughput. However, the algorithm remains an immortal masterclass in hardware-aware algorithmic design and low-level optimization.",
       },
     ],
     obsidianFrontmatter: `---

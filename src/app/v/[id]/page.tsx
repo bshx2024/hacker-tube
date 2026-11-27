@@ -22,6 +22,8 @@ interface VideoPageProps {
 const ALIAS_MAP: Record<string, string> = {
   "micrograd": "karpathy-micrograd",
   "fast-inverse-square-root": "carmack-quake-graphics",
+  "quake-fast-inverse-square-root": "carmack-quake-graphics",
+  "0x5f3759df": "carmack-quake-graphics",
   "inventing-on-principle": "bret-victor-principle",
   "zero-knowledge-proofs": "dan-boneh-crypto-intro",
   "essence-of-calculus-chapter-1": "3b1b-essence-of-calculus",
