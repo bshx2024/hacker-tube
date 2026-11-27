@@ -93,7 +93,7 @@ def fetch_gsc_data(days=14):
     daily_rows = res_daily.get('rows', [])
     daily_rows.sort(key=lambda x: x['keys'][0])
 
-    # 3. Track pilot page /v/karpathy-micrograd
+    # 3. Track pilot pages
     res_pilot = service.searchanalytics().query(
         siteUrl=SITE_URL,
         body={
@@ -110,10 +110,28 @@ def fetch_gsc_data(days=14):
             'rowLimit': 20
         }
     ).execute()
-
     pilot_rows = res_pilot.get('rows', [])
 
-    return res_qp.get('rows', []), daily_rows, pilot_rows, start_date, end_date
+    # Pilot Candidate #2: Carmack Quake III Fast Inverse Square Root
+    res_carmack = service.searchanalytics().query(
+        siteUrl=SITE_URL,
+        body={
+            'startDate': start_date,
+            'endDate': end_date,
+            'dimensionFilterGroups': [{
+                'filters': [{
+                    'dimension': 'page',
+                    'operator': 'contains',
+                    'expression': 'square-root'
+                }]
+            }],
+            'dimensions': ['query'],
+            'rowLimit': 20
+        }
+    ).execute()
+    carmack_rows = res_carmack.get('rows', [])
+
+    return res_qp.get('rows', []), daily_rows, pilot_rows, carmack_rows, start_date, end_date
 
 def analyze_opportunities(rows, context):
     """Segment GSC query data into Gefei 4-Quadrant Opportunity Matrix."""
@@ -169,7 +187,7 @@ def analyze_opportunities(rows, context):
         'q4': q4_top_performers
     }
 
-def print_autopilot_report(daily_rows, pilot_rows, matrix, start_date, end_date, context):
+def print_autopilot_report(daily_rows, pilot_rows, carmack_rows, matrix, start_date, end_date, context):
     print("=" * 88)
     print("HACKERTUBE SEO AUTOPILOT: REAL-TIME SEARCH ANALYTICS (GEFEI BEST PRACTICE)")
     print(f"Aggregated Window: {start_date} to {end_date} | Source: Google Search Console API")
@@ -198,7 +216,8 @@ def print_autopilot_report(daily_rows, pilot_rows, matrix, start_date, end_date,
         
         print(f"{d:<12} | {c:<8} | {imp:<8} | {ctr:>5.2f}%  | {pos:>4.1f}  | {delta_str:<22}")
 
-    print("\n[SECTION 2: PILOT PAGE REAL-TIME TRACKING 👉 /v/karpathy-micrograd]")
+    print("\n[SECTION 2: CRAFTSMANSHIP PILOT PAGES REAL-TIME TRACKING]")
+    print("👉 Pilot #1: /v/karpathy-micrograd")
     if pilot_rows:
         print(f"{'Query':<36} | {'Imp':<6} | {'Clicks':<6} | {'CTR':<7} | {'Pos':<5}")
         print("-" * 88)
@@ -210,7 +229,21 @@ def print_autopilot_report(daily_rows, pilot_rows, matrix, start_date, end_date,
             pos = r['position']
             print(f"{q:<36} | {imp:<6} | {c:<6} | {ctr:>5.2f}% | {pos:>4.1f}")
     else:
-        print("  Currently 0 direct GSC impressions recorded for this inner path. (Target of Phase 2 pilot).")
+        print("  Currently 0 direct GSC impressions recorded for this inner path.")
+
+    print("\n👉 Pilot #2: /v/carmack-quake-graphics & /v/fast-inverse-square-root")
+    if carmack_rows:
+        print(f"{'Query':<36} | {'Imp':<6} | {'Clicks':<6} | {'CTR':<7} | {'Pos':<5}")
+        print("-" * 88)
+        for r in carmack_rows:
+            q = r['keys'][0].strip()
+            c = r['clicks']
+            imp = r['impressions']
+            ctr = r['ctr'] * 100
+            pos = r['position']
+            print(f"{q:<36} | {imp:<6} | {c:<6} | {ctr:>5.2f}% | {pos:>4.1f}")
+    else:
+        print("  Currently 0 direct GSC impressions recorded for this inner path.")
 
     print("\n[SECTION 3: 14-DAY AGGREGATED OPPORTUNITY QUADRANTS]")
     print("\n[QUADRANT 1: HIGH IMPRESSION, LOW CTR] 👉 Highest Traffic Unlock via Title & Snippet")
@@ -270,9 +303,9 @@ def print_autopilot_report(daily_rows, pilot_rows, matrix, start_date, end_date,
 
 def main():
     context = load_codebase_context()
-    rows, daily_rows, pilot_rows, start_date, end_date = fetch_gsc_data(days=14)
+    rows, daily_rows, pilot_rows, carmack_rows, start_date, end_date = fetch_gsc_data(days=14)
     matrix = analyze_opportunities(rows, context)
-    print_autopilot_report(daily_rows, pilot_rows, matrix, start_date, end_date, context)
+    print_autopilot_report(daily_rows, pilot_rows, carmack_rows, matrix, start_date, end_date, context)
 
 if __name__ == '__main__':
     main()
